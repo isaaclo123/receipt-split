@@ -1,45 +1,40 @@
 import React from 'react'
-import { connect } from 'react-redux'
 
 import {
   Route,
-  Redirect,
-  Switch
+  Switch,
+  Link
 } from 'react-router-dom'
 
-import Navbar from 'react-bootstrap/Navbar';
-import Login from './Login';
-import Home from './Home';
+import { LinkContainer } from 'react-router-bootstrap'
 
-class App extends React.Component {
-  handleSetLogin = () => {
-    console.log(this.props.login)
-    this.props.setLogin()
-  }
+import Nav from 'react-bootstrap/Nav'
+import Navbar from 'react-bootstrap/Navbar'
 
-  render() {
-    return (
-      <>
-        <Navbar>
-          <Navbar.Brand>Reciept Split</Navbar.Brand>
-        </Navbar>
+import PrivateRoute from './PrivateRoute'
+import NavComponent from './NavComponent'
 
+import BalancePage from './BalancePage'
+import RecieptPage from './RecieptPage'
+import PeoplePage from './PeoplePage'
+import NotificationPage from './NotificationPage'
+
+const App = ({ match }) => {
+  return (
+    <>
+      <NavComponent match={ match } />
+
+      <div class="container">
         <Switch>
-          <Route exact path="/" component={Login}/>
-          <Route path="/login" component={Login}/>
-          <Route exact path="/home" component={Home}/>
+          <Route exact path={`${match.path}/balance`} component={BalancePage} />
+          <Route path={`${match.path}/reciepts`} component={RecieptPage} />
+          <Route path={`${match.path}/people`} component={PeoplePage} />
+          <Route path={`${match.path}/notifications`} component={NotificationPage} />
+          <Route component={BalancePage} />
         </Switch>
-      </>
-    );
-  }
-}
-
-const mapStateToProps = (state) => {
-  const { login } = state
-
-  return {
-    login
-  };
+      </div>
+    </>
+  )
 }
 
 export default App

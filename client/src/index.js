@@ -12,14 +12,18 @@ import './index.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import App from './components/App';
-
 import * as serviceWorker from './serviceWorker';
+
+import App from './components/App';
+import Login from './components/LoginPage';
+import PrivateRoute from './components/PrivateRoute';
 
 ReactDOM.render(
   <Provider store={configureStore()}>
     <BrowserRouter>
-      <Route path="/" component={App} />
+      <PrivateRoute exact path="/" component={Login} />
+      <Route path="/login" component={Login} />
+      <PrivateRoute path="/app" component={App} />
     </BrowserRouter>
   </Provider>,
   document.getElementById('root')
