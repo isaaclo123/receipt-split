@@ -8,9 +8,6 @@ import {
 
 import { LinkContainer } from 'react-router-bootstrap'
 
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
-
 import PrivateRoute from './PrivateRoute'
 import NavComponent from './NavComponent'
 
@@ -26,11 +23,11 @@ const App = ({ match }) => {
 
       <div class="container">
         <Switch>
-          <Route exact path={`${match.path}/balance`} component={BalancePage} />
-          <Route path={`${match.path}/reciepts`} component={RecieptPage} />
-          <Route path={`${match.path}/people`} component={PeoplePage} />
-          <Route path={`${match.path}/notifications`} component={NotificationPage} />
-          <Route component={BalancePage} />
+          <PrivateRoute path={`${match.path}/balance`} component={BalancePage} exact />
+          <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />
+          <PrivateRoute path={`${match.path}/people`} component={PeoplePage} />
+          <PrivateRoute path={`${match.path}/notifications`} component={NotificationPage} />
+          <PrivateRoute component={BalancePage} />
         </Switch>
       </div>
     </>
