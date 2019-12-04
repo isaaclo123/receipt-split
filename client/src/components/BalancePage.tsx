@@ -21,50 +21,50 @@ const youowe = [ // TODO
 const BalancePage = () => {
   return (
     <>
-    <h5>You Take</h5>
+      <h5>You Take It</h5>
 
-    <ListGroup>
-      {youowe.map((item) => {
-        const props: TakeProps = {
-          handleNameClick: () => {},
-          handlePayClick: () => {},
-          ...item
-        }
-        return (
-          <TakeListItemComponent
-            {...props}/>
-        )
-      })}
-    </ListGroup>
+      <ListGroup className="pb-3">
+        {youowe.map((item) => {
+          const props: TakeProps = {
+            handleNameClick: () => {},
+            handleAcceptClick: () => {},
+            handleRejectClick: () => {},
+            ...item
+          }
+          return (
+            <TakeListItemComponent
+              {...props}/>
+          )
+        })}
+      </ListGroup>
 
-    <h5>You Leave</h5>
+      <h5>You Leave It</h5>
 
-    <ListGroup>
-      {youowe.map((item) => {
-        const props: LeaveProps = {
-          handleNameClick: () => {},
-          handleAcceptClick: () => {},
-          handleRejectClick: () => {},
-          ...item
-        }
-        return (
-          <LeaveListItemComponent
-            {...props}/>
-        )
-      })}
-    </ListGroup>
+      <ListGroup className="pb-3">
+        {youowe.map((item) => {
+          const props: LeaveProps = {
+            handleNameClick: () => {},
+            handlePayClick: () => {},
+            ...item
+          }
+          return (
+            <LeaveListItemComponent
+              {...props}/>
+          )
+        })}
+      </ListGroup>
 
-    <h5>History</h5>
+      <h5>History</h5>
 
-    <ListGroup>
-      {youowe.map(({name, amount}) => {
-        return (
-          <ListGroup.Item>
-            {name} ${amount}
-          </ListGroup.Item>
-        )
-      })}
-    </ListGroup>
+      <ListGroup className="pb-3">
+        {youowe.map(({name, amount}) => {
+          return (
+            <ListGroup.Item>
+              {name} ${amount}
+            </ListGroup.Item>
+          )
+        })}
+      </ListGroup>
     </>
   )
 }

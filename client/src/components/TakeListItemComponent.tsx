@@ -11,7 +11,8 @@ export interface TakeProps {
   name: string,
   pending: boolean,
   handleNameClick: () => void,
-  handlePayClick: () => void,
+  handleAcceptClick: () => void,
+  handleRejectClick: () => void,
 }
 
 export const TakeListItemComponent = ({
@@ -20,13 +21,18 @@ export const TakeListItemComponent = ({
   pending,
 
   handleNameClick,
-  handlePayClick,
+  handleAcceptClick,
+  handleRejectClick,
 }: TakeProps) => {
   const buttons: ButtonProps[] = [
     {
-      variant: "primary",
-      text: "MARK PAID",
-      handleClick: handlePayClick
+      variant: "success",
+      text: "ACCEPT",
+      handleClick: handleAcceptClick
+    }, {
+      variant: "danger",
+      text: "REJECT",
+      handleClick: handleRejectClick
     },
   ]
 
