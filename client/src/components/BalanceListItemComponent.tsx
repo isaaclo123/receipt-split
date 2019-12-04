@@ -61,14 +61,14 @@ export const BalanceListItemComponent = ({
           {buttons.map(({ variant, text, handleClick}: ButtonProps) => {
             return active ? (
               <Button
-                color={variant}
+                className={`btn btn-${variant}`}
                 onClick={() => handleClick()}
                 active>
                 {text}
               </Button>
               ) : (
               <Button
-                color={variant}
+                className={`btn btn-${variant}`}
                 onClick={() => handleClick()}
                 disabled>
                 {text}
