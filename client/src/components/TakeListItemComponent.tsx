@@ -9,7 +9,7 @@ import {
 export interface TakeProps {
   amount: number,
   name: string,
-  pending: bool,
+  pending: boolean,
   handleNameClick: () => void,
   handlePayClick: () => void,
 }
@@ -36,7 +36,7 @@ export const TakeListItemComponent = ({
     amount,
     descriptor: "from",
     name,
-    handleNameClick,
+    handleClick: handleNameClick,
     buttons,
     active: pending // TODO
   }

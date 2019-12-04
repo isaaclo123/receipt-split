@@ -1,10 +1,7 @@
 import React from 'react'
-import { connect } from 'react-redux'
 
 import {
-  Route,
-  Link,
-  Redirect
+  RouteComponentProps
 } from 'react-router-dom'
 
 import { LinkContainer } from 'react-router-bootstrap'
@@ -12,7 +9,9 @@ import { LinkContainer } from 'react-router-bootstrap'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 
-const NavComponent = ({ match }) => {
+type TParams = { url: string };
+
+const NavComponent = ({ match }: RouteComponentProps<TParams>) => {
   return (
     <Navbar variant="dark" bg="dark">
       <Navbar.Brand>

@@ -1,12 +1,9 @@
 import React from 'react'
 
 import {
-  Route,
   Switch,
-  Link
+  RouteComponentProps
 } from 'react-router-dom'
-
-import { LinkContainer } from 'react-router-bootstrap'
 
 import PrivateRoute from './PrivateRoute'
 import NavComponent from './NavComponent'
@@ -16,12 +13,14 @@ import RecieptPage from './RecieptPage'
 import PeoplePage from './PeoplePage'
 import NotificationPage from './NotificationPage'
 
-const App = ({ match }) => {
+type TParams = { path: string };
+
+const App = ({ match }: RouteComponentProps<TParams>) => {
   return (
     <>
       <NavComponent match={ match } />
 
-      <div class="container">
+      <div className="container">
         <Switch>
           <PrivateRoute path={`${match.path}/balance`} component={BalancePage} exact />
           <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />

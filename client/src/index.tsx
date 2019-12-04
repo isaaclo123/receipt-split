@@ -16,7 +16,7 @@ import * as serviceWorker from './serviceWorker';
 
 import App from './components/App';
 import Login from './components/LoginPage';
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './components/PrivateRoute'
 
 ReactDOM.render(
   <Provider store={configureStore()}>

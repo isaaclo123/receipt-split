@@ -1,5 +1,6 @@
 import React from 'react'
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
+import { LoginState } from '../reducers/loginReducer'
 
 import {
   Redirect
@@ -13,7 +14,13 @@ import Form from 'react-bootstrap/Form';
 
 const defaultRoute = "/app";
 
-const Login = ({ login, setLogin }) => {
+type PropsFromRedux = ConnectedProps<typeof connector>
+// The inferred type will look like:
+// {On: boolean, toggleOn: () => void}
+
+type Props = PropsFromRedux
+
+const LoginPage = ({ login, setLogin }: Props) => {
   if (login === true) {
     return <Redirect to={defaultRoute} />
   }
@@ -34,7 +41,7 @@ const Login = ({ login, setLogin }) => {
             <Form.Control type="password" placeholder="Password" />
           </Form.Group>
 
-          <Button onClick={setLogin} type="submit">
+          <Button onClick={() => setLogin} type="submit">
             Login
           </Button>
         </Form>
@@ -43,11 +50,13 @@ const Login = ({ login, setLogin }) => {
   )
 }
 
-const mapStateToProps = ({ login }) => {
-  return { login };
+const mapStateToProps = ({ username, login }: LoginState) => {
+  return { username, login };
 }
 
-export default connect(
+const connector = connect(
   mapStateToProps,
   { setLogin }
-)(Login)
+)
+
+export default connector(LoginPage)

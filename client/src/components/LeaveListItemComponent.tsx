@@ -9,9 +9,10 @@ import {
 export interface LeaveProps {
   amount: number,
   name: string,
-  pending: bool,
+  pending: boolean,
   handleNameClick: () => void,
-  handlePayClick: () => void,
+  handleAcceptClick: () => void,
+  handleRejectClick: () => void,
 }
 
 export const LeaveListItemComponent = ({
@@ -41,8 +42,7 @@ export const LeaveListItemComponent = ({
     amount,
     descriptor: "to",
     name,
-    handleAcceptClick,
-    handleRejectClick,
+    handleClick: handleNameClick,
     buttons,
     active: pending // TODO
   }

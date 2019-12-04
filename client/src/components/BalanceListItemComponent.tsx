@@ -22,7 +22,7 @@ export interface BalanceProps {
 
   buttons: ButtonProps[];
 
-  active: bool;
+  active: boolean;
 }
 
 export const BalanceListItemComponent = ({
@@ -31,9 +31,9 @@ export const BalanceListItemComponent = ({
   variant,
   name,
   descriptor,
-  pending,
   handleClick,
-  buttons
+  buttons,
+  active
 }: BalanceProps) => {
   return (
     <ListGroup.Item style={{
@@ -41,7 +41,7 @@ export const BalanceListItemComponent = ({
       }}>
 
       <span>
-        <span class={`text-${variant}`}>{prefix}${amount.toFixed(2)}</span>
+        <span className={`text-${variant}`}>{prefix}${amount.toFixed(2)}</span>
         &nbsp;{descriptor}&nbsp;
         <Button
           variant="link"
@@ -56,19 +56,19 @@ export const BalanceListItemComponent = ({
         </Button>
       </span>
 
-      <span class="text-danger float-right">
+      <span className="text-danger float-right">
         <ButtonGroup size="sm">
-          {buttons.map(({ active, variant, text, handleButtonClick}: ButtonProps) => {
+          {buttons.map(({ variant, text, handleClick}: ButtonProps) => {
             return active ? (
               <Button
-                variant={variant}
+                color={variant}
                 onClick={() => handleClick()}
                 active>
                 {text}
               </Button>
               ) : (
               <Button
-                variant={variant}
+                color={variant}
                 onClick={() => handleClick()}
                 disabled>
                 {text}
