@@ -9,9 +9,11 @@ import { LinkContainer } from 'react-router-bootstrap'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 
-type TParams = { url: string };
+interface MatchParams {}
 
-const NavComponent = ({ match }: RouteComponentProps<TParams>) => {
+const NavComponent = (props: RouteComponentProps<{}>) => {
+  const { match } = props
+
   return (
     <Navbar variant="dark" bg="dark">
       <Navbar.Brand>

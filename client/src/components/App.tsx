@@ -13,12 +13,13 @@ import RecieptPage from './RecieptPage'
 import PeoplePage from './PeoplePage'
 import NotificationPage from './NotificationPage'
 
-type TParams = { path: string };
 
-const App = ({ match }: RouteComponentProps<TParams>) => {
+const App = (props: RouteComponentProps<{}>) => {
+  const { match } = props
+
   return (
     <>
-      <NavComponent match={ match } />
+      <NavComponent {...props}/>
 
       <div className="container">
         <Switch>

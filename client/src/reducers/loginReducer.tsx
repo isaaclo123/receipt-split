@@ -11,6 +11,10 @@ const initialState = {
 }
 
 export default (state:LoginState = initialState, action: LoginAction) => {
+  if (action.payload == null) {
+    return initialState
+  }
+
   const { username, password }: LoginData = action.payload
 
   console.log(username)
