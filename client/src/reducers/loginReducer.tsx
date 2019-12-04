@@ -15,15 +15,18 @@ export default (state:LoginState = initialState, action: LoginAction) => {
     return initialState
   }
 
-  const { username, password }: LoginData = action.payload
+  // const { username, password }: LoginData = action.payload
 
-  console.log(username)
-  console.log(password)
+  console.log("LOGIN")
+  // alert(username)
+  // console.log(username)
+  // console.log(password)
+  console.log(action.payload)
 
   switch (action.type) {
     case 'SET_LOGIN':
       return {
-        username,
+        username: action.payload.username,
         login: true
       }
     default:

@@ -8,33 +8,31 @@ import {
   RouteProps,
 } from 'react-router-dom'
 
-type PropsFromRedux = ConnectedProps<typeof connector>
-// The inferred type will look like:
-// {On: boolean, toggleOn: () => void}
-
-type Props = PropsFromRedux & RouteProps
-
-const PrivateRoute = (props: Props) => {
-  if (props.login === false) {
-    return <Redirect to='/login' />
-  }
-
-  return <Route {...props} />
-  // return <Route path={props.path} component={props.component} />
-
+const mapStateToProps = (state: LoginState) => {
+  return state
 }
-
-const mapStateToProps = ({ username, login }: LoginState) => {
-  return { username, login };
-}
-
-// const mapDispatch = {
-//   toggleOn: () => ({ type: 'TOGGLE_IS_ON' })
-// }
 
 const connector = connect(
   mapStateToProps,
   {}
 )
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & RouteProps & {
+  loginState?: LoginState
+}
+
+const PrivateRoute = (props: Props) => {
+  console.log(props)
+
+  if (props.loginState == null || props.loginState.login === false) {
+    return <Redirect to='/login' />
+  }
+
+  // return <Route {...props} />
+
+  return <Route path={props.path} component={props.component} />
+}
 
 export default connector(PrivateRoute)

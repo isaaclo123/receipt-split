@@ -11,8 +11,10 @@ export interface LoginAction {
 }
 
 export const setLogin = (payload: LoginData) => (dispatch: Dispatch) => {
-  dispatch({
+  const loginAction: LoginAction = {
     type: 'SET_LOGIN',
     payload
-  })
+  }
+
+  dispatch(loginAction)
 }

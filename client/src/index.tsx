@@ -21,7 +21,7 @@ import PrivateRoute from './components/PrivateRoute'
 ReactDOM.render(
   <Provider store={configureStore()}>
     <BrowserRouter>
-      <PrivateRoute exact path="/" component={App} />
+      <PrivateRoute exact path="/" component={Login} />
       <Route path="/login" component={Login} />
       <PrivateRoute path="/app" component={App} />
     </BrowserRouter>

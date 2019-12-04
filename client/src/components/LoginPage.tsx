@@ -14,13 +14,31 @@ import Form from 'react-bootstrap/Form';
 
 const defaultRoute = "/app";
 
+const mapStateToProps = (state: LoginState) => {
+  return state
+}
+
+const connector = connect(
+  mapStateToProps,
+  { setLogin }
+)
+
 type PropsFromRedux = ConnectedProps<typeof connector>
-// The inferred type will look like:
-// {On: boolean, toggleOn: () => void}
 
-type Props = PropsFromRedux
+type Props = PropsFromRedux & {
+  loginState: LoginState
+}
 
-const LoginPage = ({ login, setLogin }: Props) => {
+const LoginPage = ({ loginState, setLogin }: Props) => {
+  const { login, username }: LoginState = loginState;
+
+  const handleLoginClick = () => {
+    setLogin({
+      username: "isaac",
+      password: "test"
+    });
+  }
+
   if (login === true) {
     return <Redirect to={defaultRoute} />
   }
@@ -29,6 +47,7 @@ const LoginPage = ({ login, setLogin }: Props) => {
     <Card>
       <Card.Body>
         <Card.Title>Login</Card.Title>
+        <Card.Title>{login.toString()}</Card.Title>
 
         <Form>
           <Form.Group controlId="formUsername">
@@ -41,7 +60,7 @@ const LoginPage = ({ login, setLogin }: Props) => {
             <Form.Control type="password" placeholder="Password" />
           </Form.Group>
 
-          <Button onClick={() => setLogin} type="submit">
+          <Button onClick={handleLoginClick}>
             Login
           </Button>
         </Form>
@@ -49,14 +68,5 @@ const LoginPage = ({ login, setLogin }: Props) => {
     </Card>
   )
 }
-
-const mapStateToProps = ({ username, login }: LoginState) => {
-  return { username, login };
-}
-
-const connector = connect(
-  mapStateToProps,
-  { setLogin }
-)
 
 export default connector(LoginPage)

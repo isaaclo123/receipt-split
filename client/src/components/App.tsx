@@ -16,6 +16,7 @@ import NotificationPage from './NotificationPage'
 
 const App = (props: RouteComponentProps<{}>) => {
   const { match } = props
+  console.log(props)
 
   return (
     <>
@@ -27,7 +28,7 @@ const App = (props: RouteComponentProps<{}>) => {
           <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />
           <PrivateRoute path={`${match.path}/people`} component={PeoplePage} />
           <PrivateRoute path={`${match.path}/notifications`} component={NotificationPage} />
-          <PrivateRoute component={BalancePage} />
+          <PrivateRoute component={BalancePage} exact />
         </Switch>
       </div>
     </>
