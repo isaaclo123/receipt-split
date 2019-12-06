@@ -2,18 +2,17 @@ import React from 'react'
 
 import ListGroup from 'react-bootstrap/ListGroup';
 
-import { TakeProps, TakeListItemComponent } from './TakeListItemComponent';
-import { LeaveProps, LeaveListItemComponent } from './LeaveListItemComponent';
+import { RecieptProps, RecieptListItemComponent } from './RecieptListItemComponent';
 
 const youowe = [ // TODO
   {
-    name: "bill",
-    amount: 5.00,
+    name: "Fresh Thyme",
+    amount: 54.00,
     pending: true,
   },
   {
-    name: "bill2",
-    amount: 5.20,
+    name: "Target",
+    amount: 55.20,
     pending: false,
   },
 ]
@@ -23,16 +22,15 @@ const RecieptPage = () => {
     <>
       <h5>Out of Control</h5>
 
-      <ListGroup>
+      <ListGroup className="pb-3">
         {youowe.map((item) => {
-          const props: TakeProps = {
+          const props: RecieptProps = {
             handleNameClick: () => {},
-            handleAcceptClick: () => {},
-            handleRejectClick: () => {},
+            handleViewClick: () => {},
             ...item
           }
           return (
-            <TakeListItemComponent
+            <RecieptListItemComponent
               {...props}/>
           )
         })}
@@ -40,28 +38,16 @@ const RecieptPage = () => {
 
       <h5>Under Control</h5>
 
-      <ListGroup>
+      <ListGroup className="pb-3">
         {youowe.map((item) => {
-          const props: LeaveProps = {
+          const props: RecieptProps = {
             handleNameClick: () => {},
-            handlePayClick: () => {},
+            handleViewClick: () => {},
             ...item
           }
           return (
-            <LeaveListItemComponent
+            <RecieptListItemComponent
               {...props}/>
-          )
-        })}
-      </ListGroup>
-
-      <h5>History</h5>
-
-      <ListGroup>
-        {youowe.map(({name, amount}) => {
-          return (
-            <ListGroup.Item>
-              {name} ${amount}
-            </ListGroup.Item>
           )
         })}
       </ListGroup>

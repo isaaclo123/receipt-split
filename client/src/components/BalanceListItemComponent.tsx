@@ -45,12 +45,7 @@ export const BalanceListItemComponent = ({
         &nbsp;{descriptor}&nbsp;
         <Button
           variant="link"
-          style={{
-            paddingLeft: 0,
-            paddingRight: 0,
-            marginLeft: 0,
-            marginRight: 0
-          }}
+          className="mx-0 px-0"
           onClick={() => handleClick()}>
           {name}
         </Button>

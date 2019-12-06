@@ -30,9 +30,9 @@ const PrivateRoute = (props: Props) => {
     return <Redirect to='/login' />
   }
 
-  // return <Route {...props} />
+  const { loginState, ...rest } = props
 
-  return <Route path={props.path} component={props.component} />
+  return <Route {...rest}/>
 }
 
 export default connector(PrivateRoute)

@@ -9,8 +9,6 @@ import { LinkContainer } from 'react-router-bootstrap'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 
-interface MatchParams {}
-
 const NavComponent = (props: RouteComponentProps<{}>) => {
   const { match } = props
 
@@ -37,8 +35,8 @@ const NavComponent = (props: RouteComponentProps<{}>) => {
             <Nav.Link>People</Nav.Link>
           </LinkContainer>
 
-          <LinkContainer to={`${match.url}/notifications`}>
-            <Nav.Link>Notifications</Nav.Link>
+          <LinkContainer to={`${match.url}/reciepts/1`}>
+            <Nav.Link>recp</Nav.Link>
           </LinkContainer>
         </Nav>
       </Navbar.Collapse>

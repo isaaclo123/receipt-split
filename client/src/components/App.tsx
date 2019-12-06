@@ -1,20 +1,18 @@
 import React from 'react'
 
 import {
+  Redirect,
   Switch,
   RouteComponentProps
 } from 'react-router-dom'
-
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
 
 import PrivateRoute from './PrivateRoute'
 import NavComponent from './NavComponent'
 
 import BalancePage from './BalancePage'
 import RecieptPage from './RecieptPage'
+import RecieptEditPage from './RecieptEditPage'
 import PeoplePage from './PeoplePage'
-import NotificationPage from './NotificationPage'
 
 const App = (props: RouteComponentProps<{}>) => {
   const { match } = props
@@ -23,19 +21,24 @@ const App = (props: RouteComponentProps<{}>) => {
     <>
       <NavComponent {...props}/>
 
-    <div className="container pt-3" style={{
-      height: "100%"
-    }}>
+      <div className="container pt-3 h-100">
         <Switch>
-          <PrivateRoute path={`${match.path}/balance`} component={BalancePage} exact />
+          <PrivateRoute path={`${match.path}/balance`} component={BalancePage} />
+
+          <PrivateRoute
+            path={`${match.path}/reciepts/:id`}
+            render={props => <RecieptEditPage {...props}/>} exact />
+
           <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />
+
           <PrivateRoute path={`${match.path}/people`} component={PeoplePage} />
-          <PrivateRoute path={`${match.path}/notifications`} component={NotificationPage} />
-          <PrivateRoute component={BalancePage} exact />
+
+          <Redirect to={`${match.url}/balance`} />
         </Switch>
       </div>
     </>
   )
 }
+          // <PrivateRoute component={redirect(propsr} exact />
 
 export default App
