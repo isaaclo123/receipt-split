@@ -27,7 +27,7 @@ const App = (props: RouteComponentProps<{}>) => {
 
           <PrivateRoute
             path={`${match.path}/reciepts/:id`}
-            render={props => <RecieptEditPage {...props}/>} exact />
+            render={props => <RecieptEditPage {...props}/>} />
 
           <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />
 

@@ -1,41 +1,68 @@
 import React from 'react'
 
 import Card from 'react-bootstrap/Card';
+import Badge from 'react-bootstrap/Badge';
 
 import {
+  Redirect,
   RouteComponentProps
 } from 'react-router-dom'
 
-import { LinkContainer } from 'react-router-bootstrap'
-
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
+import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
 interface MatchParams {
   id: string;
 }
 
 const RecieptEditPage = (props: RouteComponentProps<MatchParams>) => {
-  const {match} = props
+  const { match } = props
 
-  const id = match.params.id
+  const id = parseInt(match.params.id, 10) || -1;
+
+  const total = 100
+
+  const users = [
+    "Isaac",
+    "Oliver",
+  ]
+
+  if (id < 0) {
+    return <Redirect to={'/app'} />
+  }
 
   return (
     <>
-      <p>{id}</p>
+      <h5>Reciept Info {id}</h5>
 
-      <Card style={{ width: '18rem' }}>
+      <Card>
         <Card.Body>
-          <Card.Title>Card Title</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">Card Subtitle</Card.Subtitle>
-          <Card.Text>
-            Some quick example text to build on the card title and make up the bulk of
-            the card's content.
+          <Card.Title>
+            <span className="float-left">
+              Reciept
+            </span>
+            <span className="text-info float-right">${ total }</span>
+            <br />
+          </Card.Title>
+          <Card.Subtitle className="mb-2 text-muted">
+          </Card.Subtitle>
+          <Card.Text className="align-middle">
+              Paid by <a href="#">{"hi"}</a> on {"1/2/23"}
+            <br />
+              <span className="align-middle">
+                With&nbsp;
+              </span>
+
+              <BadgeListComponent
+                items={users}
+                handleItemClick={(x) => { alert(`clicked ${x}`) }}
+                handleDeleteClick={(x) => {alert(`delete ${x}`)}}
+                handleAddClick={() => {alert("clicked")}} />
+
           </Card.Text>
-          <Card.Link href="#">Card Link</Card.Link>
-          <Card.Link href="#">Another Link</Card.Link>
         </Card.Body>
       </Card>
+
+      <h5>Reciept Info {id}</h5>
     </>
   )
 }

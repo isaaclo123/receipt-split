@@ -24,7 +24,7 @@ const BalancePage = () => {
       <h5>You Take It</h5>
 
       <ListGroup className="pb-3">
-        {youowe.map((item) => {
+        {youowe.map(item => {
           const props: TakeProps = {
             handleNameClick: () => {},
             handleAcceptClick: () => {},
@@ -41,7 +41,7 @@ const BalancePage = () => {
       <h5>You Leave It</h5>
 
       <ListGroup className="pb-3">
-        {youowe.map((item) => {
+        {youowe.map(item => {
           const props: LeaveProps = {
             handleNameClick: () => {},
             handlePayClick: () => {},

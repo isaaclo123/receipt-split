@@ -14,8 +14,6 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 
-const defaultRoute = "/app";
-
 const mapStateToProps = (state: LoginState) => {
   return state
 }
@@ -42,7 +40,7 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
   }
 
   if (login === true) {
-    return <Redirect to={defaultRoute} />
+    return <Redirect to={'/app'} />
   }
 
   return (

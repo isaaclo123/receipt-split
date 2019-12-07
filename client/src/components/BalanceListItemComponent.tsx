@@ -43,12 +43,9 @@ export const BalanceListItemComponent = ({
       <span>
         <span className={`text-${variant}`}>{prefix}${amount.toFixed(2)}</span>
         &nbsp;{descriptor}&nbsp;
-        <Button
-          variant="link"
-          className="mx-0 px-0"
-          onClick={() => handleClick()}>
+        <a onClick={() => handleClick()} href="#">
           {name}
-        </Button>
+        </a>
       </span>
 
       <span className="text-danger float-right">
