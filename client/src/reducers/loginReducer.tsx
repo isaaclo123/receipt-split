@@ -1,18 +1,17 @@
-import { LoginData, LoginAction } from '../actions/setLogin'
+import {
+  // LoginData,
+  LoginAction,
+  LoginState
+} from '../types/index'
 
-export interface LoginState {
-  username: string;
-  login: boolean;
-}
-
-const initialState = {
+const initialState: LoginState = {
   username: "",
   login: false
 }
 
 export default (state:LoginState = initialState, action: LoginAction) => {
   if (action.payload == null) {
-    return initialState
+    return state
   }
 
   // const { username, password }: LoginData = action.payload
@@ -30,6 +29,6 @@ export default (state:LoginState = initialState, action: LoginAction) => {
         login: true
       }
     default:
-      return initialState;
+      return state;
   }
 }

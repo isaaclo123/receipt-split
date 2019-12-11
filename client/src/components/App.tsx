@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { connect, ConnectedProps } from 'react-redux'
+
 import {
   Redirect,
   Switch,
@@ -14,8 +16,19 @@ import RecieptPage from './RecieptPage'
 import RecieptEditPage from './RecieptEditPage'
 import PeoplePage from './PeoplePage'
 
-const App = (props: RouteComponentProps<{}>) => {
-  const { match } = props
+import { getReciept } from '../actions/getReciept'
+
+const connector = connect(
+  null,
+  { getReciept }
+)
+
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+type Props = PropsFromRedux & RouteComponentProps<{}>
+
+const App = (props: Props) => {
+  const { match, getReciept } = props
 
   return (
     <>
@@ -25,9 +38,16 @@ const App = (props: RouteComponentProps<{}>) => {
         <Switch>
           <PrivateRoute path={`${match.path}/balance`} component={BalancePage} />
 
+          <PrivateRoute path={`${match.path}/reciepts/edit`}
+            render={props => <RecieptEditPage {...props}/>} />
+
           <PrivateRoute
             path={`${match.path}/reciepts/:id`}
-            render={props => <RecieptEditPage {...props}/>} />
+
+            render={(props) => {
+              getReciept({id: props.match.params.id})
+              return <Redirect to={`${match.path}/reciepts/edit`}/>
+            }} />
 
           <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />
 
@@ -41,4 +61,4 @@ const App = (props: RouteComponentProps<{}>) => {
 }
           // <PrivateRoute component={redirect(propsr} exact />
 
-export default App
+export default connector(App)

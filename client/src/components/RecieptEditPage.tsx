@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { connect, ConnectedProps } from 'react-redux'
+
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
@@ -9,47 +11,58 @@ import {
   RouteComponentProps
 } from 'react-router-dom'
 
+import { getReciept } from '../actions/getReciept'
+
 import { List } from 'immutable'
+
+import { RecieptState } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
 import { ExpenseCardComponent } from './ExpenseCardComponent'
 
-interface MatchParams {
+type MatchParams = {
   id: string;
 }
 
-const RecieptEditPage = (props: RouteComponentProps<MatchParams>) => {
-  const { match } = props
+const mapStateToProps = (state: RecieptState, { match }: RouteComponentProps<MatchParams>) => {
+  return state
+}
 
-  const id = parseInt(match.params.id, 10) || -1;
+const connector = connect(
+  mapStateToProps,
+  { getReciept }
+)
 
-  const total = 100
+type PropsFromRedux = ConnectedProps<typeof connector>
 
-  const users = List([
-    "Isaac",
-    "Oliver",
-  ])
+type Props = PropsFromRedux & RouteComponentProps<MatchParams> & {
+  recieptState?: RecieptState
+}
 
-  if (id < 0) {
+
+const RecieptEditPage = ({
+  match,
+  recieptState,
+  getReciept
+}: Props) => {
+  // getReciept({
+  //   id
+  // })
+
+  if (recieptState == null) {
     return <Redirect to={'/app'} />
   }
 
-  const items = [{
-    name: "potato",
-    amount: 5.0,
-    users: List([
-    "me",
-    "you"
-    ])
-  }, {
-    name: "onions",
-    amount: 8.60,
-    users: List([
-    "isaac", "oliver", "jackie"
-    ])
-  }
-  ]
+  // const id = parseInt(match.params.id, 10) || -1;
+
+  // getReciept({id})
+
+  const { name, amount, owner, users, items }: RecieptState = recieptState
+
+  // if (id < 0) {
+  //   return <Redirect to={'/app'} />
+  // }
 
 
   // const handleItemClick = (index: number) => {
@@ -64,22 +77,25 @@ const RecieptEditPage = (props: RouteComponentProps<MatchParams>) => {
 
   return (
     <>
-      <h5>Reciept Info {id}</h5>
+
+      <Button onClick={() => {getReciept({id: Number(match.params.id)})}}>test</Button>
+
+      <h5>Reciept Info</h5>
 
       <ExpenseCardComponent
         extraComponent={
           (<>
-            Paid by <a href="#">{"hi"}</a> on {"1/2/23"}
+            Paid by <a href="#">{ owner }</a> on {"1/2/23"}
             <br />
           </>)
         }
         prefix="*"
         variant="info"
 
-        name={"recipt for fresh thyme"}
+        name={name}
         handleNameChange={(name:string) => {alert(name)}}
 
-        amount={100}
+        amount={amount}
         handleAmountChange={(amt:number) => {alert(amt)}}
 
         handleDeleteClick={() => {alert("delete")}}
@@ -134,4 +150,4 @@ const RecieptEditPage = (props: RouteComponentProps<MatchParams>) => {
   )
 }
 
-export default RecieptEditPage
+export default connector(RecieptEditPage)

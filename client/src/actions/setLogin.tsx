@@ -1,14 +1,6 @@
 import { Dispatch } from 'redux';
 
-export interface LoginData {
-  username:string;
-  password:string;
-}
-
-export interface LoginAction {
-  type: string;
-  payload: LoginData;
-}
+import { LoginData, LoginAction } from '../types/index'
 
 export const setLogin = (payload: LoginData) => (dispatch: Dispatch) => {
   const loginAction: LoginAction = {

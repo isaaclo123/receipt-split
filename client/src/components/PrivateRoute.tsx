@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
-import { LoginState } from '../reducers/loginReducer'
+import { LoginState } from '../types/index'
 
 import {
   Route,
