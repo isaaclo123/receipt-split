@@ -23,7 +23,7 @@ const BalancePage = () => {
     <>
       <h5>You Take It</h5>
 
-      <ListGroup className="pb-3">
+      <ListGroup className="mb-3">
         {youowe.map(item => {
           const props: TakeProps = {
             handleNameClick: () => {},
@@ -40,7 +40,7 @@ const BalancePage = () => {
 
       <h5>You Leave It</h5>
 
-      <ListGroup className="pb-3">
+      <ListGroup className="mb-3">
         {youowe.map(item => {
           const props: LeaveProps = {
             handleNameClick: () => {},
@@ -56,7 +56,7 @@ const BalancePage = () => {
 
       <h5>History</h5>
 
-      <ListGroup className="pb-3">
+      <ListGroup className="mb-3">
         {youowe.map(({name, amount}) => {
           return (
             <ListGroup.Item>

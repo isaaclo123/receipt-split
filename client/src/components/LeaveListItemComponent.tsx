@@ -37,7 +37,7 @@ export const LeaveListItemComponent = ({
     prefix: "-",
     variant: "danger",
     amount,
-    descriptor: "from",
+    descriptor: "to",
     name,
     handleClick: handleNameClick,
     buttons,

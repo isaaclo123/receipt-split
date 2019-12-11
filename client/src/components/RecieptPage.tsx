@@ -22,7 +22,7 @@ const RecieptPage = () => {
     <>
       <h5>Out of Control</h5>
 
-      <ListGroup className="pb-3">
+      <ListGroup className="mb-3">
         {youowe.map(item => {
           const props: RecieptProps = {
             handleNameClick: () => {},
@@ -38,7 +38,7 @@ const RecieptPage = () => {
 
       <h5>Under Control</h5>
 
-      <ListGroup className="pb-3">
+      <ListGroup className="mb-3">
         {youowe.map(item => {
           const props: RecieptProps = {
             handleNameClick: () => {},
