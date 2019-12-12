@@ -77,9 +77,6 @@ const RecieptEditPage = ({
 
   return (
     <>
-
-      <Button onClick={() => {getReciept({id: Number(match.params.id)})}}>test</Button>
-
       <h5>Reciept Info</h5>
 
       <ExpenseCardComponent

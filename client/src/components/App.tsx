@@ -59,6 +59,5 @@ const App = (props: Props) => {
     </>
   )
 }
-          // <PrivateRoute component={redirect(propsr} exact />
 
 export default connector(App)

@@ -11,6 +11,7 @@ wtforms = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
+flask-api = "*"
 
 [requires]
 python_version = "3.7"
