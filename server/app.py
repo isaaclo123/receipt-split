@@ -1,3 +1,3 @@
-from app import create_app
+from reciept_split import create_app
 
-app = create_app()
+create_app()

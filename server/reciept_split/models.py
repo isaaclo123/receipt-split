@@ -1,4 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from datetime import datetime
@@ -6,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, Date, DateTime, ForeignKey, Boolean,\
     String, Float
 
-db = SQLAlchemy()
+from .meta import db
 
 
 class Balance(db.Model):
@@ -46,9 +45,9 @@ class User(db.Model):
                            backref=backref('friend_of', remote_side=[id])
                            )
 
-    email = db.Column(db.String(100), unique=True)
+    username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(100))
+    fullname = db.Column(db.String(100))
 
     reciepts = relationship("Reciept", backref="user")
 

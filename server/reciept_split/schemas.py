@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy import ModelSchema
-from models import User, Reciept, RecieptItem, Balance, Payment
+from .models import User, Reciept, RecieptItem, Balance, Payment
 
 
 class UserSchema(ModelSchema):
