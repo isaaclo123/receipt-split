@@ -13,6 +13,13 @@ class Config(object):
     WTF_CSRF_ENABLED = False
     CORS_HEADERS = 'Content-Type'
 
+    DEFAULT_PARSERS = [
+        'reciept_split.parsers.SimpleJsonParser',
+        # 'flask.ext.api.parsers.JSONParser',
+        'flask_api.parsers.URLEncodedParser',
+        'flask_api.parsers.MultiPartParser'
+    ]
+
     # @property
     # def DATABASE_URI(self):         # Note: all caps
     #     return 'mysql://user@{}/foo'.format(self.DB_SERVER)

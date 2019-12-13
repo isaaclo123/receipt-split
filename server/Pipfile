@@ -17,6 +17,8 @@ flask-cors = "*"
 wtforms-alchemy = "*"
 flask-wtf = "*"
 marshmallow-sqlalchemy = "*"
+wtforms-json = "*"
+simplejson = "*"
 
 [requires]
 python_version = "3.7"

@@ -5,8 +5,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .meta import db
 from .models import User
 
-from flask_cors import CORS
-
 
 def authenticate(username, password):
     user = User.query.filter_by(username=username).first()

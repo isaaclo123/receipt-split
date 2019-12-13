@@ -3,7 +3,8 @@ from flask_api import status
 from flask_jwt import current_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from datetime import datetime
+from datetime import date
+import simplejson as json
 
 from .meta import db
 from .auth import identity
@@ -32,15 +33,15 @@ def register():
     current_identity = User.query.all()[0]
     if request.method == 'GET':
         return {"message": "send name, amount, date"}
-    form = RecieptForm(request.form)
+    form = RecieptForm.from_json(request.data)
     print(form)
     if request.method == 'POST' and form.validate():
         reciept = Reciept(name=form.name.data,
                           amount=form.amount.data,
-                          date=datetime.utcnow(),
-                          resolved=None,
+                          date=form.date.data,
                           owner_id=current_identity.id)
         db.session.add(reciept)
         db.session.commit()
-        return reciept_schema.dump(reciept), status.HTTP_200_OK
+        reciept_dump = reciept_schema.dump(reciept)
+        return reciept_dump, status.HTTP_200_OK
     return form.errors, status.HTTP_400_BAD_REQUEST

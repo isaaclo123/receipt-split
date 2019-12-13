@@ -4,6 +4,7 @@ from config import Config
 from flask_migrate import Migrate
 
 import logging
+import wtforms_json
 
 # from .models import db
 from .auth import auth as auth_blueprint, authenticate, identity
@@ -31,15 +32,18 @@ def create_app():
     JWT(app, authenticate, identity)
 
     db.init_app(app)
+    wtforms_json.init()
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(views_blueprint)
 
     @app.before_first_request
     def before_first_request_func():
-        # db.drop_all()
         db.create_all()
         db.session.commit()
+        # user = User(username="test", password="test", fullname="test test")
+        # db.session.add(user)
+        # db.session.commit()
 
     return app
 
