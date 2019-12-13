@@ -22,6 +22,22 @@ export interface LoginState {
   token: string | null;
 }
 
+// signup
+//
+export interface SignupData {
+  username:string;
+  fullname:string;
+  password:string;
+}
+
+export interface SignupAction {
+  type: string;
+  payload: SignupData;
+}
+
+export interface SignupState extends SignupData {
+  signed_up: boolean;
+}
 
 // set login
 //

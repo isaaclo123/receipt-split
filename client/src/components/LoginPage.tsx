@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { LoginState } from '../types/index'
+
+import { LinkContainer } from 'react-router-bootstrap'
 
 import './Login.css'
 
@@ -37,22 +39,17 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
   //   password: ""
   // })
 
+  if (login) {
+    return <Redirect to={'/app'} />
+  }
+
   let loginData = {
     username: "",
     password: ""
   }
 
   const handleLoginClick = () => {
-    console.log("loginclik")
-    console.log(loginData)
-    setLogin({
-      username: "test",
-      password: "test"
-    })
-  }
-
-  if (login) {
-    return <Redirect to={'/app'} />
+    setLogin(loginData)
   }
 
   return (
@@ -88,9 +85,15 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
                 }} />
             </Form.Group>
 
-            <Button onClick={handleLoginClick}>
-              Login
-            </Button>
+            <span>
+              <Button onClick={handleLoginClick} className="float-left">
+                Login
+              </Button>
+
+              <LinkContainer to={`/signup`} className="float-right">
+                <Button>Signup</Button>
+              </LinkContainer>
+            </span>
           </Form>
         </Card.Body>
       </Card>

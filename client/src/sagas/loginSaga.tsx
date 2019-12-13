@@ -1,15 +1,16 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 
-import { fetchLogin, fetchSignup } from '../api/index'
+import { fetchLogin } from '../api/index'
 
 import { TokenData, LoginAction } from '../types/index'
 
 function* fetchLoginWorker(action: LoginAction) {
   try {
       const { payload } = action
-      const { username } = payload
 
       const tokenData = yield call(fetchLogin, payload);
+
+      const { username } = payload
 
       const tokenPayload: TokenData = {
         username,

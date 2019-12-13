@@ -1,4 +1,7 @@
-import { LoginData } from '../types/index'
+import {
+  LoginData,
+  SignupData
+} from '../types/index'
 
 const SERVER_URL = `http://127.0.0.1:5000`
 
@@ -9,7 +12,7 @@ export const fetchLogin = async (myloginData: any) => {
       method: 'POST',
       mode: 'cors',
       headers: {
-        // 'Accept': 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(loginData)
@@ -22,9 +25,9 @@ export const fetchLogin = async (myloginData: any) => {
   }
 };
 
-export const fetchSignup = async (signinData: any) => {
+export const fetchSignup = async (mySignupData: any) => {
   try {
-    // const loginData: LoginData = myloginData
+    const signupData: SignupData = mySignupData
     const response = await fetch(`${SERVER_URL}/signup`, {
       method: 'POST',
       mode: 'cors',
@@ -32,11 +35,7 @@ export const fetchSignup = async (signinData: any) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-body: JSON.stringify({
-  username: "test2",
-  fullname: "tst2 lastname",
-  password: "password"
-          })
+      body: JSON.stringify(signupData)
     })
 
     const json = await response.json()

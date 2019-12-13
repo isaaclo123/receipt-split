@@ -5,6 +5,7 @@ import { rootReducer, RootState } from './reducers/rootReducer';
 import createSagaMiddleware from 'redux-saga'
 
 import { loginSaga } from './sagas/loginSaga'
+import { signupSaga } from './sagas/signupSaga'
 
 /*
 const initialState = {
@@ -21,6 +22,7 @@ export default function configureStore() {
   );
 
   sagaMiddleware.run(loginSaga)
+  sagaMiddleware.run(signupSaga)
 
   return store
 }

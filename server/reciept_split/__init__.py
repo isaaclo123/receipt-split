@@ -1,7 +1,6 @@
-from flask_api import FlaskAPI, status
-from flask import request
+from flask_api import FlaskAPI
 from config import Config
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
 
 import logging
 import wtforms_json
@@ -11,7 +10,7 @@ from .auth import auth as auth_blueprint, authenticate, identity
 from .views import views as views_blueprint
 
 from flask_jwt import JWT
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 # db.init_app(app)
 # migrate = Migrate(app, db)
 from .models import *

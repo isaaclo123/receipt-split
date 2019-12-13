@@ -16,6 +16,7 @@ import * as serviceWorker from './serviceWorker';
 
 import App from './components/App';
 import Login from './components/LoginPage';
+import Signup from './components/SignupPage';
 import PrivateRoute from './components/PrivateRoute'
 
 ReactDOM.render(
@@ -23,6 +24,7 @@ ReactDOM.render(
     <BrowserRouter>
       <PrivateRoute exact path="/" component={Login} />
       <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <PrivateRoute path="/app" component={App} />
     </BrowserRouter>
   </Provider>,
