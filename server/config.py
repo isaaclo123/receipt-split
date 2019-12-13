@@ -9,6 +9,8 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
                                                           'app.db.sqlite3')
 
+    CORS_HEADERS = 'Content-Type'
+
     # @property
     # def DATABASE_URI(self):         # Note: all caps
     #     return 'mysql://user@{}/foo'.format(self.DB_SERVER)

@@ -13,6 +13,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-api = "*"
 flask-jwt = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"

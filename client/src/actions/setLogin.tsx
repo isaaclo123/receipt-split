@@ -4,7 +4,7 @@ import { LoginData, LoginAction } from '../types/index'
 
 export const setLogin = (payload: LoginData) => (dispatch: Dispatch) => {
   const loginAction: LoginAction = {
-    type: 'SET_LOGIN',
+    type: 'LOGIN_REQUEST',
     payload
   }
 

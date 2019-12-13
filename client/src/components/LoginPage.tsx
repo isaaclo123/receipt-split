@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { LoginState } from '../types/index'
 
@@ -32,14 +32,26 @@ type Props = PropsFromRedux & {
 const LoginPage = ({ loginState, setLogin }: Props) => {
   const { login }: LoginState = loginState;
 
-  const handleLoginClick = () => {
-    setLogin({
-      username: "isaac",
-      password: "test"
-    });
+  // const [ loginData, setLoginData ] = useState({
+  //   username: "",
+  //   password: ""
+  // })
+
+  let loginData = {
+    username: "",
+    password: ""
   }
 
-  if (login === true) {
+  const handleLoginClick = () => {
+    console.log("loginclik")
+    console.log(loginData)
+    setLogin({
+      username: "test",
+      password: "test"
+    })
+  }
+
+  if (login) {
     return <Redirect to={'/app'} />
   }
 
@@ -52,12 +64,28 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
           <Form>
             <Form.Group controlId="formUsername">
               <Form.Label>Username</Form.Label>
-              <Form.Control type="email" placeholder="Enter email" />
+              <Form.Control
+                type="email"
+                placeholder="Username"
+                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                  loginData = {
+                    username: event.currentTarget.value,
+                    password: loginData.password
+                  }
+                }} />
             </Form.Group>
 
             <Form.Group controlId="formPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                  loginData = {
+                    username: loginData.username,
+                    password: event.currentTarget.value
+                  }
+                }} />
             </Form.Group>
 
             <Button onClick={handleLoginClick}>

@@ -1,30 +1,35 @@
-from flask_api import FlaskAPI
+from flask_api import FlaskAPI, status
 from flask import request
 from config import Config
 from flask_migrate import Migrate
+
+import logging
 
 # from .models import db
 from .auth import auth as auth_blueprint, authenticate, identity
 
 from flask_jwt import JWT
+from flask_cors import CORS, cross_origin
 # db.init_app(app)
 # migrate = Migrate(app, db)
 from .models import *
 
-from flask_sqlalchemy import SQLAlchemy
-
 from .meta import db
-
-from flask import current_app
 
 
 def create_app():
     app = FlaskAPI(__name__)
     app.config.from_object(Config)
-    JWT(app, authenticate, identity)
-    db.init_app(app)
 
-    # jwt_init(app)
+    logging.basicConfig(level=logging.INFO)
+
+    # To enable logging for flask-cors,
+    logging.getLogger('flask_cors').level = logging.DEBUG
+
+    CORS(app, automatic_options=True, supports_credentials=True)
+    JWT(app, authenticate, identity)
+
+    db.init_app(app)
 
     app.register_blueprint(auth_blueprint)
 

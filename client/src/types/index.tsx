@@ -6,15 +6,22 @@ export interface LoginData {
   password:string;
 }
 
+export interface TokenData {
+  username:string;
+  token?: string
+}
+
 export interface LoginAction {
   type: string;
-  payload: LoginData;
+  payload: LoginData | TokenData;
 }
 
 export interface LoginState {
   username: string;
   login: boolean;
+  token: string | null;
 }
+
 
 // set login
 //
