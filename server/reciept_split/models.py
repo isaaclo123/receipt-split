@@ -28,7 +28,7 @@ class Payment(db.Model):
 
     # true is accepted, false is not accepted, null is not accepted or rejected
     accepted = db.Column(db.Boolean, nullable=True)
-    message = db.Column(db.String(256), nullable=True)
+    message = db.Column(db.String(300), nullable=True)
 
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -73,13 +73,11 @@ class User(db.Model):
                                       ],
                                       backref="from_user")
 
-    # friends = relationship("User")
-
 
 class Reciept(db.Model):
     __tablename__ = 'reciept'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(100))
     price = db.Column(db.Float(asdecimal=True))
     date = db.Column(db.Date)
 
@@ -95,7 +93,7 @@ class Reciept(db.Model):
 class RecieptItem(db.Model):
     __tablename__ = 'recieptitem'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(100))
     value = db.Column(db.Float(asdecimal=True))
 
     reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
