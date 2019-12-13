@@ -7,6 +7,7 @@ import logging
 
 # from .models import db
 from .auth import auth as auth_blueprint, authenticate, identity
+from .views import views as views_blueprint
 
 from flask_jwt import JWT
 from flask_cors import CORS, cross_origin
@@ -32,6 +33,7 @@ def create_app():
     db.init_app(app)
 
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(views_blueprint)
 
     @app.before_first_request
     def before_first_request_func():

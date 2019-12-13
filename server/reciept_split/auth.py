@@ -16,7 +16,7 @@ def authenticate(username, password):
 
 def identity(payload):
     user_id = payload['identity']
-    return User.find_by_id(user_id)
+    return User.query.get(user_id)
 
 
 auth = Blueprint('auth', __name__)

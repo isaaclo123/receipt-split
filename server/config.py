@@ -9,6 +9,8 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
                                                           'app.db.sqlite3')
 
+    WTF_CSRF_CHECK_DEFAULT = False
+    WTF_CSRF_ENABLED = False
     CORS_HEADERS = 'Content-Type'
 
     # @property

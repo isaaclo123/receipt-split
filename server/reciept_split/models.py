@@ -15,7 +15,7 @@ class Balance(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    value = db.Column(db.Float(asdecimal=True))
+    amount = db.Column(db.Float(asdecimal=True))
 
     reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
 
@@ -33,7 +33,7 @@ class Payment(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    value = db.Column(db.Float(asdecimal=True))
+    amount = db.Column(db.Float(asdecimal=True))
 
 
 class User(db.Model):
@@ -78,7 +78,7 @@ class Reciept(db.Model):
     __tablename__ = 'reciept'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    price = db.Column(db.Float(asdecimal=True))
+    amount = db.Column(db.Float(asdecimal=True))
     date = db.Column(db.Date)
 
     resolved = db.Column(db.Boolean)
@@ -94,6 +94,6 @@ class RecieptItem(db.Model):
     __tablename__ = 'recieptitem'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    value = db.Column(db.Float(asdecimal=True))
+    amount = db.Column(db.Float(asdecimal=True))
 
     reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
