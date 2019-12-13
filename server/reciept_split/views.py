@@ -20,17 +20,17 @@ reciept_schema = RecieptSchema()
 
 
 @views.route('/reciept_list', methods=['GET'])
-# @jwt_required()
+@jwt_required()
 def reciept_list():
-    current_identity = User.query.all()[0]
+    # current_identity = User.query.all()[0]
     reciept_list = [reciept_schema.dump(r) for r in current_identity.reciepts]
     return reciept_list, status.HTTP_200_OK
 
 
 @views.route('/reciept_add', methods=['GET', 'POST'])
-# @jwt_required()
+@jwt_required()
 def register():
-    current_identity = User.query.all()[0]
+    # current_identity = User.query.all()[0]
     if request.method == 'GET':
         return {"message": "send name, amount, date"}
     form = RecieptForm.from_json(request.data)
