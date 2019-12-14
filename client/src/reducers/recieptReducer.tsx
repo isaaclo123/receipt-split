@@ -1,21 +1,21 @@
 import {
   RecieptData,
   RecieptAction,
-  RecieptState,
-  RecieptItem
+  RecieptType,
 } from '../types/index'
 
-import { List } from 'immutable'
-
-const initialState: RecieptState = {
+const initialState: RecieptType = {
+  id: -1,
   name: "Reciept",
-  owner: "newuser",
   amount: 0,
-  users: List(["newuser"]),
-  items: List([])
+  date: "2019-12-13",
+  resolved: null,
+  user_id: -1,
+  balances: [],
+  reciept_items: [],
 }
 
-export default (state:RecieptState = initialState, {
+export default (state:RecieptType = initialState, {
   payload,
   type
 }: RecieptAction) => {
@@ -34,16 +34,9 @@ export default (state:RecieptState = initialState, {
   const items = [{
     name: "potato",
     amount: 5.0,
-    users: List([
-    "me",
-    "you"
-    ])
   }, {
     name: "onions",
     amount: 8.60,
-    users: List([
-    "isaac", "oliver", "jackie"
-    ])
   }
   ]
 
@@ -52,10 +45,10 @@ export default (state:RecieptState = initialState, {
       console.log("GET_RECIEPT_FROM_ID")
       return {
         name: `rciept with special ${id}`,
-        owner: "me",
         amount: 100,
-        users: List(["me"]),
-        items: List(items)
+        date: "2019-03-20",
+        // users: ["me"],
+        reciept_items: items
       }
     default:
       return state;

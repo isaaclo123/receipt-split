@@ -16,7 +16,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 
-const mapStateToProps = (state: LoginState) => {
+const mapStateToProps = (state: any) => {
   return state
 }
 

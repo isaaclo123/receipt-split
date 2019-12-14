@@ -1,4 +1,3 @@
-import { List } from 'immutable'
 // login
 
 export interface LoginData {
@@ -40,7 +39,7 @@ export interface SignupState extends SignupData {
 }
 
 // set login
-//
+
 export interface RecieptData {
   id: number;
 }
@@ -50,16 +49,84 @@ export interface RecieptAction {
   payload: RecieptData;
 }
 
-export interface RecieptItem {
+// export interface RecieptItem {
+//   name: string;
+//   amount: number;
+//   users: UserType[];
+// }
+
+// export interface RecieptState {
+//   name: string;
+//   amount: number;
+//   owner: string;
+//   users: UserType[];
+//   items: RecieptItem[];
+// }
+
+// server types
+
+export type RecieptType = {
+  id?: number;
   name: string;
   amount: number;
-  users: List<string>;
+  date: string;
+  resolved?: boolean | null;
+  user_id?: number
+  user?: UserType; //TODO
+  users?: UserType[]; //TODO
+  balances?: BalanceType[]
+  reciept_items?: RecieptItemType[]
 }
 
-export interface RecieptState {
+export type RecieptItemType = {
+  id?: number;
   name: string;
   amount: number;
-  owner: string;
-  users: List<string>;
-  items: List<RecieptItem>;
+  users?: UserType[]; //TODO
+  reciept_id?: number;
+  reciept?: RecieptType
+}
+
+export type UserType = {
+  id?: number;
+  friend_of_id?: number;
+  friends?: UserType[]
+
+  username: string
+  fullname: string
+
+  reciepts: RecieptType
+}
+
+export type BalanceType = {
+  id?: number;
+  to_user: UserType;
+  from_user: UserType;
+  to_user_id?: number;
+  from_user_id?: number;
+  amount: number;
+  reciept: RecieptType;
+}
+
+export type PaymentType = {
+  id?: number;
+  created?: string;
+  accepted?: boolean;
+  message?: string;
+
+  to_user_id?: number;
+  from_user_id?: number;
+
+  amount: number;
+
+  to_user: UserType;
+  from_user: UserType;
+}
+
+// button
+
+export interface ButtonProps {
+  variant: string;
+  text: string;
+  handleClick: () => void;
 }

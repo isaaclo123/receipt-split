@@ -2,12 +2,17 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from datetime import date, datetime
 
-from sqlalchemy import Column, Integer, Date, DateTime, ForeignKey, Boolean,\
-    String, Float
-
 from decimal import Decimal
 
 from .meta import db
+
+
+association_table = db.Table(
+    'association',
+    db.metadata,
+    db.Column('left_id', db.Integer, db.ForeignKey('recieptitem.id')),
+    db.Column('right_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 
 class Balance(db.Model):
@@ -17,9 +22,11 @@ class Balance(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    # to_user
+    # from_user
+
     amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False,
-                       python_type=Decimal)
+                       nullable=False)
 
     reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
 
@@ -39,14 +46,18 @@ class Payment(db.Model):
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False,
-                       python_type=Decimal)
+                       nullable=False)
+
+    # to_user
+    # from_user
 
 
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     friend_of_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # friend_of
 
     friends = relationship("User",
                            backref=backref('friend_of', remote_side=[id])
@@ -81,32 +92,44 @@ class User(db.Model):
                                       backref="from_user")
 
 
+class RecieptItem(db.Model):
+    __tablename__ = 'recieptitem'
+    id = db.Column(db.Integer, primary_key=True)
+
+    reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
+
+    name = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float(asdecimal=True),
+                       nullable=False)
+
+    # users = relationship("RecieptItem",
+    #                      # backref="reciept_items",
+    #                      foreign_keys=[User.reciept_item_id])
+    # reciept
+
+    users = relationship("User",
+                         secondary=association_table,
+                         backref="reciept_items")
+
+
 class Reciept(db.Model):
     __tablename__ = 'reciept'
+    # user
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False,
-                       python_type=Decimal)
+                       nullable=False)
     date = db.Column(db.Date,
                      default=date.today(),
                      nullable=False)
 
     resolved = db.Column(db.Boolean)
 
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     balances = relationship("Balance", backref="reciept")
 
-    reciept_items = relationship("RecieptItem", backref="reciept")
-
-
-class RecieptItem(db.Model):
-    __tablename__ = 'recieptitem'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False,
-                       python_type=Decimal)
-
-    reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
+    reciept_items = relationship("RecieptItem", backref="reciept",
+                                 foreign_keys=[RecieptItem.reciept_id])

@@ -24,6 +24,8 @@ function* fetchSignupWorker(action: SignupAction) {
 
       const tokenData = yield call(fetchLogin, loginPayload);
 
+      console.log(tokenData)
+
       const tokenPayload: TokenData = {
         username,
         token: tokenData.access_token

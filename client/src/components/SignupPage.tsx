@@ -25,7 +25,7 @@ type AppState = {
 
 type Props = PropsFromRedux & AppState
 
-const mapStateToProps = (state: AppState) => {
+const mapStateToProps = (state: any) => {
   const { loginState, signupState } = state
   return {
     loginState,

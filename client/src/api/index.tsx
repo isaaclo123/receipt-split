@@ -1,6 +1,7 @@
 import {
   LoginData,
-  SignupData
+  SignupData,
+  RecieptData
 } from '../types/index'
 
 const SERVER_URL = `http://127.0.0.1:5000`
@@ -36,6 +37,26 @@ export const fetchSignup = async (mySignupData: any) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(signupData)
+    })
+
+    const json = await response.json()
+    return json
+  } catch (e) {
+    return null
+  }
+};
+
+
+export const fetchRecieptList = async (token: any) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/reciept_list`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${token}`,
+      }
     })
 
     const json = await response.json()

@@ -10,7 +10,8 @@ import {
 import configureStore from './store';
 import './index.css';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.scss';
 
 import * as serviceWorker from './serviceWorker';
 

@@ -4,11 +4,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 
-export interface ButtonProps {
-  variant: string;
-  text: string;
-  handleClick: () => void;
-}
+import { ButtonProps } from '../types/index';
 
 export interface BalanceProps {
   prefix: string;

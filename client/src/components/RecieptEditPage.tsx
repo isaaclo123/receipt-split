@@ -13,9 +13,7 @@ import {
 
 import { getReciept } from '../actions/getReciept'
 
-import { List } from 'immutable'
-
-import { RecieptState } from '../types/index'
+import { RecieptType } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
@@ -25,7 +23,7 @@ type MatchParams = {
   id: string;
 }
 
-const mapStateToProps = (state: RecieptState, { match }: RouteComponentProps<MatchParams>) => {
+const mapStateToProps = (state: RecieptType, { match }: RouteComponentProps<MatchParams>) => {
   return state
 }
 
@@ -37,7 +35,7 @@ const connector = connect(
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & RouteComponentProps<MatchParams> & {
-  recieptState?: RecieptState
+  recieptState?: RecieptType
 }
 
 
@@ -58,7 +56,7 @@ const RecieptEditPage = ({
 
   // getReciept({id})
 
-  const { name, amount, owner, users, items }: RecieptState = recieptState
+  const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = recieptState
 
   // if (id < 0) {
   //   return <Redirect to={'/app'} />
@@ -82,7 +80,7 @@ const RecieptEditPage = ({
       <ExpenseCardComponent
         extraComponent={
           (<>
-            Paid by <a href="#">{ owner }</a> on {"1/2/23"}
+            Paid by <a href="#">{ (user == null) ? "Unknown" : user.fullname }</a> on {date}
             <br />
           </>)
         }
@@ -97,7 +95,7 @@ const RecieptEditPage = ({
 
         handleDeleteClick={() => {alert("delete")}}
 
-        users={users}
+        users={users.map(user => user.fullname)}
         handleUserClick={(i:number) => {alert(i)}}
         handleDeleteUserClick={(i:number) => {alert(i)}}
         handleAddUserClick={() => {}}
@@ -110,7 +108,7 @@ const RecieptEditPage = ({
       <br />
       <h5 />
 
-      {items.map((props: any) => {
+      {(reciept_items != null) && reciept_items.map((props: any) => {
         const { name, amount, users } = props
         return (<ExpenseCardComponent
                   prefix="-"

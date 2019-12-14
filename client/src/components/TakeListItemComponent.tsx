@@ -1,10 +1,13 @@
 import React from 'react'
 
 import {
-  ButtonProps,
   BalanceProps,
   BalanceListItemComponent
 } from './BalanceListItemComponent';
+
+import {
+  ButtonProps
+} from '../types/index'
 
 export interface TakeProps {
   amount: number,

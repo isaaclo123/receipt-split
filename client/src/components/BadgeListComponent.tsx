@@ -4,10 +4,8 @@ import Badge from 'react-bootstrap/Badge';
 
 import './BadgeListComponent.css'
 
-import { List } from 'immutable'
-
 export interface BadgeListProps {
-  items: List<string>;
+  items: string[];
   handleItemClick: (index: number) => void;
   handleDeleteClick: (index: number) => void;
   handleAddClick: () => void;
@@ -21,7 +19,7 @@ export const BadgeListComponent = (props : BadgeListProps) => {
     handleAddClick
   } = props
 
-  if (items && items.size) {
+  if (items && items.length) {
     return (
       <>
         {items.map((item, index: number) => {

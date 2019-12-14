@@ -4,10 +4,9 @@ import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent'
+import { UserType } from '../types/index'
 
 import { TextInputComponent } from './TextInputComponent'
-
-import { List } from 'immutable'
 
 export interface ExpenseCardParams {
   variant?: string;
@@ -21,7 +20,7 @@ export interface ExpenseCardParams {
 
   handleDeleteClick: () => void;
 
-  users: List<string>;
+  users: string[];
 
   handleUserClick: (arg0:number) => void;
   handleDeleteUserClick: (arg0:number) => void;

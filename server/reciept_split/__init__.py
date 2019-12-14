@@ -38,6 +38,8 @@ def create_app():
 
     @app.before_first_request
     def before_first_request_func():
+        # db.metadata.clear()
+        # db.drop_all()
         db.create_all()
         db.session.commit()
         # user = User(username="test", password="test", fullname="test test")

@@ -18,6 +18,8 @@ import PeoplePage from './PeoplePage'
 
 import { getReciept } from '../actions/getReciept'
 
+import './App.css'
+
 const connector = connect(
   null,
   { getReciept }
