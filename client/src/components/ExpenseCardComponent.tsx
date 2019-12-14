@@ -32,7 +32,7 @@ export interface ExpenseCardParams {
 export const ExpenseCardComponent = ({
   name,
   handleNameChange,
-  amount,
+  amount = 0,
   handleAmountChange,
   users = [],
 

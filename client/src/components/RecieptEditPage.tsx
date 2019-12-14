@@ -22,6 +22,8 @@ import { UserSelectModal, UserSelectProps } from './UserSelectModal';
 
 import { ExpenseCardComponent } from './ExpenseCardComponent'
 
+import { TextInputComponent } from './TextInputComponent'
+
 type MatchParams = {
   id: string;
 }
@@ -85,13 +87,13 @@ const RecieptEditPage = ({
   const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
 
   const removeIndex = (list:UserType[], index:number) => {
-    return list.filter((_:any, i:number) => i !== index)
+    return list.filter((_:UserType, i:number) => i !== index)
   }
 
   const listDiff = (list1:UserType[], list2:UserType[]) => {
     return list1.filter((i) => {
       for (let j = 0; j < list2.length; j++) {
-        if (i.id == list2[j].id) {
+        if (i.id === list2[j].id) {
           return false
         }
       }
@@ -132,7 +134,18 @@ const RecieptEditPage = ({
       <ExpenseCardComponent
         extraComponent={
           (<>
-            Paid by <a href="#">{ (user == null) ? "Unknown" : user.fullname }</a> on {date}
+            Paid by <a href="#">{ (user == null) ? "Unknown" : user.fullname }</a> on &nbsp;
+            <TextInputComponent
+              size={40}
+              type="text"
+              value={date}
+              handleTextChange={(date:string) => {
+                setReciept({
+                  ...reciept,
+                  date
+                })
+              }}
+              />
             <br />
           </>)
         }
@@ -207,8 +220,9 @@ const RecieptEditPage = ({
         </Card>)
       }
 
-      {(reciept_items != null) && reciept_items.map((props: any, i:number) => {
-        const { name, amount, users } = props
+      {(reciept_items != null) && reciept_items.map(({
+          name, amount, users=blankUserList
+        }: RecieptItemType, i:number) => {
         return (<ExpenseCardComponent
                   prefix="-"
                   variant="danger"
@@ -255,10 +269,15 @@ const RecieptEditPage = ({
                   handleUserClick={(i:number) => {}}
 
                   handleDeleteUserClick={(i:number) => {
+                    const removebadgeuser:UserType[] = removeIndex(users, i)
                     setReciept({
                       ...reciept,
-                      reciept_items: deleteIndex(users, i)
-                    })
+                      reciept_items: insertIndex(
+                        reciept_items, {
+                          ...reciept_items[i],
+                          users: removebadgeuser
+                        }, i)
+                      })
                   }}
 
                   handleAddUserClick={() => {

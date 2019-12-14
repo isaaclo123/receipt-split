@@ -113,10 +113,12 @@ export type RecieptItemType = {
   reciept?: RecieptType
 }
 
+const userListExample: UserType[] = []
+
 export const RecieptItemTypeDefault: RecieptItemType = {
   name: "New Reciept Item",
   amount: 0,
-  users: []
+  users: userListExample
 }
 
 export type UserType = {

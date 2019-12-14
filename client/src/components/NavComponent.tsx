@@ -34,10 +34,6 @@ const NavComponent = (props: RouteComponentProps<{}>) => {
           <LinkContainer to={`${match.url}/people`}>
             <Nav.Link>People</Nav.Link>
           </LinkContainer>
-
-          <LinkContainer to={`${match.url}/reciepts/edit/1`}>
-            <Nav.Link>recp</Nav.Link>
-          </LinkContainer>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
