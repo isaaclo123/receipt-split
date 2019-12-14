@@ -1,4 +1,5 @@
 import os
+import datetime
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -12,6 +13,8 @@ class Config(object):
     WTF_CSRF_CHECK_DEFAULT = False
     WTF_CSRF_ENABLED = False
     CORS_HEADERS = 'Content-Type'
+
+    JWT_EXPIRATION_DELTA = datetime.timedelta(weeks=999)
 
     DEFAULT_PARSERS = [
         'reciept_split.parsers.SimpleJsonParser',

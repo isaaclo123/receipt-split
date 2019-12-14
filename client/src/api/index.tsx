@@ -24,7 +24,7 @@ export const fetchLogin = async (myloginData: any) => {
   } catch (e) {
     return null
   }
-};
+}
 
 export const fetchSignup = async (mySignupData: any) => {
   try {
@@ -44,12 +44,12 @@ export const fetchSignup = async (mySignupData: any) => {
   } catch (e) {
     return null
   }
-};
+}
 
 
 export const fetchRecieptList = async (token: any) => {
   try {
-    const response = await fetch(`${SERVER_URL}/reciept_list`, {
+    const response = await fetch(`${SERVER_URL}/reciept`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -64,4 +64,24 @@ export const fetchRecieptList = async (token: any) => {
   } catch (e) {
     return null
   }
-};
+}
+
+
+export const fetchRecieptById = async (token: any, id: number) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/reciept/${id}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${token}`,
+      }
+    })
+
+    const json = await response.json()
+    return json
+  } catch (e) {
+    return null
+  }
+}

@@ -19,7 +19,7 @@ export const getReciept = (payload: RecieptData) => (dispatch: Dispatch) => {
   console.log("getReciept")
   console.log(payload)
   const action: RecieptAction = {
-    type: 'GET_RECIEPT_FROM_ID',
+    type: 'RECIEPT_ID_REQUEST',
     payload
   }
 

@@ -15,7 +15,7 @@ from flask_cors import CORS
 # migrate = Migrate(app, db)
 from .models import *
 
-from .meta import db
+from .meta import db, ma
 
 
 def create_app():
@@ -31,6 +31,7 @@ def create_app():
     JWT(app, authenticate, identity)
 
     db.init_app(app)
+    ma.init_app(app)
     wtforms_json.init()
 
     app.register_blueprint(auth_blueprint)
