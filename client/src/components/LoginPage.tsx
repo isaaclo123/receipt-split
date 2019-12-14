@@ -52,6 +52,12 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
     setLogin(loginData)
   }
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      setLogin(loginData)
+    }
+  }
+
   return (
     <div className="login-container">
       <Card>
@@ -77,6 +83,7 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
               <Form.Control
                 type="password"
                 placeholder="Password"
+                onKeyPress={handleKeyPress}
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
                   loginData = {
                     username: loginData.username,

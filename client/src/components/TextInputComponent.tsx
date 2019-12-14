@@ -2,31 +2,29 @@ import React, { useState } from 'react'
 
 export interface TextInputProps {
   value: string;
+  type?: string;
   handleTextChange: (arg0: string) => void;
   pattern?: string;
+  size?: number;
   handleValidate?: (arg0: string) => boolean;
 }
 
 export const TextInputComponent = ({
     handleTextChange,
+    size=30,
+    type="text",
     value,
     pattern = "",
     handleValidate = (str: string) => true
   }: TextInputProps) => {
 
   const [ hideInput, setHideInput ] = useState(true)
-  const [ newValue, setNewValue ] = useState(value)
+  // const [ newValue, setNewValue ] = useState(value)
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      if (handleValidate(newValue)) {
-        handleTextChange(newValue)
-        setHideInput(true)
-      } else {
-        setNewValue(value)
-      }
-    }
-  }
+  // if (value !== newValue) {
+  //   setNewValue(value)
+  //   // setHideInput(true)
+  // }
 
   // if (hideInput &&
   //     value === "" &&
@@ -41,6 +39,12 @@ export const TextInputComponent = ({
   //   )
   // }
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      setHideInput(true)
+    }
+  }
+
   return (
     <>
       <span
@@ -48,17 +52,23 @@ export const TextInputComponent = ({
         style={{
           display: hideInput ? "inline" : "none"
         }}>
-        {newValue}
+        {value}
       </span>
 
       <input
+        size={size}
         style={{
           display: hideInput ? "none" : "inline"
         }}
         pattern={pattern}
-        value={newValue}
-        onChange={event => {setNewValue(event.currentTarget.value)}}
-        onKeyPress={handleKeyPress} />
+        value={value}
+        onChange={event => {
+          if (handleValidate(event.currentTarget.value)) {
+            handleTextChange(event.currentTarget.value)
+          }
+        }}
+        onKeyPress={handleKeyPress}
+        onBlur={()=>{setHideInput(true)}} />
     </>
   )
 }

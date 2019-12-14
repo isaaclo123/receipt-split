@@ -27,7 +27,7 @@ const NavComponent = (props: RouteComponentProps<{}>) => {
             <Nav.Link>Balances</Nav.Link>
           </LinkContainer>
 
-          <LinkContainer to={`${match.url}/reciepts/list`}>
+          <LinkContainer to={`${match.url}/reciepts`}>
             <Nav.Link>Reciepts</Nav.Link>
           </LinkContainer>
 
@@ -35,7 +35,7 @@ const NavComponent = (props: RouteComponentProps<{}>) => {
             <Nav.Link>People</Nav.Link>
           </LinkContainer>
 
-          <LinkContainer to={`${match.url}/reciepts/1`}>
+          <LinkContainer to={`${match.url}/reciepts/edit/1`}>
             <Nav.Link>recp</Nav.Link>
           </LinkContainer>
         </Nav>

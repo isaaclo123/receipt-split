@@ -85,3 +85,22 @@ export const fetchRecieptById = async (token: any, id: number) => {
     return null
   }
 }
+
+export const fetchUser = async (token: any) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/user`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${token}`,
+      }
+    })
+
+    const json = await response.json()
+    return json
+  } catch (e) {
+    return null
+  }
+}

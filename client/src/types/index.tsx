@@ -49,6 +49,11 @@ export interface RecieptRequestAction {
   payload: RecieptData;
 }
 
+export interface RecieptSetAction {
+  type: string;
+  payload: RecieptType;
+}
+
 export interface RecieptAction {
   type: string;
   payload: RecieptState;
@@ -118,6 +123,19 @@ export type UserType = {
 
   reciepts?: RecieptType
   reciept_items?: number;
+}
+
+export interface UserRequestAction {
+  type: string;
+}
+
+export interface UserAction {
+  type: string;
+  payload: UserState | null;
+}
+
+export interface UserState {
+  user: UserType | null
 }
 
 export type BalanceType = {

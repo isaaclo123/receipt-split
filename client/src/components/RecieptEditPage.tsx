@@ -12,10 +12,13 @@ import {
 } from 'react-router-dom'
 
 import { getReciept } from '../actions/getReciept'
+import { setReciept } from '../actions/setReciept'
 
-import { RecieptType, RecieptState } from '../types/index'
+import { RecieptType, RecieptState, UserType } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
+
+import { UserSelectModal, UserSelectProps } from './UserSelectModal';
 
 import { ExpenseCardComponent } from './ExpenseCardComponent'
 
@@ -23,13 +26,17 @@ type MatchParams = {
   id: string;
 }
 
-const mapStateToProps = (state: RecieptState) => {
-  return state
+const mapStateToProps = (state: any) => {
+  const { recieptState, userState } = state
+  return {
+    recieptState,
+    userState
+  }
 }
 
 const connector = connect(
   mapStateToProps,
-  { getReciept }
+  { getReciept, setReciept }
 )
 
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -40,13 +47,38 @@ type Props = PropsFromRedux & RouteComponentProps<MatchParams> & {
 
 
 const RecieptEditPage = ({
+  match,
+  userState,
   recieptState,
+  setReciept,
   getReciept
 }: Props) => {
-  // const { state, setState } = useState({})
+  const [ run, setRun ] = useState(true)
+
+  const blankUserList: UserType[] = []
+
+  const [ modalState, setModalState ] = useState({
+    show: false,
+    addedusers: blankUserList,
+    modalcallback: (user: UserType) => {}
+  })
+
+  const {show, addedusers, modalcallback} = modalState
+
+  const friends = userState.user.friends
+  const you = userState.user
+  const [ friend, setFriend ] = useState(you)
+
+  const reciept_id = Number(match.params.id) || -1
+
+  console.log(run)
+  if (run) {
+    getReciept({id: reciept_id})
+    setRun(false)
+  }
+  console.log(recieptState)
 
   if (recieptState == null || recieptState.reciept == null) {
-    // return <Redirect to={'/app'} />
     return (<div>loading</div>)
   }
 
@@ -54,8 +86,27 @@ const RecieptEditPage = ({
 
   const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
 
+  const removeIndex = (list:UserType[], index:number) => {
+    return list.filter((_:any, i:number) => i !== index)
+  }
+
+  const ListsDiff = (list1:UserType[], list2:UserType[]) => {
+    return list1.filter((i) => {return list2.indexOf(i) < 0;});
+  }
+
   return (
     <>
+      <UserSelectModal
+        show={show}
+        onHide={() => {
+          setModalState({
+            ...modalState,
+            show: false
+        })}}
+        users={ListsDiff(friends, addedusers)}
+        title="Friends"
+        onUserSelect={modalcallback} />
+
       <h5>Reciept Info</h5>
 
       <ExpenseCardComponent
@@ -69,17 +120,49 @@ const RecieptEditPage = ({
         variant="info"
 
         name={name}
-        handleNameChange={(name:string) => {alert(name)}}
+        handleNameChange={(name:string) => {
+          setReciept({
+            ...reciept,
+            name
+          })
+        }}
 
         amount={amount}
-        handleAmountChange={(amt:number) => {alert(amt)}}
+        handleAmountChange={(amount:number) => {
+          setReciept({
+            ...reciept,
+            amount
+          })
+        }}
 
         handleDeleteClick={() => {alert("delete")}}
 
         users={users}
-        handleUserClick={(i:number) => {alert(i)}}
-        handleDeleteUserClick={(i:number) => {alert(i)}}
-        handleAddUserClick={() => {alert("add")}}
+        handleUserClick={() => {}}
+
+        handleDeleteUserClick={(i:number) => {
+          const test = removeIndex(users, i);
+          console.log(test)
+          setReciept({
+            ...reciept,
+            users: removeIndex(users, i)
+          })
+        }}
+
+        handleAddUserClick={() => {
+          setModalState({
+            show: true,
+            addedusers: users,
+            modalcallback: (user: UserType) => {
+              console.log(user)
+              console.log(users.concat([user]))
+              setReciept({
+                ...reciept,
+                users: users.concat([user])
+              })
+            }
+          })
+        }}
         />
 
       <div className="align-middle">

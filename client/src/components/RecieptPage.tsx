@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { connect, ConnectedProps } from 'react-redux'
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 
 import {
   Redirect,
@@ -30,15 +30,26 @@ type Props = PropsFromRedux & RouteComponentProps<{}> & {
 }
 
 const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
-  const history = useHistory()
+  const [ redirect, setRedirect ] = useState({
+    redirect: false,
+    id: -1,
+  })
+
+  if (redirect.redirect) {
+    return <Redirect to={`${match.url}/edit/${redirect.id}`} />
+  }
 
   if (recieptListState == null) {
     return <Redirect to={'/app'} />
   }
 
   const recieptEdit = (id: number) => {
-    console.log(`${match.url}/${id}`)
-    history.push(`${match.url}/${id}`)
+    // console.log(`${match.url}/edit/${id}`)
+    // history.push(`${match.url}/edit/${id}`)
+    setRedirect({
+      redirect: true,
+      id
+    })
   }
 
   const { reciepts } = recieptListState
@@ -70,6 +81,7 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
           }
           return (
             <RecieptListItemComponent
+              key={id}
               {...props}/>
           )
         })}

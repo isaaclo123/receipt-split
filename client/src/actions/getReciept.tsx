@@ -5,15 +5,15 @@ import {
   RecieptData
 } from '../types/index'
 
-export const setRecieptList = () => (dispatch: Dispatch) => {
-  const action = {
-    type: 'RECIEPT_LIST_REQUEST',
-  }
-
-  console.log("GETRECIEPTLIST")
-
-  dispatch(action)
-}
+// export const setRecieptList = () => (dispatch: Dispatch) => {
+//   const action = {
+//     type: 'RECIEPT_LIST_REQUEST',
+//   }
+//
+//   console.log("GETRECIEPTLIST")
+//
+//   dispatch(action)
+// }
 
 export const getRecieptList = () => (dispatch: Dispatch) => {
   const action = {

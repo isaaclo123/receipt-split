@@ -30,13 +30,15 @@ export default (state:RecieptState = initialState, {
     return state
   }
 
-  // const { reciept }: RecieptState = payload
-
   // alert(username)
   // console.log(username)
   // console.log(password)
 
   switch (type) {
+    case 'RECIEPT_SET':
+      console.log("RECIEPTSET")
+      console.log(payload)
+      return payload
     case 'RECIEPT_ID_SUCCESS':
       return payload
     case 'RECIEPT_ID_FAIL':

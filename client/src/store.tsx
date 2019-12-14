@@ -8,6 +8,7 @@ import { loginSaga } from './sagas/loginSaga'
 import { signupSaga } from './sagas/signupSaga'
 import { recieptListSaga } from './sagas/recieptListSaga'
 import { recieptSaga } from './sagas/recieptSaga'
+import { userSaga } from './sagas/userSaga'
 
 export default function configureStore() {
   const sagaMiddleware = createSagaMiddleware()
@@ -21,6 +22,7 @@ export default function configureStore() {
   sagaMiddleware.run(signupSaga)
   sagaMiddleware.run(recieptListSaga)
   sagaMiddleware.run(recieptSaga)
+  sagaMiddleware.run(userSaga)
 
   return store
 }

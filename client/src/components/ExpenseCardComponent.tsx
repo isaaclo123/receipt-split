@@ -54,6 +54,8 @@ export const ExpenseCardComponent = ({
         <Card.Title>
           <span className="float-left">
             <TextInputComponent
+              size={40}
+              type="text"
               value={name}
               handleTextChange={handleNameChange}
               />
@@ -62,6 +64,8 @@ export const ExpenseCardComponent = ({
             className={`text-${variant} float-right`}>
             {prefix}$
             <TextInputComponent
+              size={10}
+              type="number"
               value={amount.toFixed(2)}
               pattern="^(\d*\.)?\d+$"
               handleValidate={(str: string) => {

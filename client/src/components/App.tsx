@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { connect, ConnectedProps } from 'react-redux'
 
@@ -17,12 +17,13 @@ import RecieptEditPage from './RecieptEditPage'
 import PeoplePage from './PeoplePage'
 
 import { getRecieptList, getReciept } from '../actions/getReciept'
+import { getUser } from '../actions/getUser'
 
 import './App.css'
 
 const connector = connect(
   null,
-  { getReciept, getRecieptList }
+  { getReciept, getRecieptList, getUser }
 )
 
 
@@ -30,7 +31,16 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & RouteComponentProps<{}>
 
 const App = (props: Props) => {
-  const { match, getReciept, getRecieptList } = props
+  const { match, getUser, getReciept, getRecieptList } = props
+
+  const [ run, setRun ] = useState(true)
+
+  // gets user info once
+  if (run) {
+    setRun(false)
+    getRecieptList()
+    getUser()
+  }
 
   return (
     <>
@@ -40,23 +50,7 @@ const App = (props: Props) => {
         <Switch>
           <PrivateRoute path={`${match.path}/balance`} component={BalancePage} />
 
-          <PrivateRoute
-            path={`${match.path}/reciepts/list`}
-
-            render={() => {
-              getRecieptList()
-              return <Redirect to={`${match.path}/reciepts`}/>
-            }} />
-
-          <PrivateRoute path={`${match.path}/reciepts/edit`}
-            render={props => <RecieptEditPage {...props}/>} />
-
-          <PrivateRoute
-            path={`${match.path}/reciepts/:id`}
-            render={(props) => {
-              getReciept({id: props.match.params.id})
-              return <Redirect to={`${match.path}/reciepts/edit`}/>
-            }} />
+          <PrivateRoute path={`${match.path}/reciepts/edit/:id`} component={RecieptEditPage} />
 
           <PrivateRoute path={`${match.path}/reciepts`} component={RecieptPage} />
 
@@ -68,5 +62,24 @@ const App = (props: Props) => {
     </>
   )
 }
+
+          // <PrivateRoute path={`${match.path}/reciepts/edit/:id`} component={RecieptEditPage} />
+          // <PrivateRoute path={`${match.path}/reciepts/edit/:id`}
+          //   render={props => <RecieptEditPage {...props}/>} />
+
+          // <PrivateRoute
+          //   path={`${match.path}/reciepts/edit/:id`}
+          //   render={(props) => {
+          //     getReciept({id: props.match.params.id})
+          //     return <Redirect to={`${match.path}/reciepts/edit`}/>
+          //   }} />
+          // <PrivateRoute
+          //   path={`${match.path}/reciepts/list`}
+
+          //   render={() => {
+          //     getRecieptList()
+          //     return <Redirect to={`${match.path}/reciepts`}/>
+          //   }} />
+
 
 export default connector(App)
