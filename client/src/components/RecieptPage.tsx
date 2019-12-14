@@ -37,6 +37,7 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
   }
 
   const recieptEdit = (id: number) => {
+    console.log(`${match.url}/${id}`)
     history.push(`${match.url}/${id}`)
   }
 
@@ -58,6 +59,7 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
           date="",
           id=-1,
           }: RecieptType) => {
+            console.log(`ID ${id}`)
 
           const props: RecieptProps = {
             pending: true,

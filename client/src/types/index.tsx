@@ -44,9 +44,20 @@ export interface RecieptData {
   id: number;
 }
 
-export interface RecieptAction {
+export interface RecieptRequestAction {
   type: string;
   payload: RecieptData;
+}
+
+export interface RecieptAction {
+  type: string;
+  payload: RecieptState;
+}
+
+// reciept state
+
+export interface RecieptState {
+  reciept: RecieptType | null
 }
 
 // export interface RecieptItem {

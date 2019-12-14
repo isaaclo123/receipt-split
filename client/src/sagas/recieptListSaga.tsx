@@ -21,7 +21,11 @@ function* fetchRecieptListWorker(action: any) {
 
       yield put({type: "RECIEPT_LIST_SUCCESS", payload: recieptListPayload});
   } catch (e) {
-      yield put({type: "RECIEPT_LIST_FAIL", payload: []});
+      const recieptListPayload: RecieptListState = {
+        reciepts: []
+      }
+
+      yield put({type: "RECIEPT_LIST_FAIL", payload: recieptListPayload});
   }
 }
 

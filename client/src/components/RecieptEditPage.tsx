@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { connect, ConnectedProps } from 'react-redux'
 
@@ -13,7 +13,7 @@ import {
 
 import { getReciept } from '../actions/getReciept'
 
-import { RecieptType } from '../types/index'
+import { RecieptType, RecieptState } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
@@ -23,7 +23,7 @@ type MatchParams = {
   id: string;
 }
 
-const mapStateToProps = (state: RecieptType, { match }: RouteComponentProps<MatchParams>) => {
+const mapStateToProps = (state: RecieptState) => {
   return state
 }
 
@@ -35,20 +35,24 @@ const connector = connect(
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & RouteComponentProps<MatchParams> & {
-  recieptState?: RecieptType
+  recieptState?: RecieptState
 }
 
 
 const RecieptEditPage = ({
-  match,
   recieptState,
   getReciept
 }: Props) => {
-  if (recieptState == null) {
-    return <Redirect to={'/app'} />
+  // const { state, setState } = useState({})
+
+  if (recieptState == null || recieptState.reciept == null) {
+    // return <Redirect to={'/app'} />
+    return (<div>loading</div>)
   }
 
-  const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = recieptState
+  const { reciept } = recieptState
+
+  const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
 
   return (
     <>
@@ -72,10 +76,10 @@ const RecieptEditPage = ({
 
         handleDeleteClick={() => {alert("delete")}}
 
-        users={["one"]}
+        users={users}
         handleUserClick={(i:number) => {alert(i)}}
         handleDeleteUserClick={(i:number) => {alert(i)}}
-        handleAddUserClick={() => {}}
+        handleAddUserClick={() => {alert("add")}}
         />
 
       <div className="align-middle">
@@ -84,6 +88,18 @@ const RecieptEditPage = ({
       </div>
       <br />
       <h5 />
+
+      {(reciept_items == null || reciept_items.length <= 0) &&
+        (<Card className="mb-3">
+          <Card.Body>
+            <Card.Title>
+              <span className="float-left text-secondary">
+                None
+              </span>
+            </Card.Title>
+          </Card.Body>
+        </Card>)
+      }
 
       {(reciept_items != null) && reciept_items.map((props: any) => {
         const { name, amount, users } = props

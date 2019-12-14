@@ -20,7 +20,7 @@ export interface ExpenseCardParams {
 
   handleDeleteClick: () => void;
 
-  users: string[];
+  users: UserType[];
 
   handleUserClick: (arg0:number) => void;
   handleDeleteUserClick: (arg0:number) => void;
@@ -34,7 +34,7 @@ export const ExpenseCardComponent = ({
   handleNameChange,
   amount,
   handleAmountChange,
-  users,
+  users = [],
 
   handleUserClick,
   handleDeleteUserClick,
@@ -89,7 +89,10 @@ export const ExpenseCardComponent = ({
             </span>
 
             <BadgeListComponent
-              items={users}
+              items={users.map((user: UserType) => {
+                const { fullname="" } = user
+                return fullname
+              })}
               handleItemClick={handleUserClick}
               handleDeleteClick={handleDeleteUserClick}
               handleAddClick={handleAddUserClick} />

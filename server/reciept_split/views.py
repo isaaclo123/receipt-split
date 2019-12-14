@@ -9,13 +9,14 @@ import simplejson
 from .meta import db
 from .auth import identity
 from .models import User, Reciept
-from .schemas import RecieptSchema
+from .schemas import UserSchema, RecieptSchema
 from .forms import RecieptForm
 
 
 views = Blueprint('views', __name__)
 
 
+user_schema = UserSchema()
 reciept_schema = RecieptSchema()
 reciepts_schema = RecieptSchema(many=True)
 
@@ -32,9 +33,6 @@ def reciept_list():
     ]
 
     all_reciepts = reciepts_owned + reciept_notin_owned
-    print("all_reciepts--------")
-    print(all_reciepts)
-    print("all_reciepts--------")
 
     return all_reciepts, status.HTTP_200_OK
 
@@ -105,3 +103,38 @@ def reciept_create():
     reciept_dump = reciept_schema.dump(reciept_data)
 
     return reciept_dump, status.HTTP_201_CREATED
+
+
+@views.route('/user', methods=['GET'])
+@jwt_required()
+def user():
+    user_dump = user_schema.dump(current_identity)
+    return user_dump, status.HTTP_200_OK
+
+
+@views.route('/friend/<username>', methods=['POST'])
+@jwt_required()
+def friend_add(username):
+    friend = User.query.filter_by(username=username).first()
+    print("FRIEND///////////")
+    print(friend)
+    print("FRIEND///////////")
+
+    if friend is None:
+        return {"error": "friend does not exist"}, status.HTTP_400_BAD_REQUEST
+
+    if friend == current_identity:
+        return {"error": "cannot friend yourself"}, status.HTTP_400_BAD_REQUEST
+
+    if friend not in current_identity.friends:
+        current_identity.friends.append(friend)
+        db.session.add(current_identity)
+        db.session.commit()
+
+    if current_identity not in friend.friends:
+        friend.friends.append(current_identity)
+        db.session.add(friend)
+        db.session.commit()
+
+    friend_dump = user_schema.dump(friend)
+    return friend_dump, status.HTTP_200_OK

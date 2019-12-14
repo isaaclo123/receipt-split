@@ -1,4 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from datetime import date, datetime
 
