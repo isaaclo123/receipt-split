@@ -14,7 +14,7 @@ import {
 import { getReciept } from '../actions/getReciept'
 import { setReciept } from '../actions/setReciept'
 
-import { RecieptType, RecieptState, UserType } from '../types/index'
+import { RecieptType, RecieptItemType, RecieptState, UserType, RecieptItemTypeDefault } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
@@ -29,6 +29,7 @@ type MatchParams = {
 const mapStateToProps = (state: any) => {
   const { recieptState, userState } = state
   return {
+    people: userState.user.friends.concat(userState.user),
     recieptState,
     userState
   }
@@ -51,7 +52,8 @@ const RecieptEditPage = ({
   userState,
   recieptState,
   setReciept,
-  getReciept
+  getReciept,
+  people
 }: Props) => {
   const [ run, setRun ] = useState(true)
 
@@ -64,10 +66,6 @@ const RecieptEditPage = ({
   })
 
   const {show, addedusers, modalcallback} = modalState
-
-  const friends = userState.user.friends
-  const you = userState.user
-  const [ friend, setFriend ] = useState(you)
 
   const reciept_id = Number(match.params.id) || -1
 
@@ -90,8 +88,30 @@ const RecieptEditPage = ({
     return list.filter((_:any, i:number) => i !== index)
   }
 
-  const ListsDiff = (list1:UserType[], list2:UserType[]) => {
-    return list1.filter((i) => {return list2.indexOf(i) < 0;});
+  const listDiff = (list1:UserType[], list2:UserType[]) => {
+    return list1.filter((i) => {
+      for (let j = 0; j < list2.length; j++) {
+        if (i.id == list2[j].id) {
+          return false
+        }
+      }
+      return true
+    })
+  }
+
+  const insertIndex = (state:RecieptItemType[], newItem:RecieptItemType, insertAt:number) => {
+    return [
+      ...state.slice(0, insertAt),
+      newItem,
+      ...state.slice(insertAt+1)
+    ]
+  }
+
+  const deleteIndex = (state:RecieptItemType[], deleteAt:number) => {
+    return [
+      ...state.slice(0, deleteAt),
+      ...state.slice(deleteAt+1)
+    ]
   }
 
   return (
@@ -103,7 +123,7 @@ const RecieptEditPage = ({
             ...modalState,
             show: false
         })}}
-        users={ListsDiff(friends, addedusers)}
+        users={listDiff(people, addedusers)}
         title="Friends"
         onUserSelect={modalcallback} />
 
@@ -141,8 +161,6 @@ const RecieptEditPage = ({
         handleUserClick={() => {}}
 
         handleDeleteUserClick={(i:number) => {
-          const test = removeIndex(users, i);
-          console.log(test)
           setReciept({
             ...reciept,
             users: removeIndex(users, i)
@@ -154,8 +172,6 @@ const RecieptEditPage = ({
             show: true,
             addedusers: users,
             modalcallback: (user: UserType) => {
-              console.log(user)
-              console.log(users.concat([user]))
               setReciept({
                 ...reciept,
                 users: users.concat([user])
@@ -167,7 +183,14 @@ const RecieptEditPage = ({
 
       <div className="align-middle">
         <h5 className="float-left">Sub-expenses</h5>
-        <a href="#" className="float-right">+ Add</a>
+        <a href="#"
+          className="float-right"
+          onClick={() => {
+            setReciept({
+              ...reciept,
+              reciept_items: [RecieptItemTypeDefault].concat(reciept_items)
+            })
+          }}>+ Add Item</a>
       </div>
       <br />
       <h5 />
@@ -184,25 +207,79 @@ const RecieptEditPage = ({
         </Card>)
       }
 
-      {(reciept_items != null) && reciept_items.map((props: any) => {
+      {(reciept_items != null) && reciept_items.map((props: any, i:number) => {
         const { name, amount, users } = props
         return (<ExpenseCardComponent
                   prefix="-"
                   variant="danger"
 
                   name={name}
-                  handleNameChange={(name:string) => {alert(name)}}
+                  handleNameChange={(name:string) => {
+                    setReciept({
+                      ...reciept,
+                      reciept_items: insertIndex(
+                        reciept_items,
+                        {
+                          ...reciept_items[i],
+                          name
+                        },
+                        i
+                      )
+                    })
+                  }}
 
                   amount={amount}
-                  handleAmountChange={(amt:number) => {alert(amt)}}
+                  handleAmountChange={(amount:number) => {
+                    setReciept({
+                      ...reciept,
+                      reciept_items: insertIndex(
+                        reciept_items,
+                        {
+                          ...reciept_items[i],
+                          amount
+                        },
+                        i
+                      )
+                    })
+                  }}
 
                   users={users}
 
-                  handleDeleteClick={() => {alert("delete card")}}
+                  handleDeleteClick={() => {
+                    setReciept({
+                      ...reciept,
+                      reciept_items: deleteIndex(reciept_items, i)
+                    })
+                  }}
 
-                  handleUserClick={(i:number) => {alert(i)}}
-                  handleDeleteUserClick={(i:number) => {alert(i)}}
-                  handleAddUserClick={() => {}} />)
+                  handleUserClick={(i:number) => {}}
+
+                  handleDeleteUserClick={(i:number) => {
+                    setReciept({
+                      ...reciept,
+                      reciept_items: deleteIndex(users, i)
+                    })
+                  }}
+
+                  handleAddUserClick={() => {
+                    setModalState({
+                      show: true,
+                      addedusers: users,
+                      modalcallback: (user: UserType) => {
+                        setReciept({
+                          ...reciept,
+                          reciept_items: insertIndex(
+                            reciept_items,
+                            {
+                              ...reciept_items[i],
+                              users: users.concat([user])
+                            },
+                            i)
+                        })
+                      }
+                    })
+                  }}
+                  />)
       })}
 
       <h5>Balance</h5>

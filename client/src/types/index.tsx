@@ -113,6 +113,12 @@ export type RecieptItemType = {
   reciept?: RecieptType
 }
 
+export const RecieptItemTypeDefault: RecieptItemType = {
+  name: "New Reciept Item",
+  amount: 0,
+  users: []
+}
+
 export type UserType = {
   id?: number;
   friend_of_id?: number;
