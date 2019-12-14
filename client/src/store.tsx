@@ -6,12 +6,7 @@ import createSagaMiddleware from 'redux-saga'
 
 import { loginSaga } from './sagas/loginSaga'
 import { signupSaga } from './sagas/signupSaga'
-
-/*
-const initialState = {
-  login: false,
-};
-*/
+import { recieptListSaga } from './sagas/recieptListSaga'
 
 export default function configureStore() {
   const sagaMiddleware = createSagaMiddleware()
@@ -23,6 +18,7 @@ export default function configureStore() {
 
   sagaMiddleware.run(loginSaga)
   sagaMiddleware.run(signupSaga)
+  sagaMiddleware.run(recieptListSaga)
 
   return store
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 import { connect, ConnectedProps } from 'react-redux'
 
@@ -44,34 +44,11 @@ const RecieptEditPage = ({
   recieptState,
   getReciept
 }: Props) => {
-  // getReciept({
-  //   id
-  // })
-
   if (recieptState == null) {
     return <Redirect to={'/app'} />
   }
 
-  // const id = parseInt(match.params.id, 10) || -1;
-
-  // getReciept({id})
-
   const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = recieptState
-
-  // if (id < 0) {
-  //   return <Redirect to={'/app'} />
-  // }
-
-
-  // const handleItemClick = (index: number) => {
-  //   const user = users.get(index)
-  //   handleUserClick(user)
-  // }
-
-  // const handleDeleteClick = (index: number) => {
-  //   const newUsers = users.splice(index, 1);
-  //   handleUsersChange(newUsers)
-  // }
 
   return (
     <>
@@ -95,7 +72,7 @@ const RecieptEditPage = ({
 
         handleDeleteClick={() => {alert("delete")}}
 
-        users={users.map(user => user.fullname)}
+        users={["one"]}
         handleUserClick={(i:number) => {alert(i)}}
         handleDeleteUserClick={(i:number) => {alert(i)}}
         handleAddUserClick={() => {}}

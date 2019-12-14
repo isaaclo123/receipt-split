@@ -17,6 +17,9 @@ function* fetchLoginWorker(action: LoginAction) {
         token: tokenData.access_token
       }
 
+      console.log("LOGIN_SUCCESS")
+      console.log(payload)
+
       yield put({type: "LOGIN_SUCCESS", payload: tokenPayload});
   } catch (e) {
       yield put({type: "LOGIN_FAIL", token: ""});

@@ -10,8 +10,8 @@ from .meta import db
 association_table = db.Table(
     'association',
     db.metadata,
-    db.Column('left_id', db.Integer, db.ForeignKey('recieptitem.id')),
-    db.Column('right_id', db.Integer, db.ForeignKey('user.id'))
+    db.Column('left_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('right_id', db.Integer, db.ForeignKey('recieptitem.id'))
 )
 
 
@@ -91,6 +91,10 @@ class User(db.Model):
                                       ],
                                       backref="from_user")
 
+    reciept_items = relationship("User",
+                                 secondary=association_table,
+                                 backref="users")
+
 
 class RecieptItem(db.Model):
     __tablename__ = 'recieptitem'
@@ -106,10 +110,6 @@ class RecieptItem(db.Model):
     #                      # backref="reciept_items",
     #                      foreign_keys=[User.reciept_item_id])
     # reciept
-
-    users = relationship("User",
-                         secondary=association_table,
-                         backref="reciept_items")
 
 
 class Reciept(db.Model):

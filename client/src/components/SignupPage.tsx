@@ -84,8 +84,8 @@ const SignupPage = ({ signupState, setSignup, loginState }: Props) => {
                 placeholder="Full Name"
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
                   signupData = {
-                    username: event.currentTarget.value,
-                    fullname: signupData.fullname,
+                    username: signupData.username,
+                    fullname: event.currentTarget.value,
                     password: signupData.password
                   }
                 }} />

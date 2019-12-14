@@ -16,13 +16,13 @@ import RecieptPage from './RecieptPage'
 import RecieptEditPage from './RecieptEditPage'
 import PeoplePage from './PeoplePage'
 
-import { getReciept } from '../actions/getReciept'
+import { getRecieptList, getReciept } from '../actions/getReciept'
 
 import './App.css'
 
 const connector = connect(
   null,
-  { getReciept }
+  { getReciept, getRecieptList }
 )
 
 
@@ -30,7 +30,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & RouteComponentProps<{}>
 
 const App = (props: Props) => {
-  const { match, getReciept } = props
+  const { match, getReciept, getRecieptList } = props
 
   return (
     <>
@@ -40,12 +40,19 @@ const App = (props: Props) => {
         <Switch>
           <PrivateRoute path={`${match.path}/balance`} component={BalancePage} />
 
+          <PrivateRoute
+            path={`${match.path}/reciepts/list`}
+
+            render={() => {
+              getRecieptList()
+              return <Redirect to={`${match.path}/reciepts`}/>
+            }} />
+
           <PrivateRoute path={`${match.path}/reciepts/edit`}
             render={props => <RecieptEditPage {...props}/>} />
 
           <PrivateRoute
             path={`${match.path}/reciepts/:id`}
-
             render={(props) => {
               getReciept({id: props.match.params.id})
               return <Redirect to={`${match.path}/reciepts/edit`}/>

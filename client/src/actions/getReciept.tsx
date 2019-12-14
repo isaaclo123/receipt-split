@@ -5,10 +5,12 @@ import {
   RecieptData
 } from '../types/index'
 
-export const getRecieptList = (payload: any) => (dispatch: Dispatch) => {
+export const getRecieptList = () => (dispatch: Dispatch) => {
   const action = {
-    type: 'GET_RECIEPT_LIST',
+    type: 'RECIEPT_LIST_REQUEST',
   }
+
+  console.log("GETRECIEPTLIST")
 
   dispatch(action)
 }

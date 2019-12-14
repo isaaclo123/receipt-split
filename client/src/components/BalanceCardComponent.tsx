@@ -107,19 +107,16 @@ export const BalanceCardComponent = ({
             margin: 0,
           }} />
 
-        <ListGroup className="list-group-flush">
+      <ListGroup className="list-group-flush">
+        <Button
+          className={`text-${listButton.variant}`}
+          size="sm"
+          onClick={() => listButton.handleClick()}>
+          {listButton.text}
+        </Button>
 
-
-          <Button
-            className={`text-${listButton.variant}`}
-            size="sm"
-            onClick={() => listButton.handleClick()}>
-            {listButton.text}
-          </Button>
-
-
-          {balanceRender(items)}
-        </ListGroup>
+        {balanceRender(items)}
+      </ListGroup>
     </Card>
   )
 }

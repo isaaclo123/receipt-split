@@ -1,49 +1,70 @@
 import React from 'react'
 
+import { connect, ConnectedProps } from 'react-redux'
+import { useHistory } from "react-router-dom";
+
+import {
+  Redirect,
+  RouteComponentProps
+} from 'react-router-dom'
+
 import ListGroup from 'react-bootstrap/ListGroup';
 
+import { getRecieptList } from '../actions/getReciept'
 import { RecieptProps, RecieptListItemComponent } from './RecieptListItemComponent';
+import { RecieptType, RecieptListState } from '../types/index'
 
-const youowe = [ // TODO
-  {
-    name: "Fresh Thyme",
-    amount: 54.00,
-    pending: true,
-  },
-  {
-    name: "Target",
-    amount: 55.20,
-    pending: false,
-  },
-]
+const mapStateToProps = (state: RecieptListState ) => {
+  return state
+}
 
-const RecieptPage = () => {
+const connector = connect(
+  mapStateToProps,
+  { getRecieptList }
+)
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & RouteComponentProps<{}> & {
+  recieptListState?: RecieptListState
+}
+
+const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
+  const history = useHistory()
+
+  if (recieptListState == null) {
+    return <Redirect to={'/app'} />
+  }
+
+  const recieptEdit = (id: number) => {
+    history.push(`${match.url}/${id}`)
+  }
+
+  const { reciepts } = recieptListState
+
   return (
     <>
-      <h5>Out of Control</h5>
+      <div className="align-middle">
+        <h5 className="float-left">Unresolved Reciepts</h5>
+        <a href="#" className="float-right">+ New</a>
+      </div>
+      <br />
+      <h5 />
 
       <ListGroup className="mb-3">
-        {youowe.map(item => {
-          const props: RecieptProps = {
-            handleNameClick: () => {},
-            handleViewClick: () => {},
-            ...item
-          }
-          return (
-            <RecieptListItemComponent
-              {...props}/>
-          )
-        })}
-      </ListGroup>
+        {reciepts.map(({
+          name="",
+          amount=-1,
+          date="",
+          id=-1,
+          }: RecieptType) => {
 
-      <h5>Under Control</h5>
-
-      <ListGroup className="mb-3">
-        {youowe.map(item => {
           const props: RecieptProps = {
-            handleNameClick: () => {},
-            handleViewClick: () => {},
-            ...item
+            pending: true,
+            handleNameClick: () => {recieptEdit(id)},
+            handleViewClick: () => {recieptEdit(id)},
+            amount,
+            name
           }
           return (
             <RecieptListItemComponent
@@ -55,4 +76,4 @@ const RecieptPage = () => {
   )
 }
 
-export default RecieptPage
+export default connector(RecieptPage)

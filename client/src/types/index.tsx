@@ -63,6 +63,16 @@ export interface RecieptAction {
 //   items: RecieptItem[];
 // }
 
+// reciept list
+export interface RecieptListAction {
+  type: string;
+  payload: RecieptListState;
+}
+
+export interface RecieptListState {
+  reciepts: RecieptType[]
+}
+
 // server types
 
 export type RecieptType = {
