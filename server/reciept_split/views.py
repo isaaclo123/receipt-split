@@ -23,12 +23,24 @@ reciepts_schema = RecieptSchema(many=True)
 @views.route('/reciept', methods=['GET'])
 @jwt_required()
 def reciept_list():
-    reciepts_dump = reciepts_schema.dump(current_identity.reciepts)
-    return reciepts_dump, status.HTTP_200_OK
+    reciepts_owned = reciepts_schema.dump(current_identity.reciepts_owned)
+    reciepts_owned_map = {r["id"]: True for r in reciepts_owned}
+
+    reciepts_in = reciepts_schema.dump(current_identity.reciepts_in)
+    reciept_notin_owned = [
+        r for r in reciepts_in if r["id"] not in reciepts_owned_map
+    ]
+
+    all_reciepts = reciepts_owned + reciept_notin_owned
+    print("all_reciepts--------")
+    print(all_reciepts)
+    print("all_reciepts--------")
+
+    return all_reciepts, status.HTTP_200_OK
 
 
 @views.route('/reciept/<int:id>',
-             methods=['GET', 'UPDATE', 'DELETE'])
+             methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
 def reciept_by_id(id):
     reciept = Reciept.query.get(id)
@@ -44,15 +56,23 @@ def reciept_by_id(id):
     if not request.is_json:
         return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
 
-    data = request.get_json()
+    if reciept.user != current_identity:
+        return {"error": "Your do not own this reciept"},\
+                status.HTTP_401_UNAUTHORIZED
 
-    form = RecieptForm.from_json(data)
+    json_data = request.get_json()
+
+    form = RecieptForm.from_json(json_data)
     if not form.validate():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
-    if request.method == 'UPDATE':
-        reciept.update(data)
+    if request.method == 'PUT' or request.method == 'PATCH':
+        json_data["id"] = id
+        reciept_data = reciept_schema.load(json_data, session=db.session)
+
+        db.session.add(reciept_data)
         db.session.commit()
+
         reciept_dump = reciept_schema.dump(reciept)
         return reciept_dump, status.HTTP_200_OK
 
@@ -70,28 +90,18 @@ def reciept_create():
     if not request.is_json:
         return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
 
-    data = request.get_json()
+    json_data = request.get_json()
 
-    form = RecieptForm.from_json(data)
+    form = RecieptForm.from_json(json_data)
     if not form.validate():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
-    print("DATA--------")
-    data["user_id"] = current_identity.id
-    print(data)
-    print("DATA--------")
-    # data["user_id"] = current_identity.id
-    reciept_data = reciept_schema.load(data)
-    print("RECPDATA--------")
-    print(reciept_data)
-    print("DATA--------")
+    reciept_data = reciept_schema.load(json_data)
+    reciept_data.user = current_identity
 
     db.session.add(reciept_data)
     db.session.commit()
 
     reciept_dump = reciept_schema.dump(reciept_data)
-    print("RECPDATA--------")
-    print(reciept_dump)
-    print("DATA--------")
 
     return reciept_dump, status.HTTP_201_CREATED

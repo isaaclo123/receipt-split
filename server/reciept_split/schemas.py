@@ -13,8 +13,8 @@ class UserSchema(ma.ModelSchema):
 class RecieptSchema(ma.ModelSchema):
     class Meta:
         model = Reciept
-        fields = ('id', 'name', 'amount', 'date', 'resolved', 'user_id',
-                  'balances', 'reciept_items')
+        fields = ('id', 'name', 'amount', 'date', 'resolved',
+                  'balances', 'reciept_items', 'users', 'user')
 
 
 class RecieptItemSchema(ma.ModelSchema):

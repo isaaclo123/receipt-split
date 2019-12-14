@@ -7,11 +7,18 @@ from decimal import Decimal
 from .meta import db
 
 
-association_table = db.Table(
-    'association',
+recieptitem_association_table = db.Table(
+    'user_recieptitem_association',
     db.metadata,
     db.Column('left_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('right_id', db.Integer, db.ForeignKey('recieptitem.id'))
+)
+
+reciept_association_table = db.Table(
+    'user_reciept_association',
+    db.metadata,
+    db.Column('left_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('right_id', db.Integer, db.ForeignKey('reciept.id'))
 )
 
 
@@ -67,7 +74,11 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
 
-    reciepts = relationship("Reciept", backref="user")
+    reciepts_owned = relationship("Reciept", backref="user")
+
+    reciepts_in = relationship("Reciept",
+                               secondary=reciept_association_table,
+                               backref="users")
 
     balances_to_user = relationship("Balance",
                                     foreign_keys=[
@@ -91,8 +102,8 @@ class User(db.Model):
                                       ],
                                       backref="from_user")
 
-    reciept_items = relationship("User",
-                                 secondary=association_table,
+    reciept_items = relationship("RecieptItem",
+                                 secondary=recieptitem_association_table,
                                  backref="users")
 
 
@@ -127,6 +138,8 @@ class Reciept(db.Model):
     resolved = db.Column(db.Boolean)
 
     # user
+    # users
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     balances = relationship("Balance", backref="reciept")
