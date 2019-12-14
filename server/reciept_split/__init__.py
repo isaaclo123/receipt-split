@@ -5,6 +5,8 @@ from config import Config
 import logging
 import wtforms_json
 
+from flask import request
+
 # from .models import db
 from .auth import auth as auth_blueprint, authenticate, identity
 from .views import views as views_blueprint
@@ -24,11 +26,11 @@ def create_app():
 
     logging.basicConfig(level=logging.INFO)
 
-    # To enable logging for flask-cors,
-    logging.getLogger('flask_cors').level = logging.DEBUG
+    # # To enable logging for flask-cors,
+    # logging.getLogger('flask_cors').level = logging.DEBUG
 
-    CORS(app, automatic_options=True, supports_credentials=True)
     JWT(app, authenticate, identity)
+    CORS(app, automatic_options=True, supports_credentials=True)
 
     db.init_app(app)
     ma.init_app(app)

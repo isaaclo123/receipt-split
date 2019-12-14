@@ -35,6 +35,11 @@ export default (state:RecieptState = initialState, {
   // console.log(password)
 
   switch (type) {
+    case 'RECIEPT_SAVE_SUCCESS':
+      return payload
+    case 'RECIEPT_SAVE_FAIL':
+      return state
+
     case 'RECIEPT_SET':
       console.log("RECIEPTSET")
       console.log(payload)

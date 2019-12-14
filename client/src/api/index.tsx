@@ -67,7 +67,26 @@ export const fetchRecieptList = async (token: any) => {
 }
 
 
-export const fetchRecieptById = async (token: any, id: number) => {
+export const saveRecieptById = async (token: any, id: number, recieptData: any) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/reciept/${id}`, {
+      method: 'PUT',
+      // credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${token}`,
+      },
+      body: JSON.stringify(recieptData)
+    })
+    console.log(response)
+    const json = await response.json()
+    return json
+  } catch (e) {
+    return null
+  }
+}
+
+export const fetchRecieptById = async (token: any, id: number, ) => {
   try {
     const response = await fetch(`${SERVER_URL}/reciept/${id}`, {
       method: 'GET',

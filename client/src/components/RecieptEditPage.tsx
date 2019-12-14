@@ -13,6 +13,7 @@ import {
 
 import { getReciept } from '../actions/getReciept'
 import { setReciept } from '../actions/setReciept'
+import { saveReciept } from '../actions/saveReciept'
 
 import { RecieptType, RecieptItemType, RecieptState, UserType, RecieptItemTypeDefault } from '../types/index'
 
@@ -39,7 +40,7 @@ const mapStateToProps = (state: any) => {
 
 const connector = connect(
   mapStateToProps,
-  { getReciept, setReciept }
+  { getReciept, setReciept, saveReciept }
 )
 
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -54,6 +55,7 @@ const RecieptEditPage = ({
   userState,
   recieptState,
   setReciept,
+  saveReciept,
   getReciept,
   people
 }: Props) => {
@@ -71,7 +73,10 @@ const RecieptEditPage = ({
 
   const reciept_id = Number(match.params.id) || -1
 
-  console.log(run)
+  console.log("RECIEPTID")
+  console.log(reciept_id)
+  console.log("RECIEPTID")
+
   if (run) {
     getReciept({id: reciept_id})
     setRun(false)
@@ -129,7 +134,14 @@ const RecieptEditPage = ({
         title="Friends"
         onUserSelect={modalcallback} />
 
-      <h5>Reciept Info</h5>
+      <div className="align-middle mb-3">
+        <h5 className="float-left m-0 p-0" style={{display: "inline", lineHeight: "2rem"}}>Reciept Info</h5>
+        <Button size="sm" className="float-right"
+          onClick={() => {
+            saveReciept({...recieptState.reciept, id:reciept_id})
+          }}>SAVE</Button>
+      </div>
+      <br />
 
       <ExpenseCardComponent
         extraComponent={

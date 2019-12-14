@@ -66,7 +66,7 @@ export const ExpenseCardComponent = ({
             <TextInputComponent
               size={10}
               type="number"
-              value={amount.toFixed(2)}
+              value={(amount != null) ? amount.toFixed(2): "0.00"}
               pattern="^(\d*\.)?\d+$"
               handleValidate={(str: string) => {
                 // check greater than 0 and not invalid
@@ -77,6 +77,7 @@ export const ExpenseCardComponent = ({
               handleTextChange={(str: string) => {
                 // to decimal number
                 const value = Number(Number(str).toFixed(2))
+                console.log(value)
                 handleAmountChange(value)
               }}
               />
