@@ -39,7 +39,7 @@ def register():
         reciept = Reciept(name=form.name.data,
                           amount=form.amount.data,
                           date=form.date.data,
-                          owner_id=current_identity.id)
+                          user_id=current_identity.id)
         db.session.add(reciept)
         db.session.commit()
         reciept_dump = reciept_schema.dump(reciept)

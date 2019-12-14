@@ -93,9 +93,10 @@ export type UserType = {
   friends?: UserType[]
 
   username: string
-  fullname: string
+  fullname?: string
 
-  reciepts: RecieptType
+  reciepts?: RecieptType
+  reciept_items?: number;
 }
 
 export type BalanceType = {

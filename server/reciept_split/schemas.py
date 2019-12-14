@@ -5,7 +5,6 @@ from .models import User, Reciept, RecieptItem, Balance, Payment
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        # exclude = ('')
 
 
 class RecieptSchema(ModelSchema):
