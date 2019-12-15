@@ -84,7 +84,7 @@ const RecieptEditPage = ({
   console.log(recieptState)
 
   if (recieptState == null || recieptState.reciept == null) {
-    return (<div>loading</div>)
+    return (<Redirect to={`${match.url}/reciepts`} />)
   }
 
   const { reciept } = recieptState
