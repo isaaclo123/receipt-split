@@ -21,7 +21,8 @@ views = Blueprint('views', __name__)
 
 user_schema = UserSchema()
 reciept_schema = RecieptSchema()
-reciepts_schema = RecieptSchema(many=True)
+reciepts_schema = RecieptSchema(many=True, exclude=('reciept_items',
+                                                    'balances', 'users'))
 
 
 @views.route('/reciept', methods=['GET'])
