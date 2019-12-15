@@ -90,8 +90,13 @@ def reciept_by_id(id):
         print("afterreciept_data")
         print(reciept_data)
 
-        db.session.add(reciept_data)
+        db.session.merge(reciept_data)
         db.session.commit()
+
+        print("AFTERALL+__________")
+        print(reciept.user)
+        print(reciept_data.user)
+        print("AFTERALL+__________")
 
         reciept_dump = reciept_schema.dump(reciept_data)
         return reciept_dump, status.HTTP_200_OK
