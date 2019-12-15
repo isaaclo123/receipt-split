@@ -35,6 +35,14 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
     id: -1,
   })
 
+  const [ run, setRun ] = useState(true)
+
+  // gets user info once
+  if (run) {
+    setRun(false)
+    getRecieptList()
+  }
+
   if (redirect.redirect) {
     return <Redirect to={`${match.url}/edit/${redirect.id}`} />
   }

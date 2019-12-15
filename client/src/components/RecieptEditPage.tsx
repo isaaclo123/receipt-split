@@ -91,6 +91,14 @@ const RecieptEditPage = ({
 
   const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
 
+  const onSave = () => {
+    const payload = {...recieptState.reciept, id:reciept_id}
+    console.log("PAYLOADkjyyp")
+    console.log(payload)
+    console.log("PAYLOADkjyyp")
+    saveReciept(payload)
+  }
+
   const removeIndex = (list:UserType[], index:number) => {
     return list.filter((_:UserType, i:number) => i !== index)
   }
@@ -138,7 +146,7 @@ const RecieptEditPage = ({
         <h5 className="float-left m-0 p-0" style={{display: "inline", lineHeight: "2rem"}}>Reciept Info</h5>
         <Button size="sm" className="float-right"
           onClick={() => {
-            saveReciept({...recieptState.reciept, id:reciept_id})
+            onSave()
           }}>SAVE</Button>
       </div>
       <br />
@@ -170,6 +178,7 @@ const RecieptEditPage = ({
             ...reciept,
             name
           })
+          console.log(name)
         }}
 
         amount={amount}

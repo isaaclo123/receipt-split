@@ -38,7 +38,6 @@ const App = (props: Props) => {
   // gets user info once
   if (run) {
     setRun(false)
-    getRecieptList()
     getUser()
   }
 

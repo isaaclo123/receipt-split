@@ -18,6 +18,10 @@ export default (state:RecieptListState = initialState, {
     return state
   }
 
+  console.log("RECIPET_LIST_PAYLOAD")
+  console.log(payload)
+  console.log("RECIPET_LIST_PAYLOAD")
+
   switch (type) {
     case 'RECIEPT_LIST_SUCCESS':
       return payload

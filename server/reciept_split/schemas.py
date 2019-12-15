@@ -116,7 +116,7 @@ class RecieptSchema(ma.ModelSchema):
                   'balances', 'reciept_items', 'users', 'user')
         unknown = EXCLUDE
 
-    id = fields.Int(dump_only=True)
+    id = fields.Int()
 
     balances = ma.Nested(BalanceSchema, many=True,
                          include=('name', 'amount'))

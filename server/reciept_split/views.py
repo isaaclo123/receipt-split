@@ -40,8 +40,7 @@ def reciept_list():
     return all_reciepts, status.HTTP_200_OK
 
 
-@views.route('/reciept/<int:id>', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-# @cross_origin(headers=['Content-Type','Authorization']) # Send Access-Control-Allow-Headers
+@views.route('/reciept/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
 def reciept_by_id(id):
     print("ID---------")
@@ -59,6 +58,15 @@ def reciept_by_id(id):
         reciept_dump = reciept_schema.dump(reciept)
         return reciept_dump, status.HTTP_200_OK
 
+    if reciept.user != current_identity:
+        return {"error": "Your do not own this reciept"},\
+                status.HTTP_401_UNAUTHORIZED
+
+    if request.method == 'DELETE':
+        db.session.delete(reciept)
+        db.session.commit()
+        return {"message": "Success"}, status.HTTP_200_OK
+
     print(request)
     if not request.is_json:
         return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
@@ -66,10 +74,6 @@ def reciept_by_id(id):
     print("--------reciptuser")
     print(reciept.user)
     print("--------reciptuser")
-
-    if reciept.user != current_identity:
-        return {"error": "Your do not own this reciept"},\
-                status.HTTP_401_UNAUTHORIZED
 
     print("--------reciptuser")
 
@@ -83,28 +87,23 @@ def reciept_by_id(id):
     if not form.validate():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
-    if request.method == 'PUT' or request.method == 'PATCH' or request.method == 'POST':
+    if request.method == 'PUT' or request.method == 'PATCH':
         # json_data["id"] = id
+        # reciept.query.update(json_data)
         print("reciept_data")
         reciept_data = reciept_schema.load(json_data, session=db.session)
         print("afterreciept_data")
-        print(reciept_data)
+        # print(reciept_data)
 
-        db.session.merge(reciept_data)
+        # db.session.merge(reciept_data)
         db.session.commit()
 
         print("AFTERALL+__________")
         print(reciept.user)
-        print(reciept_data.user)
         print("AFTERALL+__________")
 
         reciept_dump = reciept_schema.dump(reciept_data)
         return reciept_dump, status.HTTP_200_OK
-
-    if request.method == 'DELETE':
-        db.session.delete(reciept)
-        db.session.commit()
-        return None, status.HTTP_200_OK
 
     return {"error": "should not get here"}, status.HTTP_400_BAD_REQUEST
 

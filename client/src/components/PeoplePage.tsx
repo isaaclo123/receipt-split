@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import { connect, ConnectedProps } from 'react-redux'
 import { useHistory } from "react-router-dom";
@@ -30,7 +30,13 @@ type Props = PropsFromRedux & RouteComponentProps<{}> & {
 }
 
 const PeoplePage = ({match, userState, getUser}: Props) => {
-  const history = useHistory()
+  const [ run, setRun ] = useState(true)
+
+  // gets user info once
+  if (run) {
+    setRun(false)
+    getUser()
+  }
 
   if (userState == null) {
     return <Redirect to={'/app'} />
