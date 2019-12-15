@@ -10,7 +10,7 @@ import simplejson
 from .meta import db
 from .auth import identity
 from .models import User, Reciept
-from .schemas import UserSchema, RecieptSchema
+from .schemas import UserSchema, RecieptSchema, UserSimpleSchema
 from .forms import RecieptForm
 
 import requests
@@ -20,6 +20,7 @@ views = Blueprint('views', __name__)
 
 
 user_schema = UserSchema()
+user_simple_schema = UserSimpleSchema()
 reciept_schema = RecieptSchema()
 reciepts_schema = RecieptSchema(many=True, exclude=('reciept_items',
                                                     'balances', 'users'))
@@ -39,6 +40,42 @@ def reciept_list():
     all_reciepts = reciepts_owned + reciept_notin_owned
 
     return all_reciepts, status.HTTP_200_OK
+
+
+@views.route('/reciept/-1', methods=['GET', 'POST', 'PUT'])
+# @cross_origin(headers=['Content-Type', 'Authorization'])
+@jwt_required()
+def reciept_create():
+    if request.method == 'GET':
+        return {
+            "name": "New Reciept",
+            "amount": 0.0,
+            "date": str(date.today()),
+            "user": user_simple_schema.dump(current_identity),
+            "users": []
+        }, status.HTTP_200_OK
+
+    if not request.is_json:
+        return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
+
+    json_data = request.get_json()
+    if id in json_data:
+        del json_data["id"]
+    print(json_data)
+
+    form = RecieptForm.from_json(json_data)
+    if not form.validate():
+        return form.errors, status.HTTP_400_BAD_REQUEST
+
+    reciept_data = reciept_schema.load(json_data)
+    reciept_data.user = current_identity
+
+    db.session.add(reciept_data)
+    db.session.commit()
+
+    reciept_dump = reciept_schema.dump(reciept_data)
+
+    return reciept_dump, status.HTTP_201_CREATED
 
 
 @views.route('/reciept/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
@@ -107,30 +144,6 @@ def reciept_by_id(id):
         return reciept_dump, status.HTTP_200_OK
 
     return {"error": "should not get here"}, status.HTTP_400_BAD_REQUEST
-
-
-@views.route('/reciept', methods=['POST', 'PUT'])
-# @cross_origin(headers=['Content-Type', 'Authorization'])
-@jwt_required()
-def reciept_create():
-    if not request.is_json:
-        return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
-
-    json_data = request.get_json()
-
-    form = RecieptForm.from_json(json_data)
-    if not form.validate():
-        return form.errors, status.HTTP_400_BAD_REQUEST
-
-    reciept_data = reciept_schema.load(json_data)
-    reciept_data.user = current_identity
-
-    db.session.add(reciept_data)
-    db.session.commit()
-
-    reciept_dump = reciept_schema.dump(reciept_data)
-
-    return reciept_dump, status.HTTP_201_CREATED
 
 
 @views.route('/user', methods=['GET'])

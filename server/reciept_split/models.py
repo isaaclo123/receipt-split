@@ -129,9 +129,9 @@ class Reciept(db.Model):
     # user
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, default="New Reciept")
     amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False)
+                       nullable=False, default=0)
     date = db.Column(db.Date,
                      default=date.today(),
                      nullable=False)

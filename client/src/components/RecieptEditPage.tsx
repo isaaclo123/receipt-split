@@ -89,14 +89,14 @@ const RecieptEditPage = ({
 
   const { reciept } = recieptState
 
-  const { name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
+  const { id=-1, name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
 
   const onSave = () => {
-    const payload = {...recieptState.reciept, id:reciept_id}
+    const payload = {...recieptState.reciept, id}
     console.log("PAYLOADkjyyp")
     console.log(payload)
     console.log("PAYLOADkjyyp")
-    saveReciept(payload)
+    saveReciept(recieptState.reciept)
   }
 
   const removeIndex = (list:UserType[], index:number) => {

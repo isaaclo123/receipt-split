@@ -10,6 +10,8 @@ import {
 
 import ListGroup from 'react-bootstrap/ListGroup';
 
+import { LinkContainer } from 'react-router-bootstrap'
+
 import { getRecieptList } from '../actions/getReciept'
 import { RecieptProps, RecieptListItemComponent } from './RecieptListItemComponent';
 import { RecieptType, RecieptListState } from '../types/index'
@@ -66,7 +68,10 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
     <>
       <div className="align-middle">
         <h5 className="float-left">Unresolved Reciepts</h5>
-        <a href="#" className="float-right">+ New</a>
+
+        <LinkContainer to={`${match.url}/edit/-1`}>
+          <a href="#" className="float-right">+ New</a>
+        </LinkContainer>
       </div>
       <br />
       <h5 />
