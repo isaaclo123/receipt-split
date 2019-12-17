@@ -22,7 +22,7 @@ from .meta import db, ma
 
 
 def create_app():
-    app = FlaskAPI(__name__, static_folder="build")
+    app = FlaskAPI(__name__, static_url_path="/../", static_folder='build')
     app.config.from_object(Config)
 
     logging.basicConfig(level=logging.INFO)
