@@ -1,1 +1,0 @@
-/nix/store/y0c3m1pc1hzjgrpmj1b9w82nfygi1bpv-python3-3.7.4-env/lib/python3.7/encodings/mac_cyrillic.py
