@@ -1,4 +1,4 @@
-#!/home/isaac/git/reciept-split/server/.venv/bin/python3.7
+#!/home/isaac/git/reciept-split/.venv/bin/python3.7
 # -*- coding: utf-8 -*-
 import re
 import sys

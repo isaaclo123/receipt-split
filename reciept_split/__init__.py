@@ -1,11 +1,12 @@
 from flask_api import FlaskAPI
+from flask import send_from_directory, request
 from config import Config
 # from flask_migrate import Migrate
 
+import os
+
 import logging
 import wtforms_json
-
-from flask import request
 
 # from .models import db
 from .auth import auth as auth_blueprint, authenticate, identity
@@ -21,7 +22,7 @@ from .meta import db, ma
 
 
 def create_app():
-    app = FlaskAPI(__name__)
+    app = FlaskAPI(__name__, static_folder='build')
     app.config.from_object(Config)
 
     logging.basicConfig(level=logging.INFO)
@@ -35,6 +36,15 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
     wtforms_json.init()
+
+# Serve React App
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        if path != "" and os.path.exists(app.static_folder + '/' + path):
+            return send_from_directory(app.static_folder, path)
+        else:
+            return send_from_directory(app.static_folder, 'index.html')
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(views_blueprint)
