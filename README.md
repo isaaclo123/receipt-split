@@ -1,6 +1,9 @@
 # Reciept-split
 
 1. Project Type: Plan A or B or C
+
+    * I tried to go for Plan A
+
 2. Group Members Name:
 
     * Isaac Lo
@@ -57,8 +60,20 @@
 
 9. List of Tables, their Structure and short description
 
-    *
+    * User: contains username, a password hash, fullname, and references to balances and reciept
+      items, and friends (a list of other users)
+    * Receipt: contains the name and date of a receipt, with the creating user (user). Has a decimal
+      amount, indicating the amount the reciept cost, and a list of users, or the people who are
+      included in the cost of the reciept. It contains a list of reciept_items, and a list of
+      balances that are calculated.
+    * Reciept item: an item whose cost is only shared by some of the people in the reciept. Contains
+      an amount, a list of users sharing the item, and a name.
+    * Balance: represents something a user must pay. contains a to_user and a from_user and an
+      amount. the "to_user" must pay the "from_user" "amount"
 
 10. References/Resources: List all the references, resources or the online templates that were used for the project.
 
-    *
+    * https://flask-marshmallow.readthedocs.io/en/latest/
+    * https://www.typescriptlang.org/
+    * https://auth0.com/blog/beyond-create-react-app-react-router-redux-saga-and-more/
+    * https://flask-sqlalchemy.palletsprojects.com/en/2.x/
