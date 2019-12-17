@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { connect, ConnectedProps } from 'react-redux'
 
+import { getUser } from '../actions/getUser'
+
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
@@ -40,7 +42,7 @@ const mapStateToProps = (state: any) => {
 
 const connector = connect(
   mapStateToProps,
-  { getReciept, setReciept, saveReciept }
+  { getReciept, setReciept, saveReciept, getUser }
 )
 
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -57,6 +59,7 @@ const RecieptEditPage = ({
   setReciept,
   saveReciept,
   getReciept,
+  getUser,
   people
 }: Props) => {
   const [ run, setRun ] = useState(true)
@@ -97,6 +100,8 @@ const RecieptEditPage = ({
     console.log(payload)
     console.log("PAYLOADkjyyp")
     saveReciept(recieptState.reciept)
+    getUser()
+    console.log("GOT USER")
   }
 
   const removeIndex = (list:UserType[], index:number) => {

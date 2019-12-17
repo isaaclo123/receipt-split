@@ -152,7 +152,7 @@ def reciept_by_id(id):
         print("reciept_data")
         # delete old balances
         for oldbalance in reciept.balances:
-            oldbalance.delete()
+            db.session.delete(oldbalance)
 
         json_data["balances"] = calculate_balances(json_data)
         print(json_data["balances"])

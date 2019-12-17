@@ -77,9 +77,6 @@ const BalancePage = ({match, userState, getUser, loginState}: Props) => {
           amount,
           from_user
         }: BalanceType) => {
-          if (from_user.id != null && from_user.id == userState.user.id) {
-            return (<></>)
-          }
 
           const props: TakeProps = {
             handleNameClick: () => {},
@@ -114,9 +111,6 @@ const BalancePage = ({match, userState, getUser, loginState}: Props) => {
           amount,
           to_user
         }: BalanceType) => {
-          if (to_user.id != null && to_user.id == userState.user.id) {
-            return (<></>)
-          }
 
           const props: LeaveProps = {
             handleNameClick: () => {},
@@ -137,3 +131,12 @@ const BalancePage = ({match, userState, getUser, loginState}: Props) => {
 }
 
 export default connector(BalancePage)
+
+          // if (to_user.id != null && to_user.id == userState.user.id) {
+          //   return (<></>)
+          // }
+          //
+          //
+          // if (from_user.id != null && from_user.id == userState.user.id) {
+          //   return (<></>)
+          // }

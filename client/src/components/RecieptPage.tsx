@@ -77,6 +77,13 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
       <h5 />
 
       <ListGroup className="mb-3">
+        {(reciepts == null || reciepts.length <= 0) &&
+          (<ListGroup.Item>
+            <span className="text-secondary">
+              None
+            </span>
+          </ListGroup.Item>)
+        }
         {reciepts.map(({
           name="",
           amount=-1,

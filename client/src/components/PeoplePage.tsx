@@ -124,12 +124,12 @@ const PeoplePage = ({match, userState, getUser, loginState}: Props) => {
 
       <ListGroup className="mb-3">
         <ListGroup.Item>
-          <h5 className="float-left">
-            {fullname}
-          </h5>
-          <h5 className="float-right">
+          <span className="float-left">
+            <a href="#">{fullname}</a>
+          </span>
+          <span className="float-right">
             ({username})
-          </h5>
+          </span>
         </ListGroup.Item>
       </ListGroup>
 
@@ -156,7 +156,7 @@ const PeoplePage = ({match, userState, getUser, loginState}: Props) => {
           }: UserType) => {
             return (<ListGroup.Item>
               <span className="float-left">
-                {fullname}
+                <a href="#">{fullname}</a>
               </span>
               <span className="float-right">
                 ({username})
