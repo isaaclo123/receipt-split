@@ -25,16 +25,17 @@ export const RecieptListItemComponent = ({
   handleNameClick,
   handleViewClick,
 }: RecieptProps) => {
-  const buttons: ButtonProps[] = pending ? [{
-      variant: "success",
-      text: "RESOLVED",
-      handleClick: handleViewClick
-    }] : [{
-      variant: "danger",
-      text: "UNRESOLVED",
-      handleClick: handleViewClick
+  // const buttons: ButtonProps[] = pending ? [{
+  //     variant: "success",
+  //     text: "RESOLVED",
+  //     handleClick: handleViewClick
+  //   }] : [{
+  //     variant: "danger",
+  //     text: "UNRESOLVED",
+  //     handleClick: handleViewClick
 
-  }]
+  // }]
+  const buttons: ButtonProps[] = []
 
   const balanceProps: BalanceProps = {
     prefix: "*",

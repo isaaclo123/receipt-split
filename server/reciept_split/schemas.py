@@ -7,34 +7,31 @@ from .meta import ma, db
 user_info_fields = ('id', 'fullname', 'username')
 
 
-def get_existing_user(self, data, original_data, **kwargs):
-    print(original_data.get("user"))
-    print(data.get("user"))
-    user = original_data.get("user")
-
-    print("USERJKyy")
-    print(user)
-    print("USERJKyy")
+def get_existing_user(self, data, original_data, user_field="user", **kwargs):
+    user = original_data.get(user_field)
 
     q_id = user.get("id")
     q_username = user.get("username")
-    print("Q_ID------------------------------")
+
+    print("field " + user_field + "=--------")
     print(q_id)
-    print(q_id)
-    print("Q_ID------------------------------")
+    print(q_username)
+    print("field " + user_field + "=--------")
+
+    exist_user = None
 
     if q_id is not None:
         exist_user = User.query.get(q_id)
-        if exist_user is not None:
-            data["user"] = exist_user
-            return data
     elif q_username is not None:
         exist_user = User.query.filter_by(username=q_username).first()
-        if exist_user is not None:
-            data["user"] = exist_user
-            return data
 
-    data["users"] = user
+    if exist_user is None:
+        return data
+
+    data[user_field] = exist_user
+    print("field " + user_field + "=--------")
+    print(exist_user)
+    print("field " + user_field + "=--------")
     return data
 
 
@@ -50,16 +47,17 @@ def get_existing_users(self, data, original_data, **kwargs):
         q_id = u.get("id")
         q_username = u.get("username")
 
+        exist_user = None
+
         if q_id is not None:
             exist_user = User.query.get(q_id)
-            if exist_user is not None:
-                newusers = newusers + [exist_user]
-                continue
         elif q_username is not None:
             exist_user = User.query.filter_by(username=q_username).first()
-            if exist_user is not None:
-                newusers = newusers + [exist_user]
-                continue
+
+        if exist_user is None:
+            continue
+
+        newusers = newusers + [exist_user]
 
     data["users"] = newusers
     return data
@@ -69,16 +67,6 @@ class FriendSchema(ma.ModelSchema):
     class Meta:
         model = User
         fields = ('id', 'fullname', 'username')
-
-
-class UserSchema(ma.ModelSchema):
-    class Meta:
-        model = User
-        fields = ('id', 'fullname', 'username', 'friends',
-                  'balances_to_user', 'balances_from_user', 'payments_to_user',
-                  'payments_from_user')
-
-    friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
 
 
 class UserSimpleSchema(ma.ModelSchema):
@@ -94,6 +82,36 @@ class BalanceSchema(ma.ModelSchema):
     class Meta:
         model = Balance
         fields = ('id', 'to_user', 'from_user', 'amount')
+        unknown = EXCLUDE
+
+    to_user = ma.Nested(UserSimpleSchema)
+    from_user = ma.Nested(UserSimpleSchema)
+
+    @post_load(pass_original=True)
+    def get_existing_user(self, data, original_data, **kwargs):
+        touser = get_existing_user(self, data, original_data,
+                                   user_field="to_user", **kwargs)
+        print("TOO USER---------")
+        print(touser)
+        print(touser.get("to_user").id)
+        print(touser.get("to_user").username)
+        fromuser = get_existing_user(self, touser, original_data,
+                                     user_field="from_user", **kwargs)
+        print(fromuser)
+        return fromuser
+
+
+class UserSchema(ma.ModelSchema):
+    class Meta:
+        model = User
+        fields = ('id', 'fullname', 'username', 'friends',
+                  'balances_to_user', 'balances_from_user', 'payments_to_user',
+                  'payments_from_user')
+
+    friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
+
+    balances_to_user = ma.Nested(BalanceSchema, many=True)
+    balances_from_user = ma.Nested(BalanceSchema, many=True)
 
 
 class RecieptItemSchema(ma.ModelSchema):
@@ -115,11 +133,11 @@ class RecieptSchema(ma.ModelSchema):
         fields = ('id', 'name', 'amount', 'date', 'resolved',
                   'balances', 'reciept_items', 'users', 'user')
         unknown = EXCLUDE
+        ordered = True
 
     id = fields.Int()
 
-    balances = ma.Nested(BalanceSchema, many=True,
-                         include=('name', 'amount'))
+    balances = ma.Nested(BalanceSchema, many=True)
     reciept_items = ma.Nested(RecieptItemSchema, many=True)
     user = ma.Nested(UserSimpleSchema)
 
@@ -128,10 +146,6 @@ class RecieptSchema(ma.ModelSchema):
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
         datawithusers = get_existing_users(self, data, original_data, **kwargs)
-        print("USERUSERJky")
-        print(datawithusers.get("users"))
-        print(datawithusers.get("user"))
-        print("USERUSERJky")
         datawithuser = get_existing_user(self, datawithusers,
                                          original_data, **kwargs)
         return datawithuser

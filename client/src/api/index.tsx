@@ -123,3 +123,22 @@ export const fetchUser = async (token: any) => {
     return null
   }
 }
+
+export const addUser = async (token: any, username: string) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/friend/${username}`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${token}`,
+      }
+    })
+
+    const json = await response.json()
+    return json
+  } catch (e) {
+    return null
+  }
+}

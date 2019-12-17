@@ -58,7 +58,7 @@ export const BalanceCardComponent = ({
           variant: color,
           prefix,
           descriptor: "for",
-          name: reciept.name,
+          name: (reciept == null) ? "Unknown" : reciept.name,
           handleClick: () => {},
           buttons: [listButton],
           amount,

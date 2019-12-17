@@ -10,8 +10,9 @@ import simplejson
 from .meta import db
 from .auth import identity
 from .models import User, Reciept
-from .schemas import UserSchema, RecieptSchema, UserSimpleSchema
+from .schemas import UserSchema, RecieptSchema, UserSimpleSchema, BalanceSchema
 from .forms import RecieptForm
+from .helpers import calculate_balances
 
 import requests
 
@@ -21,9 +22,24 @@ views = Blueprint('views', __name__)
 
 user_schema = UserSchema()
 user_simple_schema = UserSimpleSchema()
+
+balances_schema = BalanceSchema(many=True)
+
 reciept_schema = RecieptSchema()
 reciepts_schema = RecieptSchema(many=True, exclude=('reciept_items',
                                                     'balances', 'users'))
+
+
+@views.route('/balances', methods=['GET'])
+@jwt_required()
+def balance_list():
+    balances_to = balances_schema.dump(current_identity.balances_to_user)
+    balances_from = balances_schema.dump(current_identity.balances_from_user)
+    # reciepts_owned_map = {r["id"]: True for r in reciepts_owned}
+
+    all_balances = balances_to + balances_from
+
+    return all_balances, status.HTTP_200_OK
 
 
 @views.route('/reciept', methods=['GET'])
@@ -67,7 +83,12 @@ def reciept_create():
     if not form.validate():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
+    json_data["balances"] = calculate_balances(json_data)
     reciept_data = reciept_schema.load(json_data)
+    print("RECPTDATAJk-===================")
+    print(reciept_data)
+    print("RECPTDATAJk-===================")
+
     reciept_data.user = current_identity
 
     db.session.add(reciept_data)
@@ -129,7 +150,18 @@ def reciept_by_id(id):
         # json_data["id"] = id
         # reciept.query.update(json_data)
         print("reciept_data")
+        # delete old balances
+        for oldbalance in reciept.balances:
+            oldbalance.delete()
+
+        json_data["balances"] = calculate_balances(json_data)
+        print(json_data["balances"])
         reciept_data = reciept_schema.load(json_data, session=db.session)
+
+        print("RECPTDATAJk-===================")
+        print(reciept_data.balances)
+        print("RECPTDATAJk-===================")
+        print(reciept_data)
         print("afterreciept_data")
         # print(reciept_data)
 

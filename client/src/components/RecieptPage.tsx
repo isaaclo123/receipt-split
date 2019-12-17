@@ -67,7 +67,7 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
   return (
     <>
       <div className="align-middle">
-        <h5 className="float-left">Unresolved Reciepts</h5>
+        <h5 className="float-left">My Reciepts</h5>
 
         <LinkContainer to={`${match.url}/edit/-1`}>
           <a href="#" className="float-right">+ New</a>

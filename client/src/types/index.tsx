@@ -153,7 +153,7 @@ export type BalanceType = {
   to_user_id?: number;
   from_user_id?: number;
   amount: number;
-  reciept: RecieptType;
+  reciept?: RecieptType;
 }
 
 export type PaymentType = {

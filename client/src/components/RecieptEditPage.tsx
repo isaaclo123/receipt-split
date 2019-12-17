@@ -15,7 +15,7 @@ import { getReciept } from '../actions/getReciept'
 import { setReciept } from '../actions/setReciept'
 import { saveReciept } from '../actions/saveReciept'
 
-import { RecieptType, RecieptItemType, RecieptState, UserType, RecieptItemTypeDefault } from '../types/index'
+import { RecieptType, RecieptItemType, RecieptState, UserType, RecieptItemTypeDefault, BalanceType } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
@@ -89,7 +89,7 @@ const RecieptEditPage = ({
 
   const { reciept } = recieptState
 
-  const { id=-1, name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
+  const { id=-1, balances = [], name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
 
   const onSave = () => {
     const payload = {...recieptState.reciept, id}
@@ -324,16 +324,26 @@ const RecieptEditPage = ({
 
       <h5>Balance</h5>
 
-      <Card className="mb-3">
-        <Card.Body>
-          <Card.Title>
-            <span className="float-left">
-              You Pay
-            </span>
-            <span className="text-info float-right">${ (55).toFixed(2) }</span>
-          </Card.Title>
-        </Card.Body>
-      </Card>
+      {(balances == null || balances === []) && <div>None</div>}
+
+      {balances.map(({
+          to_user,
+          from_user,
+          amount
+        }: BalanceType) => {
+        return (
+          <Card className="mb-3">
+            <Card.Body>
+              <Card.Title>
+                <span className="float-left">
+                  <a href="#">{ from_user.fullname }</a> pays <a href="#">{ to_user.fullname }</a>
+                </span>
+                <span className="text-info float-right">${ (amount).toFixed(2) }</span>
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        )
+      })}
     </>
   )
 }
