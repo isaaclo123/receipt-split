@@ -159,7 +159,7 @@ const RecieptEditPage = ({
       <ExpenseCardComponent
         extraComponent={
           (<>
-            Paid by <a href="#">{ (user == null) ? "Unknown" : user.fullname }</a> on &nbsp;
+            Paid by <span className="text-primary">{ (user == null) ? "Unknown" : user.fullname }</span> on &nbsp;
             <TextInputComponent
               size={40}
               type="text"
@@ -222,14 +222,14 @@ const RecieptEditPage = ({
 
       <div className="align-middle">
         <h5 className="float-left">Sub-expenses</h5>
-        <a href="#"
-          className="float-right"
+        <span
+          className="float-right text-primary"
           onClick={() => {
             setReciept({
               ...reciept,
               reciept_items: [RecieptItemTypeDefault].concat(reciept_items)
             })
-          }}>+ Add Item</a>
+          }}>+ Add Item</span>
       </div>
       <br />
       <h5 />
@@ -341,7 +341,7 @@ const RecieptEditPage = ({
             <Card.Body>
               <Card.Title>
                 <span className="float-left">
-                  <a href="#">{ from_user.fullname }</a> pays <a href="#">{ to_user.fullname }</a>
+                  <span className="text-primary">{ from_user.fullname }</span> pays <span className="text-primary">{ to_user.fullname }</span>
                 </span>
                 <span className="text-info float-right">${ (amount).toFixed(2) }</span>
               </Card.Title>

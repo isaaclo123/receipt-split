@@ -125,7 +125,7 @@ const PeoplePage = ({match, userState, getUser, loginState}: Props) => {
       <ListGroup className="mb-3">
         <ListGroup.Item>
           <span className="float-left">
-            <a href="#">{fullname}</a>
+            <span className="text-primary">{fullname}</span>
           </span>
           <span className="float-right">
             ({username})
@@ -135,7 +135,7 @@ const PeoplePage = ({match, userState, getUser, loginState}: Props) => {
 
       <div className="align-middle">
         <h5 className="float-left">Friends</h5>
-        <a href="#" className="float-right" onClick={() => setHide(false)}>+ Add Friends</a>
+        <span className="text-primary float-right" onClick={() => setHide(false)}>+ Add Friends</span>
       </div>
       <br />
       <h5 />
@@ -156,7 +156,7 @@ const PeoplePage = ({match, userState, getUser, loginState}: Props) => {
           }: UserType) => {
             return (<ListGroup.Item>
               <span className="float-left">
-                <a href="#">{fullname}</a>
+                <span className="text-primary">{fullname}</span>
               </span>
               <span className="float-right">
                 ({username})

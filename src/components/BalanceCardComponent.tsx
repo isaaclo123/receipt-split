@@ -78,7 +78,7 @@ export const BalanceCardComponent = ({
           lineHeight: "2rem"
         }}>
         <span className="float-left">
-          <a href="#">{name}</a>
+          <span className="text-primary">{name}</span>
         </span>
         <span className="float-right">
           <Button
