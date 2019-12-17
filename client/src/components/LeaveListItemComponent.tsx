@@ -25,16 +25,17 @@ export const LeaveListItemComponent = ({
   handleNameClick,
   handlePayClick,
 }: LeaveProps) => {
-  const buttons: ButtonProps[] = pending ? [{
-      variant: "primary",
-      text: "MARK PAID",
-      handleClick: handlePayClick
-    }] : [{
-      variant: "secondary",
-      text: "PENDING",
-      handleClick: handlePayClick
+  // const buttons: ButtonProps[] = pending ? [{
+  //     variant: "primary",
+  //     text: "MARK PAID",
+  //     handleClick: handlePayClick
+  //   }] : [{
+  //     variant: "secondary",
+  //     text: "PENDING",
+  //     handleClick: handlePayClick
 
-  }]
+  // }]
+  const buttons: ButtonProps[] = []
 
   const balanceProps: BalanceProps = {
     prefix: "-",

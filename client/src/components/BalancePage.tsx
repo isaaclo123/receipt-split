@@ -1,127 +1,139 @@
-import React from 'react'
+import React, {useState} from 'react'
 
-import CardColumns from 'react-bootstrap/CardColumns';
-import Card from 'react-bootstrap/Card';
+import { connect, ConnectedProps } from 'react-redux'
+import { useHistory } from "react-router-dom";
+
+import { addUser } from '../api/index';
+
+import {
+  Redirect,
+  RouteComponentProps
+} from 'react-router-dom'
+
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-import ListGroup from 'react-bootstrap/ListGroup';
+import { getUser } from '../actions/getUser'
+import { BalanceType, UserType, UserState, LoginState } from '../types/index'
 
-import { TakeProps, TakeListItemComponent } from './TakeListItemComponent';
-import { LeaveProps, LeaveListItemComponent } from './LeaveListItemComponent';
+import { TakeProps, TakeListItemComponent } from './TakeListItemComponent'
+import { LeaveProps, LeaveListItemComponent } from './LeaveListItemComponent'
 
-const youowe = [ // TODO
-  {
-    name: "bill",
-    amount: 5.00,
-    pending: true,
-  },
-  {
-    name: "bill2",
-    amount: 5.20,
-    pending: false,
-  },
-]
+const mapStateToProps = (state: any) => {
+  return state
+}
 
-const BalancePage = () => {
+const connector = connect(
+  mapStateToProps,
+  { getUser }
+)
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & RouteComponentProps<{}> & {
+  userState?: UserState
+  loginState?: LoginState
+}
+
+const BalancePage = ({match, userState, getUser, loginState}: Props) => {
+  const [ run, setRun ] = useState(true)
+  // gets user info once
+  if (run) {
+    setRun(false)
+    getUser()
+  }
+
+  if (userState == null) {
+    return <Redirect to={'/app'} />
+  }
+
+  const { user } = userState
+
+  if (user == null) {
+    return (<div>loading</div>)
+  }
+
+  const { friends, username, fullname, balances_to_user, balances_from_user } = user
+
   return (
     <>
-      <h5>Payment</h5>
+      <h5>You are Owed</h5>
 
       <ListGroup className="mb-3">
-        {youowe.map(item => {
+
+      {(balances_to_user == null || balances_to_user.length <= 0) &&
+        (<ListGroup.Item>
+          <span className="text-secondary">
+            None
+          </span>
+        </ListGroup.Item>)
+      }
+
+      {balances_to_user.map(({
+          amount,
+          from_user
+        }: BalanceType) => {
+          if (from_user.id != null && from_user.id == userState.user.id) {
+            return (<></>)
+          }
+
           const props: TakeProps = {
             handleNameClick: () => {},
             handleAcceptClick: () => {},
             handleRejectClick: () => {},
-            ...item
+            amount,
+            name: (from_user.fullname == null) ? "Unknown" : from_user.fullname,
+            pending: true,
           }
           return (
             <TakeListItemComponent
               {...props}/>
           )
+
         })}
       </ListGroup>
 
-      <h5>To Pay</h5>
 
-      <CardColumns>
-        <Card>
-          <Card.Header
-            style={{
-              lineHeight: "2rem"
-            }}>
-            <span className="float-left">
-              <a href="#">Featured</a>
-            </span>
-            <span className="float-right">
-              <Button size="sm">
-                PAY
-              </Button>
-
-            </span>
-            <br />
-          </Card.Header>
-
-          <Card.Body className="text-center">
-            <h1
-              style={{
-                padding: 0,
-                margin: 0,
-                display: "inline-block"
-              }}>
-              $100.00
-            </h1>
-          </Card.Body>
-
-            <hr
-              style={{
-                padding: 0,
-                margin: 0,
-              }} />
-
-            <ListGroup className="list-group-flush">
-              {youowe.map(item => {
-                const props: LeaveProps = {
-                  handleNameClick: () => {},
-                  handlePayClick: () => {},
-                  ...item
-                }
-                return (
-                  <LeaveListItemComponent
-                    {...props}/>
-                )
-              })}
-            </ListGroup>
-        </Card>
-      </CardColumns>
+      <h5>You Should Pay</h5>
 
       <ListGroup className="mb-3">
-        {youowe.map(item => {
+
+      {(balances_from_user == null || balances_from_user.length <= 0) &&
+        (<ListGroup.Item>
+          <span className="text-secondary">
+            None
+          </span>
+        </ListGroup.Item>)
+      }
+
+      {balances_from_user.map(({
+          amount,
+          to_user
+        }: BalanceType) => {
+          if (to_user.id != null && to_user.id == userState.user.id) {
+            return (<></>)
+          }
+
           const props: LeaveProps = {
             handleNameClick: () => {},
             handlePayClick: () => {},
-            ...item
+            amount,
+            name: (to_user.fullname == null) ? "Unknown" : to_user.fullname,
+            pending: true,
           }
           return (
             <LeaveListItemComponent
               {...props}/>
           )
-        })}
-      </ListGroup>
 
-      <h5>History</h5>
-
-      <ListGroup className="mb-3">
-        {youowe.map(({name, amount}) => {
-          return (
-            <ListGroup.Item>
-              {name} ${amount}
-            </ListGroup.Item>
-          )
         })}
       </ListGroup>
     </>
   )
 }
 
-export default BalancePage
+export default connector(BalancePage)

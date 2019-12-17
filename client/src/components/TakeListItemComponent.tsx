@@ -27,17 +27,18 @@ export const TakeListItemComponent = ({
   handleAcceptClick,
   handleRejectClick,
 }: TakeProps) => {
-  const buttons: ButtonProps[] = [
-    {
-      variant: "success",
-      text: "ACCEPT",
-      handleClick: handleAcceptClick
-    }, {
-      variant: "danger",
-      text: "REJECT",
-      handleClick: handleRejectClick
-    },
-  ]
+  // const buttons: ButtonProps[] = [
+  //   {
+  //     variant: "success",
+  //     text: "ACCEPT",
+  //     handleClick: handleAcceptClick
+  //   }, {
+  //     variant: "danger",
+  //     text: "REJECT",
+  //     handleClick: handleRejectClick
+  //   },
+  // ]
+  const buttons: ButtonProps[] = []
 
   const balanceProps: BalanceProps = {
     prefix: "+",

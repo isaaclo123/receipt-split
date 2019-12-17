@@ -120,7 +120,6 @@ const PeoplePage = ({match, userState, getUser, loginState}: Props) => {
         </Modal.Footer>
       </Modal>
 
-
       <h5>User Info</h5>
 
       <ListGroup className="mb-3">
