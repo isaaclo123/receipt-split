@@ -21,8 +21,8 @@ from .models import *
 from .meta import db, ma
 
 
-def create_app():
-    app = FlaskAPI(__name__, static_folder='build')
+def create_app(static_folder="../build"):
+    app = FlaskAPI(__name__, static_folder=static_folder)
     app.config.from_object(Config)
 
     logging.basicConfig(level=logging.INFO)
