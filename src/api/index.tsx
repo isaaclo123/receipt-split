@@ -4,7 +4,7 @@ import {
   RecieptData
 } from '../types/index'
 
-const SERVER_URL = `http://reciept-split.herokuapp.com`
+const SERVER_URL = `http://reciept-split.herokuapp.com:5000`
 
 export const fetchLogin = async (myloginData: any) => {
   try {
