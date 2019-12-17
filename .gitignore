@@ -204,3 +204,5 @@ dmypy.json
 .pyre/
 
 .envrc
+
+*.sqlite3
