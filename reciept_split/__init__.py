@@ -22,7 +22,7 @@ from .meta import db, ma
 
 
 def create_app():
-    app = FlaskAPI(__name__, static_url_path="/../", static_folder='build')
+    app = FlaskAPI(__name__, static_folder="../build")
     app.config.from_object(Config)
 
     logging.basicConfig(level=logging.INFO)
@@ -36,6 +36,11 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
     wtforms_json.init()
+
+    def dir_last_updated(folder):
+        return str(max(os.path.getmtime(os.path.join(root_path, f))
+                   for root_path, dirs, files in os.walk(folder)
+                   for f in files))
 
 # Serve React App
     @app.route('/', defaults={'path': ''})
