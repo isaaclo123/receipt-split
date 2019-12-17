@@ -9,6 +9,7 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY', '99DEBUG_KEY_CHANGE_IN_PROD99')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
                                                           'app.db.sqlite3')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     WTF_CSRF_CHECK_DEFAULT = False
     WTF_CSRF_ENABLED = False
