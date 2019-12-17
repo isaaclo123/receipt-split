@@ -15,7 +15,7 @@ const NavComponent = (props: RouteComponentProps<{}>) => {
   return (
     <Navbar variant="dark" bg="dark">
       <Navbar.Brand>
-        Reciept Split
+        Reciept Split App
       </Navbar.Brand>
 
       <Navbar.Collapse>
