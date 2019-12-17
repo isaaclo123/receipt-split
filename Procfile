@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn reciept_split:app

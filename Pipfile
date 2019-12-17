@@ -20,6 +20,7 @@ marshmallow-sqlalchemy = "*"
 wtforms-json = "*"
 simplejson = "*"
 flask-marshmallow = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
