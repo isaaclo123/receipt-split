@@ -21,6 +21,7 @@ wtforms-json = "*"
 simplejson = "*"
 flask-marshmallow = "*"
 gunicorn = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
