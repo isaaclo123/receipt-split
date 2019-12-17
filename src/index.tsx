@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import {
-  BrowserRouter,
+  HashRouter,
   Redirect,
   Route
 } from 'react-router-dom';
@@ -22,12 +22,12 @@ import PrivateRoute from './components/PrivateRoute'
 
 ReactDOM.render(
   <Provider store={configureStore()}>
-    <BrowserRouter>
+    <HashRouter>
       <PrivateRoute exact path="/" component={Login} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
       <PrivateRoute path="/app" component={App} />
-    </BrowserRouter>
+    </HashRouter>
   </Provider>,
   document.getElementById('root')
 );

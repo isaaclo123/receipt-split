@@ -39,10 +39,6 @@ def create_app():
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(views_blueprint)
 
-    @app.route('/')
-    def root():
-        return app.send_static_file('index.html')
-
     @app.before_first_request
     def before_first_request_func():
         # db.metadata.clear()
