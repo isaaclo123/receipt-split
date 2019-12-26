@@ -1,15 +1,15 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
-import loginReducer from './loginReducer';
-import recieptReducer from './recieptReducer';
-import recieptListReducer from './recieptListReducer';
-import userReducer from './userReducer';
+import loginReducer from "./loginReducer";
+import recieptReducer from "./recieptReducer";
+import recieptListReducer from "./recieptListReducer";
+import userReducer from "./userReducer";
 
 export const rootReducer = combineReducers({
   loginState: loginReducer,
   recieptListState: recieptListReducer,
   userState: userReducer,
-  recieptState: recieptReducer,
+  recieptState: recieptReducer
 });
 
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof rootReducer>;

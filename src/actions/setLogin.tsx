@@ -1,12 +1,38 @@
-import { Dispatch } from 'redux';
+import { Dispatch } from "redux";
 
-import { LoginData, LoginAction } from '../types/index'
+import { fetchLogin } from "../api/index";
 
-export const setLogin = (payload: LoginData) => (dispatch: Dispatch) => {
-  const loginAction: LoginAction = {
-    type: 'LOGIN_REQUEST',
-    payload
+import {
+  LOGIN_FAIL,
+  LOGIN_SUCCESS,
+  TokenData,
+  LoginData,
+  LoginAction
+} from "../types/index";
+
+export const setLogin = (payload: LoginData) => async (dispatch: Dispatch) => {
+  const result = await fetchLogin(payload);
+
+  if (!result || !result.access_token) {
+    const action: LoginAction = {
+      type: LOGIN_FAIL,
+      payload: null
+    };
+
+    dispatch(action);
   }
 
-  dispatch(loginAction)
-}
+  const { username } = payload;
+
+  const tokenPayload: TokenData = {
+    username,
+    token: result.access_token
+  };
+
+  const action: LoginAction = {
+    type: LOGIN_SUCCESS,
+    payload: tokenPayload
+  };
+
+  dispatch(action);
+};
