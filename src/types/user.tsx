@@ -1,4 +1,4 @@
-import { RecieptType } from "./index";
+import { Failable, RecieptType } from "./index";
 
 export type UserType = {
   id?: number;
@@ -12,15 +12,13 @@ export type UserType = {
   reciept_items?: number;
 };
 
-export interface UserRequestAction {
-  type: string;
-}
+// export interface UserRequestAction {
+//   type: string;
+// }
 
 export interface UserAction {
   type: string;
   payload: UserState | null;
 }
 
-export interface UserState {
-  user: UserType | null;
-}
+export type UserState = Failable<UserType, {}>;

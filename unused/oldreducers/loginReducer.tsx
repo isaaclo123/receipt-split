@@ -6,17 +6,17 @@ import {
 } from "../types/index";
 
 const initialState: LoginState = {
-  //error: false,
+  error: false,
   data: {
     username: "",
     password: "",
-    token: "",
+    token: null,
     login: false
   },
   errors: {}
 };
 
-export const loginReducer = (
+export default (
   state: LoginState = initialState,
   action: LoginAction
 ): LoginState => {
@@ -25,18 +25,18 @@ export const loginReducer = (
       const { token } = action.payload;
 
       return {
-        //error: false,
+        error: false,
         data: Object.assign({}, state.data, {
           token,
-          login: true
+          login: false
         }),
         errors: {}
       };
     case LOGIN_FAIL:
       return {
-        //error: true,
+        error: true,
         data: Object.assign({}, state.data, {
-          token: "",
+          token: null,
           login: false
         }),
         errors: action.payload

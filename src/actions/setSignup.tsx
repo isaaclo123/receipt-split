@@ -1,27 +1,27 @@
 import { Dispatch } from "redux";
 
-import { LoginData, LoginAction, LOGIN_FAIL } from "../types/index";
+import { LoginPayload, SignupPayload, LOGIN_FAIL } from "../types/index";
 import { setLogin } from "./index";
 import { fetchSignup } from "../api/index";
 
-export const setSignup = (payload: LoginData) => async (dispatch: Dispatch) => {
-  const result = await fetchSignup(payload);
+export const setSignup = (payload: SignupPayload) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    await fetchSignup(payload);
 
-  if (!result) {
-    const action: LoginAction = {
-      type: LOGIN_FAIL,
-      payload: null
+    const { username, password } = payload;
+
+    const loginPayload: LoginPayload = {
+      username,
+      password
     };
 
-    dispatch(action);
+    await setLogin(loginPayload)(dispatch);
+  } catch (e) {
+    dispatch({
+      type: LOGIN_FAIL,
+      payload: {} // TODO
+    });
   }
-
-  const { username, password } = payload;
-
-  const loginPayload: LoginData = {
-    username,
-    password
-  };
-
-  await setLogin(loginPayload)(dispatch);
 };

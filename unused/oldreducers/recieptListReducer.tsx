@@ -1,29 +1,39 @@
-import { RecieptListState, RecieptListAction } from "../types/index";
+import {
+  RecieptData,
+  RecieptAction,
+  RecieptType,
+  RecieptListState,
+  RecieptListAction
+} from "../types/index";
 
 const initialState: RecieptListState = {
-  //error: false,
+  error: false,
   data: [],
   errors: []
 };
 
-export const recieptListReducer = (
+export const recieptReducer = (
   state: RecieptListState = initialState,
-  action: RecieptListAction
+  { payload, type }: RecieptListAction
 ) => {
+  if (payload == null) {
+    return state;
+  }
+
   console.log("RECIPET_LIST_PAYLOAD");
-  console.log(action.payload);
+  console.log(payload);
   console.log("RECIPET_LIST_PAYLOAD");
 
-  switch (action.type) {
+  switch (type) {
     case "RECIEPT_LIST_SUCCESS":
       return {
-        //error: false,
-        data: action.payload,
+        error: false,
+        data: payload,
         errors: []
       };
     case "RECIEPT_LIST_FAIL":
       return Object.assign({}, state, {
-        //error: true,
+        error: true,
         errors: [] //TODO
       });
     default:

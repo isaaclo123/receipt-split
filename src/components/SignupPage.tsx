@@ -1,6 +1,6 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { LoginState, SignupData } from "../types/index";
+import { LoginState } from "../types/index";
 
 import "./Login.css";
 
@@ -13,16 +13,15 @@ import { setSignup } from "../actions/setSignup";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { LoginData, SignupPayload, RootState } from "../types/index";
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type AppState = {
+type Props = PropsFromRedux & {
   loginState: LoginState;
 };
 
-type Props = PropsFromRedux & AppState;
-
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: RootState) => {
   const { loginState } = state;
   return {
     loginState
@@ -35,13 +34,13 @@ const connector = connect(
 );
 
 const SignupPage = ({ setSignup, loginState }: Props) => {
-  const { login }: LoginState = loginState;
+  const { login }: LoginData = loginState.data;
 
   if (login) {
     return <Redirect to={"/app"} />;
   }
 
-  let signupData: SignupData = {
+  let signupData: SignupPayload = {
     username: "",
     password: "",
     fullname: ""
@@ -65,11 +64,9 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
                 type="email"
                 placeholder="Username"
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                  signupData = {
-                    username: event.currentTarget.value,
-                    fullname: signupData.fullname,
-                    password: signupData.password
-                  };
+                  signupData = Object.assign({}, signupData, {
+                    username: event.currentTarget.value
+                  });
                 }}
               />
             </Form.Group>
@@ -80,11 +77,9 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
                 type="text"
                 placeholder="Full Name"
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                  signupData = {
-                    username: signupData.username,
-                    fullname: event.currentTarget.value,
-                    password: signupData.password
-                  };
+                  signupData = Object.assign({}, signupData, {
+                    fullname: event.currentTarget.value
+                  });
                 }}
               />
             </Form.Group>
@@ -95,11 +90,9 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
                 type="password"
                 placeholder="Password"
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                  signupData = {
-                    username: signupData.username,
-                    fullname: signupData.fullname,
+                  signupData = Object.assign({}, signupData, {
                     password: event.currentTarget.value
-                  };
+                  });
                 }}
               />
             </Form.Group>
@@ -120,4 +113,4 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
   );
 };
 
-export default connector(SignupPage);
+export const Signup = connector(SignupPage);

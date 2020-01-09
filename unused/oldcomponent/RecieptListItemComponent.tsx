@@ -6,45 +6,42 @@ import {
 } from './BalanceListItemComponent';
 
 import {
-  ButtonProps
-} from '../types/index'
+  ButtonProps,
+} from '../types/index';
 
-export interface TakeProps {
+export interface RecieptProps {
   amount: number,
   name: string,
   pending: boolean,
   handleNameClick: () => void,
-  handleAcceptClick: () => void,
-  handleRejectClick: () => void,
+  handleViewClick: () => void,
 }
 
-export const TakeListItemComponent = ({
+export const RecieptListItemComponent = ({
   amount,
   name,
   pending,
 
   handleNameClick,
-  handleAcceptClick,
-  handleRejectClick,
-}: TakeProps) => {
-  // const buttons: ButtonProps[] = [
-  //   {
+  handleViewClick,
+}: RecieptProps) => {
+  // const buttons: ButtonProps[] = pending ? [{
   //     variant: "success",
-  //     text: "ACCEPT",
-  //     handleClick: handleAcceptClick
-  //   }, {
+  //     text: "RESOLVED",
+  //     handleClick: handleViewClick
+  //   }] : [{
   //     variant: "danger",
-  //     text: "REJECT",
-  //     handleClick: handleRejectClick
-  //   },
-  // ]
+  //     text: "UNRESOLVED",
+  //     handleClick: handleViewClick
+
+  // }]
   const buttons: ButtonProps[] = []
 
   const balanceProps: BalanceProps = {
-    prefix: "+",
-    variant: "success",
+    prefix: "*",
+    variant: "info",
     amount,
-    descriptor: "from",
+    descriptor: "at",
     name,
     handleClick: handleNameClick,
     buttons,

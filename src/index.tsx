@@ -1,24 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux'
-import {
-  HashRouter,
-  Redirect,
-  Route
-} from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { HashRouter, Redirect, Route } from "react-router-dom";
 
-import configureStore from './store';
-import './index.css';
+import configureStore from "./store";
+import "./index.css";
 
 // import 'bootstrap/dist/css/bootstrap.min.css';
-import './custom.scss';
+import "./custom.scss";
 
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorker from "./serviceWorker";
 
-import App from './components/App';
-import Login from './components/LoginPage';
-import Signup from './components/SignupPage';
-import PrivateRoute from './components/PrivateRoute'
+import { App, Login, Signup, PrivateRoute } from "./components/index";
 
 ReactDOM.render(
   <Provider store={configureStore()}>
@@ -29,7 +22,7 @@ ReactDOM.render(
       <PrivateRoute path="/app" component={App} />
     </HashRouter>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

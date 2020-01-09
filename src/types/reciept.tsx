@@ -1,16 +1,16 @@
-import { UserType, BalanceType } from "./index";
+import { Failable, UserType, BalanceType, RECIEPT_SAVE_REQUEST } from "./index";
 
-export interface RecieptData {
+export interface RecieptPayload {
   id: number;
 }
 
-export interface RecieptRequestAction {
-  type: string;
-  payload: RecieptData;
-}
+// export interface RecieptRequestAction {
+//   type: string;
+//   payload: RecieptPayload;
+// }
 
 export interface RecieptSetAction {
-  type: string;
+  type: typeof RECIEPT_SAVE_REQUEST;
   payload: RecieptType;
 }
 
@@ -21,33 +21,42 @@ export interface RecieptAction {
 
 // reciept state
 
-export interface RecieptState {
-  reciept: RecieptType | null;
-}
+export type RecieptState = Failable<RecieptType, RecieptError>;
 
 // reciept list
 export interface RecieptListAction {
   type: string;
-  payload: RecieptListState;
+  payload: RecieptType[];
 }
 
-export interface RecieptListState {
-  reciepts: RecieptType[];
-}
+export type RecieptListState = Failable<RecieptType[], string[]>;
 
 // server types
+
+export type RecieptError = {
+  id?: string;
+  name?: string;
+  amount?: string;
+  date?: string;
+  resolved?: string;
+  user_id?: string;
+  user?: string;
+  users?: string;
+  balances?: string;
+  reciept_items?: string;
+};
 
 export type RecieptType = {
   id?: number;
   name: string;
   amount: number;
   date: string;
-  resolved?: boolean | null;
-  user_id?: number;
-  user?: UserType; //TODO
-  users?: UserType[]; //TODO
-  balances?: BalanceType[];
-  reciept_items?: RecieptItemType[];
+  resolved: boolean;
+  user_id: number;
+  user: UserType;
+  users: UserType[];
+  balances: BalanceType[];
+  reciept_items: RecieptItemType[];
 };
 
 export type RecieptItemType = {

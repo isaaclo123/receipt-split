@@ -1,38 +1,40 @@
-import React from 'react'
-import { connect, ConnectedProps } from 'react-redux'
-import { LoginState } from '../types/index'
+import React from "react";
+import { connect, ConnectedProps } from "react-redux";
+import { RootState, LoginState } from "../types/index";
 
-import {
-  Route,
-  Redirect,
-  RouteProps,
-} from 'react-router-dom'
+import { Route, Redirect, RouteProps } from "react-router-dom";
 
-const mapStateToProps = (state: LoginState) => {
-  return state
-}
+const mapStateToProps = (state: RootState) => {
+  const { loginState } = state;
+  return {
+    loginState
+  };
+};
 
 const connector = connect(
   mapStateToProps,
   {}
-)
+);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & RouteProps & {
-  loginState?: LoginState
-}
+type Props = PropsFromRedux &
+  RouteProps & {
+    loginState: LoginState;
+  };
 
-const PrivateRoute = (props: Props) => {
-  console.log(props)
+const PrivateRouteComponent = (props: Props) => {
+  console.log(props);
 
-  if (props.loginState == null || props.loginState.login === false) {
-    return <Redirect to='/login' />
+  const { login } = props.loginState.data;
+
+  if (!login) {
+    return <Redirect to="/login" />;
   }
 
-  const { loginState, ...rest } = props
+  const { loginState, ...rest } = props;
 
-  return <Route {...rest}/>
-}
+  return <Route {...rest} />;
+};
 
-export default connector(PrivateRoute)
+export const PrivateRoute = connector(PrivateRouteComponent);

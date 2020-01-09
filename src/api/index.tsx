@@ -1,141 +1,73 @@
-import { LoginData, SignupData, RecieptData } from "../types/index";
+import { LoginPayload, SignupPayload, RecieptType } from "../types/index";
 
 const SERVER_URL = `http://localhost:5000`;
 
-export const fetchLogin = async (loginData: LoginData) => {
-  try {
-    const response = await fetch(`${SERVER_URL}/auth`, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(loginData)
-    });
-
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
-  }
+const DEFAULT_HEADERS = {
+  Accept: "application/json",
+  "Content-Type": "application/json"
 };
 
-export const fetchSignup = async (mySignupData: any) => {
-  try {
-    const signupData: SignupData = mySignupData;
-    const response = await fetch(`${SERVER_URL}/signup`, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(signupData)
-    });
-
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
-  }
-};
-
-export const fetchRecieptList = async (token: any) => {
-  try {
-    const response = await fetch(`${SERVER_URL}/reciept`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+const fetchData = async (
+  url: string,
+  method: string,
+  payload: any,
+  token = ""
+) => {
+  const headers = !token
+    ? DEFAULT_HEADERS
+    : Object.assign({}, DEFAULT_HEADERS, {
         Authorization: `JWT ${token}`
-      }
-    });
+      });
 
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
+  const defaultOpts: RequestInit = {
+    method,
+    headers,
+    mode: "cors"
+  };
+
+  const options = !payload
+    ? defaultOpts
+    : Object.assign({}, defaultOpts, { body: JSON.stringify(payload) });
+
+  console.log(options);
+
+  const response = await fetch(`${SERVER_URL}/${url}`, options);
+
+  if (!response.ok) {
+    await Promise.reject(
+      new Error(`response not OK, status ${response.status}`)
+    );
   }
+
+  const json = await response.json();
+  return json;
 };
+
+/* start of API calls */
+
+export const fetchLogin = async (payload: LoginPayload) =>
+  fetchData("auth", "POST", payload);
+
+export const fetchSignup = async (payload: SignupPayload) =>
+  fetchData("signup", "POST", payload);
+
+export const fetchRecieptList = async (token: string) =>
+  fetchData("reciept", "GET", null, token);
 
 export const saveRecieptById = async (
-  token: any,
+  token: string,
   id: number,
-  recieptData: any
-) => {
-  try {
-    const response = await fetch(`${SERVER_URL}/reciept/${id}`, {
-      method: "PUT",
-      // credentials: 'include',
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${token}`
-      },
-      body: JSON.stringify(recieptData)
-    });
-    console.log(response);
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
-  }
-};
+  payload: RecieptType
+) => fetchData(`reciept/${id}`, "PUT", payload, token);
 
-export const fetchRecieptById = async (token: any, id: number) => {
-  try {
-    const response = await fetch(`${SERVER_URL}/reciept/${id}`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `JWT ${token}`
-      }
-    });
+export const fetchRecieptById = async (
+  token: string,
+  id: number,
+  payload: RecieptType
+) => fetchData(`reciept/${id}`, "GET", null, token);
 
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
-  }
-};
+export const fetchUser = (token: string) =>
+  fetchData("user", "GET", null, token);
 
-export const fetchUser = async (token: any) => {
-  try {
-    const response = await fetch(`${SERVER_URL}/user`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `JWT ${token}`
-      }
-    });
-
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
-  }
-};
-
-export const addUser = async (token: any, username: string) => {
-  try {
-    const response = await fetch(`${SERVER_URL}/friend/${username}`, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `JWT ${token}`
-      }
-    });
-
-    const json = await response.json();
-    return json;
-  } catch (e) {
-    return null;
-  }
-};
+export const addUser = async (token: any, username: string) =>
+  fetchData(`friend/${username}`, "POST", null, token);

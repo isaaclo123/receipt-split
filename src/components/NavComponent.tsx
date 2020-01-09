@@ -1,25 +1,19 @@
-import React from 'react'
+import React from "react";
 
-import {
-  RouteComponentProps
-} from 'react-router-dom'
+import { RouteComponentProps } from "react-router-dom";
 
-import { LinkContainer } from 'react-router-bootstrap'
+import { LinkContainer } from "react-router-bootstrap";
 
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 
-const NavComponent = (props: RouteComponentProps<{}>) => {
-  const { match } = props
-
+export const NavComponent = (props: RouteComponentProps<{}>) => {
+  const { match } = props;
   return (
     <Navbar variant="dark" bg="dark">
-      <Navbar.Brand>
-        Reciept Split App
-      </Navbar.Brand>
+      <Navbar.Brand>Reciept Split App</Navbar.Brand>
 
       <Navbar.Collapse>
-
         <Nav className="mr-auto" />
 
         <Nav>
@@ -37,7 +31,5 @@ const NavComponent = (props: RouteComponentProps<{}>) => {
         </Nav>
       </Navbar.Collapse>
     </Navbar>
-  )
-}
-
-export default NavComponent
+  );
+};

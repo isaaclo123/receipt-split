@@ -1,8 +1,6 @@
 import { combineReducers } from "redux";
 
-import { recieptListReducer, loginReducer } from "./index";
-
-// export type RootState = ReturnType<typeof rootReducer>;
+import { loginReducer, recieptListReducer } from "./index";
 
 export const rootReducer = combineReducers({
   loginState: loginReducer,

@@ -1,62 +1,61 @@
-import React from 'react'
-import { connect, ConnectedProps } from 'react-redux'
-import { LoginState } from '../types/index'
+import React from "react";
+import { connect, ConnectedProps } from "react-redux";
+import { LoginData, LoginState } from "../types/index";
 
-import { LinkContainer } from 'react-router-bootstrap'
+import { LinkContainer } from "react-router-bootstrap";
 
-import './Login.css'
+import "./Login.css";
 
-import {
-  Redirect
-} from 'react-router-dom'
+import { Redirect } from "react-router-dom";
 
-import { setLogin } from '../actions/setLogin'
+import { setLogin } from "../actions/setLogin";
 
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import Form from 'react-bootstrap/Form';
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
 
-const mapStateToProps = (state: any) => {
-  return state
-}
+import { RootState } from "../types/index";
+
+const mapStateToProps = (state: RootState) => {
+  const { loginState } = state;
+  return {
+    loginState
+  };
+};
 
 const connector = connect(
   mapStateToProps,
   { setLogin }
-)
+);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
-  loginState: LoginState
-}
+  loginState: LoginState;
+};
 
 const LoginPage = ({ loginState, setLogin }: Props) => {
-  const { login }: LoginState = loginState;
+  const { login }: LoginData = loginState.data;
 
-  // const [ loginData, setLoginData ] = useState({
-  //   username: "",
-  //   password: ""
-  // })
-
+  console.log("LOGIN");
   if (login) {
-    return <Redirect to={'/app'} />
+    return <Redirect to={"/app"} />;
   }
 
   let loginData = {
     username: "",
     password: ""
-  }
+  };
 
   const handleLoginClick = () => {
-    setLogin(loginData)
-  }
+    setLogin(loginData);
+  };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      setLogin(loginData)
+      setLogin(loginData);
     }
-  }
+  };
 
   return (
     <div className="login-container">
@@ -71,11 +70,11 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
                 type="email"
                 placeholder="Username"
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                  loginData = {
-                    username: event.currentTarget.value,
-                    password: loginData.password
-                  }
-                }} />
+                  loginData = Object.assign({}, loginData, {
+                    username: event.currentTarget.value
+                  });
+                }}
+              />
             </Form.Group>
 
             <Form.Group controlId="formPassword">
@@ -85,11 +84,11 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
                 placeholder="Password"
                 onKeyPress={handleKeyPress}
                 onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                  loginData = {
-                    username: loginData.username,
+                  loginData = Object.assign({}, loginData, {
                     password: event.currentTarget.value
-                  }
-                }} />
+                  });
+                }}
+              />
             </Form.Group>
 
             <span>
@@ -105,7 +104,7 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
         </Card.Body>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default connector(LoginPage)
+export const Login = connector(LoginPage);
