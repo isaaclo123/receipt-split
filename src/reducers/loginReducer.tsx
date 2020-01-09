@@ -1,12 +1,13 @@
 import {
   LoginAction,
   LoginState,
+  LoginSuccessAction,
   LOGIN_SUCCESS,
   LOGIN_FAIL
 } from "../types/index";
 
 const initialState: LoginState = {
-  //error: false,
+  error: false,
   data: {
     username: "",
     password: "",
@@ -25,7 +26,7 @@ export const loginReducer = (
       const { token } = action.payload;
 
       return {
-        //error: false,
+        error: false,
         data: Object.assign({}, state.data, {
           token,
           login: true
@@ -34,7 +35,7 @@ export const loginReducer = (
       };
     case LOGIN_FAIL:
       return {
-        //error: true,
+        error: true,
         data: Object.assign({}, state.data, {
           token: "",
           login: false

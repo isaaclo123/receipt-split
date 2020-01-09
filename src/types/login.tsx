@@ -1,4 +1,4 @@
-import { Failable, LOGIN_SUCCESS, LOGIN_FAIL } from "./index";
+import { Action, Failable, LOGIN_SUCCESS, LOGIN_FAIL } from "./index";
 
 export interface TokenPayload {
   token: string;
@@ -9,15 +9,9 @@ export interface LoginPayload {
   password: string;
 }
 
-interface LoginSuccessAction {
-  type: typeof LOGIN_SUCCESS;
-  payload: TokenPayload;
-}
+export type LoginSuccessAction = Action<typeof LOGIN_SUCCESS, TokenPayload>;
 
-interface LoginFailAction {
-  type: typeof LOGIN_FAIL;
-  payload: LoginErrors;
-}
+export type LoginFailAction = Action<typeof LOGIN_FAIL, LoginErrors>;
 
 export type LoginAction = LoginSuccessAction | LoginFailAction;
 

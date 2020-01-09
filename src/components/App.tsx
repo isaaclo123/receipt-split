@@ -2,9 +2,9 @@ import React from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
-import { Redirect, Switch, RouteComponentProps } from "react-router-dom";
+import { Switch, RouteComponentProps } from "react-router-dom";
 
-import { PrivateRoute, NavComponent, RecieptPage } from "./index";
+import { PrivateRoute, NavComponent, RecieptPage, PeoplePage } from "./index";
 
 import "./App.css";
 
@@ -28,6 +28,8 @@ const AppComponent = (props: Props) => {
             path={`${match.path}/reciepts`}
             component={RecieptPage}
           />
+
+          <PrivateRoute path={`${match.path}/people`} component={PeoplePage} />
         </Switch>
       </div>
     </>

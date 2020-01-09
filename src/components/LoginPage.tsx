@@ -8,7 +8,7 @@ import "./Login.css";
 
 import { Redirect } from "react-router-dom";
 
-import { setLogin } from "../actions/setLogin";
+import { setLogin } from "../actions/index";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";

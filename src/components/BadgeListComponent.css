@@ -1,0 +1,7 @@
+.item-badge-delete {
+  display: none;
+}
+
+.item-badge:hover .item-badge-delete {
+  display: inline;
+}

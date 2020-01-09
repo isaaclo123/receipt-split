@@ -8,7 +8,7 @@ import { Redirect } from "react-router-dom";
 
 import { LinkContainer } from "react-router-bootstrap";
 
-import { setSignup } from "../actions/setSignup";
+import { setSignup } from "../actions/index";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";

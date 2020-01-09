@@ -1,4 +1,12 @@
-import { Failable, UserType, BalanceType, RECIEPT_SAVE_REQUEST } from "./index";
+import {
+  Action,
+  Failable,
+  UserType,
+  BalanceType,
+  RECIEPT_SAVE_REQUEST,
+  RECIEPT_LIST_SUCCESS,
+  RECIEPT_LIST_FAIL
+} from "./index";
 
 export interface RecieptPayload {
   id: number;
@@ -9,10 +17,7 @@ export interface RecieptPayload {
 //   payload: RecieptPayload;
 // }
 
-export interface RecieptSetAction {
-  type: typeof RECIEPT_SAVE_REQUEST;
-  payload: RecieptType;
-}
+export type RecieptSetAction = Action<typeof RECIEPT_SAVE_REQUEST, RecieptType>;
 
 export interface RecieptAction {
   type: string;
@@ -24,10 +29,17 @@ export interface RecieptAction {
 export type RecieptState = Failable<RecieptType, RecieptError>;
 
 // reciept list
-export interface RecieptListAction {
-  type: string;
-  payload: RecieptType[];
-}
+
+export type RecieptListSuccessAction = Action<
+  typeof RECIEPT_LIST_SUCCESS,
+  RecieptType[]
+>;
+
+export type RecieptListFailAction = Action<typeof RECIEPT_LIST_FAIL, []>;
+
+export type RecieptListAction =
+  | RecieptListSuccessAction
+  | RecieptListFailAction;
 
 export type RecieptListState = Failable<RecieptType[], string[]>;
 
@@ -67,11 +79,11 @@ export type RecieptItemType = {
   reciept_id?: number;
   reciept?: RecieptType;
 };
-
-const userListExample: UserType[] = [];
-
-export const RecieptItemTypeDefault: RecieptItemType = {
-  name: "New Reciept Item",
-  amount: 0,
-  users: userListExample
-};
+//
+// const userListExample: UserType[] = [];
+//
+// export const RecieptItemTypeDefault: RecieptItemType = {
+//   name: "New Reciept Item",
+//   amount: 0,
+//   users: userListExample
+// };

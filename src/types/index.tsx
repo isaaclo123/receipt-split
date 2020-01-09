@@ -18,7 +18,12 @@ export interface ButtonProps {
 }
 
 export type Failable<T, E> = {
-  // error: boolean;
+  error: boolean;
   data: T;
   errors: E;
+};
+
+export type Action<T, P> = {
+  type: T;
+  payload: P;
 };

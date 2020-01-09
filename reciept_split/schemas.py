@@ -104,9 +104,11 @@ class BalanceSchema(ma.ModelSchema):
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
-        fields = ('id', 'fullname', 'username', 'friends',
-                  'balances_to_user', 'balances_from_user', 'payments_to_user',
-                  'payments_from_user')
+        # fields = ('id', 'fullname', 'username', 'friends',
+        #           'balances_to_user', 'balances_from_user', 'payments_to_user',
+        #           'payments_from_user')
+
+        fields = ('id', 'fullname', 'username')
 
     friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
 

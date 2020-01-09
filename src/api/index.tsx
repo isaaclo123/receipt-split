@@ -33,23 +33,26 @@ const fetchData = async (
 
   const response = await fetch(`${SERVER_URL}/${url}`, options);
 
+  const json = await response.json();
+
   if (!response.ok) {
-    await Promise.reject(
-      new Error(`response not OK, status ${response.status}`)
-    );
+    await Promise.reject(new Error(json));
   }
 
-  const json = await response.json();
   return json;
 };
 
 /* start of API calls */
+
+// login
 
 export const fetchLogin = async (payload: LoginPayload) =>
   fetchData("auth", "POST", payload);
 
 export const fetchSignup = async (payload: SignupPayload) =>
   fetchData("signup", "POST", payload);
+
+// reciept
 
 export const fetchRecieptList = async (token: string) =>
   fetchData("reciept", "GET", null, token);
@@ -65,6 +68,8 @@ export const fetchRecieptById = async (
   id: number,
   payload: RecieptType
 ) => fetchData(`reciept/${id}`, "GET", null, token);
+
+// user
 
 export const fetchUser = (token: string) =>
   fetchData("user", "GET", null, token);

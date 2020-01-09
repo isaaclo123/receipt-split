@@ -1,7 +1,5 @@
 import { Dispatch } from "redux";
-
 import { fetchLogin } from "../api/index";
-
 import { LOGIN_FAIL, LOGIN_SUCCESS, LoginPayload } from "../types/index";
 
 export const setLogin = (payload: LoginPayload) => async (
