@@ -17,7 +17,7 @@ export const setSignup = (payload: SignupPayload) => async (
       password
     };
 
-    await setLogin(loginPayload)(dispatch);
+    // await setLogin(loginPayload)(dispatch);
   } catch (e) {
     dispatch({
       type: LOGIN_FAIL,

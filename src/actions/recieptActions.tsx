@@ -2,8 +2,6 @@ import { fetchRecieptList } from "../api/index";
 
 import { RECIEPT_LIST_FAIL, RECIEPT_LIST_SUCCESS } from "../types/index";
 
-import { getData } from "./index";
-
 // export const setRecieptList = () => (dispatch: Dispatch) => {
 //   const action = {
 //     type: 'RECIEPT_LIST_REQUEST',
@@ -14,8 +12,16 @@ import { getData } from "./index";
 //   dispatch(action)
 // }
 
-export const getRecieptList = () =>
-  getData(RECIEPT_LIST_SUCCESS, RECIEPT_LIST_FAIL, true, fetchRecieptList);
+import { ApiMiddlewareAction } from "../types/index";
+import { apiCallAction } from "./index";
+
+export const getRecieptList = (): ApiMiddlewareAction =>
+  apiCallAction({
+    successType: RECIEPT_LIST_SUCCESS,
+    failType: RECIEPT_LIST_FAIL,
+    withToken: true,
+    apiCall: fetchRecieptList
+  });
 
 // export const getReciept = (payload: RecieptPayload) => (dispatch: Dispatch) => {
 //   console.log("getReciept");

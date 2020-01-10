@@ -5,6 +5,8 @@ import {
   USER_INFO_FAIL
 } from "../types/index";
 
+import { getDataReducer } from "./index";
+
 const initialState: UserState = {
   error: false,
   data: {
@@ -19,19 +21,8 @@ export const userReducer = (
   state: UserState = initialState,
   action: UserAction
 ) => {
-  switch (action.type) {
-    case USER_INFO_SUCCESS:
-      return {
-        error: false,
-        data: action.payload,
-        errors: {}
-      };
-    case USER_INFO_FAIL:
-      return Object.assign({}, state, {
-        error: true,
-        errors: action.payload
-      });
-    default:
-      return state;
-  }
+  return getDataReducer(USER_INFO_SUCCESS, USER_INFO_FAIL, state)(
+    state,
+    action
+  );
 };

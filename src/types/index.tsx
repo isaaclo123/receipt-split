@@ -1,4 +1,5 @@
 import { rootReducer } from "../reducers/rootReducer";
+import { API_MIDDLEWARE_TYPE } from "./index";
 
 export * from "./consts";
 
@@ -27,3 +28,24 @@ export type Action<T, P> = {
   type: T;
   payload: P;
 };
+
+export type ApiMiddlewarePayload = {
+  successType: string;
+  failType: string;
+
+  withToken: boolean;
+
+  apiCall: (...args: any[]) => Promise<any>;
+  apiCallArgs?: any[];
+
+  onSuccess?: (arg0: any) => any;
+  onFail?: (arg0: any) => any;
+
+  afterSuccess?: any;
+  afterFail?: any;
+};
+
+export type ApiMiddlewareAction = Action<
+  typeof API_MIDDLEWARE_TYPE,
+  ApiMiddlewarePayload
+>;

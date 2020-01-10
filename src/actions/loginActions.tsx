@@ -1,23 +1,22 @@
-import { Dispatch } from "redux";
 import { fetchLogin } from "../api/index";
-import { LOGIN_FAIL, LOGIN_SUCCESS, LoginPayload } from "../types/index";
+import {
+  ApiMiddlewareAction,
+  LOGIN_FAIL,
+  LOGIN_SUCCESS,
+  LoginPayload
+} from "../types/index";
+import { apiCallAction } from "./index";
 
-export const setLogin = (payload: LoginPayload) => async (
-  dispatch: Dispatch
-) => {
-  try {
-    const result = await fetchLogin(payload);
-
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: {
-        token: result.access_token
-      }
-    });
-  } catch (e) {
-    dispatch({
-      type: LOGIN_FAIL,
-      payload: {} // TODO
-    });
-  }
-};
+export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
+  apiCallAction({
+    successType: LOGIN_SUCCESS,
+    failType: LOGIN_FAIL,
+    withToken: false,
+    apiCall: fetchLogin,
+    apiCallArgs: [payload],
+    onSuccess: ({ access_token = "" }: any) => {
+      return {
+        token: access_token
+      };
+    }
+  });
