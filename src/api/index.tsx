@@ -22,15 +22,15 @@ export const fetchRecieptList = (token: string) =>
   fetchData("reciept", "GET", null, token);
 
 export const saveRecieptById = (
-  token: string,
   id: number,
-  payload: RecieptType
+  payload: RecieptType,
+  token: string
 ) => fetchData(`reciept/${id}`, "PUT", payload, token);
 
 export const fetchRecieptById = (
-  token: string,
   id: number,
-  payload: RecieptType
+  payload: RecieptType,
+  token: string
 ) => fetchData(`reciept/${id}`, "GET", null, token);
 
 // user
@@ -41,5 +41,5 @@ export const fetchUser = (token: string) =>
 export const fetchFriends = (token: string) =>
   fetchData("friends", "GET", null, token);
 
-export const addUser = (token: string, username: string) =>
+export const fetchAddFriend = (username: string, token: string) =>
   fetchData(`friend/${username}`, "POST", null, token);

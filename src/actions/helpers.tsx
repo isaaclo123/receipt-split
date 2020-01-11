@@ -35,11 +35,13 @@ export const apiCallMiddleware: Middleware = ({
     afterFail = null
   }: ApiMiddlewarePayload = action.payload;
 
-  const args = withToken ? [getToken(getState), ...apiCallArgs] : apiCallArgs;
-
-  const result = await apiCall(...args);
+  const args = withToken ? [...apiCallArgs, getToken(getState)] : apiCallArgs;
 
   try {
+    console.log("BEFORE APICALL");
+    const result = await apiCall(...args);
+    console.log(result);
+    console.log("AFTERAPICALL");
     if (successType != null) {
       await dispatch({
         type: successType,

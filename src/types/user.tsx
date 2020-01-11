@@ -39,4 +39,8 @@ export type FriendListFailAction = Action<
 
 export type FriendAction = FriendListSuccessAction | FriendListFailAction;
 
-export type FriendState = Failable<UserType[], UserErrors[]>;
+export type FriendError = {
+  [propName: string]: any;
+};
+
+export type FriendState = Failable<UserType[], FriendError>;

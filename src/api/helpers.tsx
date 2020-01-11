@@ -22,16 +22,13 @@ export const fetchData = async (
     ? defaultOpts
     : Object.assign({}, defaultOpts, { body: JSON.stringify(payload) });
 
-  console.log(payload);
-  console.log(options);
-
   const response = await fetch(`${SERVER_URL}/${url}`, options);
 
   console.log(response);
   const json = await response.json();
 
   if (!response.ok) {
-    await Promise.reject(new Error(json));
+    return Promise.reject(new Error("JSON ERROR"));
   }
 
   return json;

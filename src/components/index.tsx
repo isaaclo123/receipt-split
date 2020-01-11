@@ -15,3 +15,4 @@ export * from "./UserSelectModal";
 export * from "./UserListItemComponent";
 export * from "./ListOrNoneComponent";
 // export * from "./TakeListItemComponent";
+export * from "./FriendModal";
