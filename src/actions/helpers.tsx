@@ -39,10 +39,6 @@ export const apiCallMiddleware: Middleware = ({
 
   const { error, errors, data } = await apiCall(...args);
 
-  console.log(error);
-  console.log(errors);
-  console.log(data);
-
   if (!error) {
     if (successType != null) {
       await dispatch({

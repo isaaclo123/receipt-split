@@ -36,5 +36,14 @@ export type Dict = {
 export type SetDataReducerType = {
   successType: string;
   failType: string;
-  initialState: Failable<any, any>;
+};
+
+export type ReducerCreatorType = (
+  initialState: any,
+  ...args: any[]
+) => (state: Failable<any, any>, action: Action<string, any>) => any;
+
+export type DataReducerType = {
+  reducerCreator: ReducerCreatorType;
+  args: any[];
 };

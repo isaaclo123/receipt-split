@@ -5,7 +5,7 @@ import {
   USER_INFO_FAIL
 } from "../types/index";
 
-import { setDataReducer } from "./index";
+import { setDataReducer, applyDataReducers } from "./index";
 
 const initialState: UserState = {
   error: false,
@@ -17,13 +17,17 @@ const initialState: UserState = {
   errors: {}
 };
 
-export const userReducer = (
-  state: UserState = initialState,
-  action: UserAction
-) => {
-  return setDataReducer({
-    successType: USER_INFO_SUCCESS,
-    failType: USER_INFO_FAIL,
-    initialState: state
-  })(state, action);
-};
+export const userReducer = applyDataReducers<UserState, UserAction>(
+  initialState,
+  [
+    {
+      reducerCreator: setDataReducer,
+      args: [
+        {
+          successType: USER_INFO_SUCCESS,
+          failType: USER_INFO_FAIL
+        }
+      ]
+    }
+  ]
+);
