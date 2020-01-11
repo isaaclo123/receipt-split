@@ -1,9 +1,10 @@
 import { rootReducer } from "../reducers/rootReducer";
-import { API_MIDDLEWARE_TYPE } from "./index";
 
+export * from "./api";
 export * from "./consts";
 
 export * from "./balance";
+export * from "./friend";
 export * from "./login";
 export * from "./payment";
 export * from "./reciept";
@@ -28,26 +29,9 @@ export type Action<T, P> = {
   payload: P;
 };
 
-export type ApiMiddlewarePayload = {
-  successType?: string | null;
-  failType?: string | null;
-
-  withToken: boolean;
-
-  apiCall: (...args: any[]) => Promise<any>;
-  apiCallArgs?: any[];
-
-  onSuccess?: (arg0: any) => any;
-  onFail?: (arg0: any) => any;
-
-  afterSuccess?: Action<string, any> | null;
-  afterFail?: Action<string, any> | null;
+export type Dict = {
+  [propName: string]: any;
 };
-
-export type ApiMiddlewareAction = Action<
-  typeof API_MIDDLEWARE_TYPE,
-  ApiMiddlewarePayload
->;
 
 export type SetDataReducerType = {
   successType: string;

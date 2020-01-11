@@ -19,6 +19,7 @@ const initialState: UserState = {
   errors: {}
 };
 
+// TODO: likely dont need initialState
 export const friendReducer = (
   state: UserState = initialState,
   action: UserAction
@@ -26,14 +27,18 @@ export const friendReducer = (
   const s1 = setDataReducer({
     successType: FRIEND_LIST_SUCCESS,
     failType: FRIEND_LIST_FAIL,
-    initialState: state
+    initialState
   })(state, action);
+
+  console.log(s1);
 
   const s2 = setDataReducer({
     successType: FRIEND_ADD_SUCCESS,
     failType: FRIEND_ADD_FAIL,
-    initialState: s1
+    initialState
   })(s1, action);
 
-  return s1;
+  console.log(s1);
+
+  return s2;
 };
