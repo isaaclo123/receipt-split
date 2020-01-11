@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 
 import ListGroup from "react-bootstrap/ListGroup";
 
-import { getUser, getFriends } from "../actions/index";
+import { getUserAndFriends } from "../actions/index";
 import {
   UserListItemComponent,
   ListOrNoneComponent,
@@ -19,7 +19,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { getUser, getFriends }
+  { getUserAndFriends }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -34,33 +34,17 @@ const PeoplePageComponent = ({
   match,
   userState,
   friendState,
-  getUser,
-  getFriends
+  getUserAndFriends
 }: Props) => {
   const [hide, setHide] = useState(true);
 
-  // const onClose = () => {
-  //   setError("");
-  //   // setHide(true);
-  // };
-
   // gets user info once
-  const [run1, setRun1] = useState(true);
-  const [run2, setRun2] = useState(true);
-  if (run1) {
-    getUser();
-    getFriends();
-    setRun1(false);
-    console.log("USERSTATE");
-    console.log(userState);
-  }
+  const [run, setRun] = useState(true);
 
-  // if (run2) {
-  //   getFriends();
-  //   setRun2(false);
-  //   console.log("FRIENDSTATE");
-  //   console.log(friendState);
-  // }
+  if (run) {
+    getUserAndFriends();
+    setRun(false);
+  }
 
   const { username, fullname } = userState.data;
 

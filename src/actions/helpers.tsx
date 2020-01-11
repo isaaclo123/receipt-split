@@ -15,6 +15,9 @@ export const apiCallMiddleware: Middleware = ({
   dispatch,
   getState
 }) => next => async (action: Action<string, any>) => {
+  console.log("START ACTION " + action.type);
+  console.log(action);
+  console.log("END ACTION");
   if (action.type !== API_MIDDLEWARE_TYPE) {
     return next(action);
   }

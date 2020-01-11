@@ -34,9 +34,19 @@ export const applyDataReducers = <
   initialState: S,
   reducers: DataReducerType[]
 ) => (state: S = initialState, action: A) => {
-  return reducers.reduce(
-    (accState, { reducerCreator, args }) =>
-      reducerCreator(initialState, ...args)(accState, action),
-    initialState
-  );
+  // console.log("BEFORE STATE");
+  // console.log(state);
+  // console.log("END BEFORE STATE");
+
+  const myresult = reducers.reduce((accState, { reducerCreator, args }) => {
+    const result = reducerCreator(initialState, ...args)(accState, action);
+    // console.log("MID STATE");
+    // console.log(result);
+    // console.log("MID STATE");
+    return result;
+  }, state);
+  // console.log("AFTER STATE");
+  // console.log(myresult);
+  // console.log("AFTER STATE");
+  return myresult;
 };

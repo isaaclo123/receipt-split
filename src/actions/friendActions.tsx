@@ -1,3 +1,5 @@
+import { Dispatch } from "redux";
+import { batch } from "react-redux";
 import { fetchFriends, fetchAddFriend } from "../api/index";
 import {
   FRIEND_ADD_SUCCESS,
@@ -7,7 +9,7 @@ import {
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
-import { apiCallAction } from "./index";
+import { getUser, apiCallAction } from "./index";
 
 export const getFriends = (): ApiMiddlewareAction =>
   apiCallAction({
@@ -25,3 +27,10 @@ export const addFriend = (username: string): ApiMiddlewareAction =>
     apiCall: fetchAddFriend,
     apiCallArgs: [username]
   });
+
+export const getUserAndFriends = () => (dispatch: Dispatch) => {
+  batch(() => {
+    dispatch(getUser());
+    dispatch(getFriends());
+  });
+};
