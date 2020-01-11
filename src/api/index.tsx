@@ -38,5 +38,8 @@ export const fetchRecieptById = (
 export const fetchUser = (token: string) =>
   fetchData("user", "GET", null, token);
 
+export const fetchFriends = (token: string) =>
+  fetchData("friends", "GET", null, token);
+
 export const addUser = (token: string, username: string) =>
   fetchData(`friend/${username}`, "POST", null, token);

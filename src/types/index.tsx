@@ -7,7 +7,6 @@ export * from "./balance";
 export * from "./login";
 export * from "./payment";
 export * from "./reciept";
-export * from "./signup";
 export * from "./user";
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -30,8 +29,8 @@ export type Action<T, P> = {
 };
 
 export type ApiMiddlewarePayload = {
-  successType: string;
-  failType: string;
+  successType?: string | null;
+  failType?: string | null;
 
   withToken: boolean;
 
@@ -41,11 +40,17 @@ export type ApiMiddlewarePayload = {
   onSuccess?: (arg0: any) => any;
   onFail?: (arg0: any) => any;
 
-  afterSuccess?: any;
-  afterFail?: any;
+  afterSuccess?: Action<string, any> | null;
+  afterFail?: Action<string, any> | null;
 };
 
 export type ApiMiddlewareAction = Action<
   typeof API_MIDDLEWARE_TYPE,
   ApiMiddlewarePayload
 >;
+
+export type SetDataReducerType = {
+  successType: string;
+  failType: string;
+  initialState: Failable<any, any>;
+};

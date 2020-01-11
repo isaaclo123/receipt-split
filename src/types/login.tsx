@@ -29,8 +29,14 @@ export interface LoginErrors {
 }
 
 export type LoginState = Failable<LoginData, LoginErrors>;
-// {
-//   username: string;
-//   login: boolean;
-//   token: string | null;
-// }
+
+export interface SignupPayload {
+  username: string;
+  fullname: string;
+  password: string;
+}
+
+export interface SignupAction {
+  type: string;
+  payload: SignupPayload;
+}

@@ -1,10 +1,10 @@
-import { Action, Failable } from "../types/index";
+import { Action, Failable, SetDataReducerType } from "../types/index";
 
-export const getDataReducer = (
-  successType: string,
-  failType: string,
-  initialState: Failable<any, any>
-) => (
+export const setDataReducer = ({
+  successType,
+  failType,
+  initialState
+}: SetDataReducerType) => (
   state: Failable<any, any> = initialState,
   action: Action<string, any>
 ) => {

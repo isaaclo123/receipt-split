@@ -10,7 +10,7 @@ import simplejson
 from .meta import db
 from .auth import identity
 from .models import User, Reciept
-from .schemas import UserSchema, RecieptSchema, UserSimpleSchema, BalanceSchema
+from .schemas import UserSchema, RecieptSchema, BalanceSchema
 from .forms import RecieptForm
 from .helpers import calculate_balances
 
@@ -21,7 +21,7 @@ views = Blueprint('views', __name__)
 
 
 user_schema = UserSchema()
-user_simple_schema = UserSimpleSchema()
+users_schema = UserSchema(many=True)
 
 balances_schema = BalanceSchema(many=True)
 
@@ -67,7 +67,7 @@ def reciept_create():
             "name": "New Reciept",
             "amount": 0.0,
             "date": str(date.today()),
-            "user": user_simple_schema.dump(current_identity),
+            "user": user_schema.dump(current_identity),
             "users": []
         }, status.HTTP_200_OK
 
@@ -211,6 +211,14 @@ def friend_add(username):
 
     friend_dump = user_schema.dump(friend)
     return friend_dump, status.HTTP_200_OK
+
+
+@views.route('/friends', methods=['GET'])
+@jwt_required()
+def friend_list():
+    friends = users_schema.dump(current_identity.friends)
+    print(friends)
+    return friends, status.HTTP_200_OK
 
 
 @views.route('/proxy')

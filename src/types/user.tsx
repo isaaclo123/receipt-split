@@ -1,46 +1,42 @@
-import { Failable, RecieptType } from "./index";
+import { Action, Failable } from "./index";
 
-import { USER_INFO_SUCCESS, USER_INFO_FAIL, RootState } from "../types/index";
+import {
+  USER_INFO_SUCCESS,
+  USER_INFO_FAIL,
+  FRIEND_LIST_SUCCESS,
+  FRIEND_LIST_FAIL
+} from "../types/index";
 
 export type UserType = {
   id: number;
-  // friend_of_id?: number;
-  // friends?: UserType[];
-
   username: string;
   fullname: string;
-
-  // reciepts?: RecieptType;
-  // reciept_items?: number;
 };
 
 export type UserErrors = {
   id?: string;
-  // friend_of_id?: number;
-  // friends?: UserType[];
-
   username?: string;
   fullname?: string;
-
-  // reciepts?: RecieptType;
-  // reciept_items?: number;
 };
 
-export interface UserInfoSuccessAction {
-  type: typeof USER_INFO_SUCCESS;
-  payload: UserType;
-}
-
-export interface UserInfoFailAction {
-  type: typeof USER_INFO_FAIL;
-  payload: UserErrors;
-}
+export type UserInfoSuccessAction = Action<typeof USER_INFO_SUCCESS, UserType>;
+export type UserInfoFailAction = Action<typeof USER_INFO_FAIL, UserErrors>;
 
 export type UserAction = UserInfoSuccessAction | UserInfoFailAction;
 
-// export interface UserAction {
-//   type: string;
-//   payload: UserState;
-// }
+export type UserState = Failable<UserType, UserErrors>;
 
-export type UserState = Failable<UserType, {}>;
+// friends
+
+export type FriendListSuccessAction = Action<
+  typeof FRIEND_LIST_SUCCESS,
+  UserType[]
+>;
+export type FriendListFailAction = Action<
+  typeof FRIEND_LIST_FAIL,
+  UserErrors[]
+>;
+
+export type FriendAction = FriendListSuccessAction | FriendListFailAction;
+
+export type FriendState = Failable<UserType[], UserErrors[]>;

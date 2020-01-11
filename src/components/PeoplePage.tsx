@@ -14,13 +14,16 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-import { getUser } from "../actions/index";
+import { getUser, getFriends } from "../actions/index";
 
 import {
   RecieptProps,
-  RecieptListItemComponent
-} from "./RecieptListItemComponent";
-import { UserType, UserState, LoginState } from "../types/index";
+  RecieptListItemComponent,
+  UserListItemComponent,
+  UserListItemProps,
+  ListOrNoneComponent
+} from "./index";
+import { FriendState, UserType, UserState, LoginState } from "../types/index";
 
 const mapStateToProps = (state: any) => {
   return state;
@@ -28,7 +31,7 @@ const mapStateToProps = (state: any) => {
 
 const connector = connect(
   mapStateToProps,
-  { getUser }
+  { getUser, getFriends }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -36,13 +39,16 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux &
   RouteComponentProps<{}> & {
     userState?: UserState;
+    friendState?: FriendState;
     loginState?: LoginState;
   };
 
 const PeoplePageComponent = ({
   match,
   userState,
+  friendState,
   getUser,
+  getFriends,
   loginState
 }: Props) => {
   const [friendText, setFriendText] = useState("");
@@ -80,6 +86,8 @@ const PeoplePageComponent = ({
   if (run) {
     setRun(false);
     getUser();
+    console.log(getFriends);
+    getFriends();
   }
 
   if (userState == null) {
@@ -88,7 +96,13 @@ const PeoplePageComponent = ({
 
   const { username, fullname } = userState.data;
 
-  const friends: UserType[] = [];
+  const friends: UserType[] = [
+    {
+      id: 1,
+      username: "bull",
+      fullname: "Bob Clinton"
+    }
+  ];
 
   return (
     <>
@@ -154,23 +168,13 @@ const PeoplePageComponent = ({
       <br />
       <h5 />
       <ListGroup className="mb-3">
-        {(friends == null || friends.length <= 0) && (
-          <ListGroup.Item>
-            <span className="text-secondary">None</span>
-          </ListGroup.Item>
-        )}
-
-        {friends != null &&
-          friends.map(({ username = "", fullname = "", id = -1 }: UserType) => {
-            return (
-              <ListGroup.Item>
-                <span className="float-left">
-                  <span className="text-primary">{fullname}</span>
-                </span>
-                <span className="float-right">({username})</span>
-              </ListGroup.Item>
-            );
-          })}
+        <ListOrNoneComponent<UserType>
+          list={friendState.data}
+          listComponent={(user: UserType) => (
+            <UserListItemComponent user={user} />
+          )}
+          noneComponent={<UserListItemComponent />}
+        />
       </ListGroup>
     </>
   );

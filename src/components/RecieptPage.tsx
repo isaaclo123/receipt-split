@@ -12,9 +12,10 @@ import { LinkContainer } from "react-router-bootstrap";
 import { getRecieptList } from "../actions/index";
 
 import {
+  ListOrNoneComponent,
   RecieptProps,
   RecieptListItemComponent
-} from "./RecieptListItemComponent";
+} from "./index";
 
 import { RootState, RecieptType, RecieptListState } from "../types/index";
 
@@ -71,15 +72,14 @@ const RecieptPageComponent = ({
       <br />
       <h5 />
       <ListGroup className="mb-3">
-        {!reciepts.length && (
-          <ListGroup.Item>
-            <a onClick={() => {}}>None</a>
-          </ListGroup.Item>
-        )}
-        {reciepts.map(
-          ({ name = "", amount = -1, date = "", id = -1 }: RecieptType) => {
-            console.log(`ID ${id}`);
-
+        <ListOrNoneComponent<RecieptType>
+          list={reciepts}
+          listComponent={({
+            name = "",
+            amount = -1,
+            date = "",
+            id = -1
+          }: RecieptType) => {
             const props: RecieptProps = {
               pending: true,
               handleNameClick: () => {
@@ -92,8 +92,13 @@ const RecieptPageComponent = ({
               name
             };
             return <RecieptListItemComponent key={id} {...props} />;
+          }}
+          noneComponent={
+            <ListGroup.Item>
+              <a onClick={() => {}}>None</a>
+            </ListGroup.Item>
           }
-        )}
+        />
       </ListGroup>
     </>
   );

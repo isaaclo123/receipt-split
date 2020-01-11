@@ -1,9 +1,10 @@
-import { fetchLogin } from "../api/index";
+import { fetchLogin, fetchSignup } from "../api/index";
 import {
   ApiMiddlewareAction,
   LOGIN_FAIL,
   LOGIN_SUCCESS,
-  LoginPayload
+  LoginPayload,
+  SignupPayload
 } from "../types/index";
 import { apiCallAction } from "./index";
 
@@ -19,4 +20,17 @@ export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
         token: access_token
       };
     }
+  });
+
+export const setSignup = (payload: SignupPayload): ApiMiddlewareAction =>
+  apiCallAction({
+    failType: LOGIN_FAIL,
+    withToken: false,
+    apiCall: fetchSignup,
+    apiCallArgs: [payload],
+
+    afterSuccess: setLogin({
+      username: payload.username,
+      password: payload.password
+    })
   });

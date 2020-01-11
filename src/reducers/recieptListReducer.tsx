@@ -5,7 +5,7 @@ import {
   RECIEPT_LIST_FAIL
 } from "../types/index";
 
-import { getDataReducer } from "./index";
+import { setDataReducer } from "./index";
 
 const initialState: RecieptListState = {
   error: false,
@@ -17,8 +17,9 @@ export const recieptListReducer = (
   state: RecieptListState = initialState,
   action: RecieptListAction
 ) => {
-  return getDataReducer(RECIEPT_LIST_SUCCESS, RECIEPT_LIST_FAIL, state)(
-    state,
-    action
-  );
+  return setDataReducer({
+    successType: RECIEPT_LIST_SUCCESS,
+    failType: RECIEPT_LIST_FAIL,
+    initialState: state
+  })(state, action);
 };

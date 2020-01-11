@@ -20,8 +20,8 @@ export const apiCallMiddleware: Middleware = ({
   }
 
   const {
-    successType,
-    failType,
+    successType = null,
+    failType = null,
 
     withToken,
 
@@ -40,19 +40,23 @@ export const apiCallMiddleware: Middleware = ({
   const result = await apiCall(...args);
 
   try {
-    await dispatch({
-      type: successType,
-      payload: onSuccess(result)
-    });
+    if (successType != null) {
+      await dispatch({
+        type: successType,
+        payload: onSuccess(result)
+      });
+    }
 
     if (afterSuccess != null) {
       dispatch(afterSuccess);
     }
   } catch (e) {
-    await dispatch({
-      type: failType,
-      payload: onFail(e)
-    });
+    if (failType != null) {
+      await dispatch({
+        type: failType,
+        payload: onFail(e)
+      });
+    }
 
     if (afterFail != null) {
       dispatch(afterFail);

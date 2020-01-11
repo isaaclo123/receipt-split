@@ -69,7 +69,19 @@ class FriendSchema(ma.ModelSchema):
         fields = ('id', 'fullname', 'username')
 
 
-class UserSimpleSchema(ma.ModelSchema):
+class UserSchema(ma.ModelSchema):
+    # class Meta:
+    #     model = User
+    #     # fields = ('id', 'fullname', 'username', 'friends',
+    #     #           'balances_to_user', 'balances_from_user', 'payments_to_user',
+    #     #           'payments_from_user')
+
+    #     fields = ('id', 'fullname', 'username')
+
+    # friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
+
+    # balances_to_user = ma.Nested(BalanceSchema, many=True)
+    # balances_from_user = ma.Nested(BalanceSchema, many=True)
     class Meta:
         model = User
         fields = ('id', 'fullname', 'username')
@@ -84,8 +96,8 @@ class BalanceSchema(ma.ModelSchema):
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = EXCLUDE
 
-    to_user = ma.Nested(UserSimpleSchema)
-    from_user = ma.Nested(UserSimpleSchema)
+    to_user = ma.Nested(UserSchema)
+    from_user = ma.Nested(UserSchema)
 
     @post_load(pass_original=True)
     def get_existing_user(self, data, original_data, **kwargs):
@@ -101,27 +113,13 @@ class BalanceSchema(ma.ModelSchema):
         return fromuser
 
 
-class UserSchema(ma.ModelSchema):
-    class Meta:
-        model = User
-        # fields = ('id', 'fullname', 'username', 'friends',
-        #           'balances_to_user', 'balances_from_user', 'payments_to_user',
-        #           'payments_from_user')
-
-        fields = ('id', 'fullname', 'username')
-
-    friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
-
-    balances_to_user = ma.Nested(BalanceSchema, many=True)
-    balances_from_user = ma.Nested(BalanceSchema, many=True)
-
 
 class RecieptItemSchema(ma.ModelSchema):
     class Meta:
         model = RecieptItem
         fields = ('name', 'amount', 'users')
 
-    users = ma.Nested(UserSimpleSchema,
+    users = ma.Nested(UserSchema,
                       many=True)
 
     @post_load(pass_original=True)
@@ -141,9 +139,9 @@ class RecieptSchema(ma.ModelSchema):
 
     balances = ma.Nested(BalanceSchema, many=True)
     reciept_items = ma.Nested(RecieptItemSchema, many=True)
-    user = ma.Nested(UserSimpleSchema)
+    user = ma.Nested(UserSchema)
 
-    users = ma.Nested(UserSimpleSchema, many=True)
+    users = ma.Nested(UserSchema, many=True)
 
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):

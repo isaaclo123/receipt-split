@@ -3,7 +3,7 @@ import {
   Failable,
   UserType,
   BalanceType,
-  RECIEPT_SAVE_REQUEST,
+  // RECIEPT_SAVE_REQUEST,
   RECIEPT_LIST_SUCCESS,
   RECIEPT_LIST_FAIL
 } from "./index";
@@ -17,7 +17,7 @@ export interface RecieptPayload {
 //   payload: RecieptPayload;
 // }
 
-export type RecieptSetAction = Action<typeof RECIEPT_SAVE_REQUEST, RecieptType>;
+// export type RecieptSetAction = Action<typeof RECIEPT_SAVE_REQUEST, RecieptType>;
 
 export interface RecieptAction {
   type: string;

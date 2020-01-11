@@ -12,4 +12,6 @@ export * from "./SignupPage";
 export * from "./PeoplePage";
 export * from "./TextInputComponent";
 export * from "./UserSelectModal";
+export * from "./UserListItemComponent";
+export * from "./ListOrNoneComponent";
 // export * from "./TakeListItemComponent";

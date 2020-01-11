@@ -1,8 +1,8 @@
 import {
   UserAction,
   UserState,
-  USER_INFO_SUCCESS,
-  USER_INFO_FAIL
+  FRIEND_LIST_SUCCESS,
+  FRIEND_LIST_FAIL
 } from "../types/index";
 
 import { setDataReducer } from "./index";
@@ -17,13 +17,13 @@ const initialState: UserState = {
   errors: {}
 };
 
-export const userReducer = (
+export const friendReducer = (
   state: UserState = initialState,
   action: UserAction
 ) => {
   return setDataReducer({
-    successType: USER_INFO_SUCCESS,
-    failType: USER_INFO_FAIL,
+    successType: FRIEND_LIST_SUCCESS,
+    failType: FRIEND_LIST_FAIL,
     initialState: state
   })(state, action);
 };
