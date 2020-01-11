@@ -36,7 +36,7 @@ export const applyDataReducers = <
 ) => (state: S = initialState, action: A) => {
   return reducers.reduce(
     (accState, { reducerCreator, args }) =>
-      reducerCreator(initialState, ...args)(state, action),
+      reducerCreator(initialState, ...args)(accState, action),
     initialState
   );
 };

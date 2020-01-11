@@ -38,7 +38,6 @@ const PeoplePageComponent = ({
   getFriends
 }: Props) => {
   const [hide, setHide] = useState(true);
-  const [run, setRun] = useState(true);
 
   // const onClose = () => {
   //   setError("");
@@ -46,12 +45,22 @@ const PeoplePageComponent = ({
   // };
 
   // gets user info once
-  if (run) {
-    getFriends();
+  const [run1, setRun1] = useState(true);
+  const [run2, setRun2] = useState(true);
+  if (run1) {
     getUser();
-    console.log(friendState);
-    setRun(false);
+    getFriends();
+    setRun1(false);
+    console.log("USERSTATE");
+    console.log(userState);
   }
+
+  // if (run2) {
+  //   getFriends();
+  //   setRun2(false);
+  //   console.log("FRIENDSTATE");
+  //   console.log(friendState);
+  // }
 
   const { username, fullname } = userState.data;
 
