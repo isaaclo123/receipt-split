@@ -1,10 +1,18 @@
-import { Action, Failable, Dict, API_MIDDLEWARE_TYPE } from "./index";
+import {
+  RootState,
+  Action,
+  Failable,
+  Dict,
+  API_MIDDLEWARE_TYPE
+} from "./index";
 
 export type ApiMiddlewarePayload = {
   successType?: string | null;
   failType?: string | null;
 
   withToken: boolean;
+
+  shouldCallApi?: (state: RootState) => any | unknown;
 
   apiCall: (...args: any[]) => Promise<ApiFetchType>;
   apiCallArgs?: any[];

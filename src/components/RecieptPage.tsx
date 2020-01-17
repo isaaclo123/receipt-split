@@ -17,7 +17,11 @@ import {
   RecieptListItemComponent
 } from "./index";
 
-import { RootState, RecieptType, RecieptListState } from "../types/index";
+import {
+  RootState,
+  RecieptSummaryType,
+  RecieptListState
+} from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
   const { recieptListState } = state;
@@ -72,14 +76,14 @@ const RecieptPageComponent = ({
       <br />
       <h5 />
       <ListGroup className="mb-3">
-        <ListOrNoneComponent<RecieptType>
+        <ListOrNoneComponent<RecieptSummaryType>
           list={reciepts}
           listComponent={({
             name = "",
             amount = -1,
             date = "",
             id = -1
-          }: RecieptType) => {
+          }: RecieptSummaryType) => {
             const props: RecieptProps = {
               pending: true,
               handleNameClick: () => {

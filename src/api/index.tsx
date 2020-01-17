@@ -29,7 +29,7 @@ export const saveRecieptById = (
 
 export const fetchRecieptById = (
   id: number,
-  payload: RecieptType,
+  // payload: RecieptType,
   token: string
 ) => fetchData(`reciept/${id}`, "GET", null, token);
 

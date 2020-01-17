@@ -2,7 +2,7 @@ import React from "react";
 
 export type ListOrNoneComponentProps<T> = {
   list: T[];
-  listComponent: (arg0: T) => React.ReactNode;
+  listComponent: (arg0: T, arg1?: number) => React.ReactNode;
   noneComponent?: React.ReactNode;
 };
 
@@ -17,8 +17,8 @@ export const ListOrNoneComponent = <T extends {}>({
 
   return (
     <>
-      {list.map((item: T) => {
-        return <> {listComponent(item)} </>;
+      {list.map((item: T, i: number) => {
+        return <> {listComponent(item, i)} </>;
       })}
     </>
   );

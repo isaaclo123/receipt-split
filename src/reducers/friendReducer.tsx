@@ -41,6 +41,8 @@ const initialState: FriendState = {
 //
 // };
 //
+//
+
 export const friendReducer = applyDataReducers<FriendState, FriendAction>(
   initialState,
   [
@@ -58,7 +60,8 @@ export const friendReducer = applyDataReducers<FriendState, FriendAction>(
       args: [
         {
           successType: FRIEND_ADD_SUCCESS,
-          failType: FRIEND_ADD_FAIL
+          failType: FRIEND_ADD_FAIL,
+          onSuccess: (acc: any, cur: any[]) => [cur].concat(acc)
         }
       ]
     }

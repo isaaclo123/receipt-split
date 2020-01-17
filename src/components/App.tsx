@@ -4,7 +4,13 @@ import { connect, ConnectedProps } from "react-redux";
 
 import { Switch, RouteComponentProps } from "react-router-dom";
 
-import { PrivateRoute, NavComponent, RecieptPage, PeoplePage } from "./index";
+import {
+  PrivateRoute,
+  NavComponent,
+  RecieptPage,
+  PeoplePage,
+  RecieptEditPage
+} from "./index";
 
 import "./App.css";
 
@@ -24,6 +30,10 @@ const AppComponent = (props: Props) => {
       <NavComponent {...props} />
       <div className="container pt-3 h-100">
         <Switch>
+          <PrivateRoute
+            path={`${match.path}/reciepts/edit/:id`}
+            component={RecieptEditPage}
+          />
           <PrivateRoute
             path={`${match.path}/reciepts`}
             component={RecieptPage}

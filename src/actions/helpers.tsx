@@ -28,6 +28,8 @@ export const apiCallMiddleware: Middleware = ({
 
     withToken,
 
+    shouldCallApi = (state: any) => null,
+
     apiCall,
     apiCallArgs = [],
 
@@ -38,15 +40,28 @@ export const apiCallMiddleware: Middleware = ({
     afterFail = null
   }: ApiMiddlewarePayload = action.payload;
 
-  const args = withToken ? [...apiCallArgs, getToken(getState)] : apiCallArgs;
+  const shouldCall = shouldCallApi(getState());
 
-  const { error, errors, data } = await apiCall(...args);
+  const callData =
+    shouldCall != null
+      ? {
+          error: false,
+          errors: {
+            error: "No Proper SuccessType Given, Speak with developer"
+          },
+          data: shouldCall
+        }
+      : await apiCall(
+          ...(withToken ? [...apiCallArgs, getToken(getState)] : apiCallArgs)
+        );
+
+  const { error, errors, data } = callData;
 
   if (!error) {
     if (successType != null) {
       await dispatch({
         type: successType,
-        payload: onSuccess(data)
+        payload: shouldCall != null ? data : onSuccess(data)
       });
     }
 
@@ -57,7 +72,7 @@ export const apiCallMiddleware: Middleware = ({
     if (failType != null) {
       await dispatch({
         type: failType,
-        payload: onFail(errors)
+        payload: shouldCall != null ? errors : onFail(errors)
       });
     }
 

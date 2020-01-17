@@ -1,9 +1,14 @@
 import {
   Action,
   Failable,
+  Dict,
   UserType,
   BalanceType,
   // RECIEPT_SAVE_REQUEST,
+  RECIEPT_ID_SUCCESS,
+  RECIEPT_ID_FAIL,
+  RECIEPT_CACHE_SUCCESS,
+  RECIEPT_CACHE_FAIL,
   RECIEPT_LIST_SUCCESS,
   RECIEPT_LIST_FAIL
 } from "./index";
@@ -58,14 +63,17 @@ export type RecieptError = {
   reciept_items?: string;
 };
 
-export type RecieptType = {
+export type RecieptSummaryType = {
   id?: number;
   name: string;
   amount: number;
   date: string;
   resolved: boolean;
-  user_id: number;
   user: UserType;
+};
+
+export type RecieptType = RecieptSummaryType & {
+  user_id?: number;
   users: UserType[];
   balances: BalanceType[];
   reciept_items: RecieptItemType[];
@@ -79,6 +87,30 @@ export type RecieptItemType = {
   reciept_id?: number;
   reciept?: RecieptType;
 };
+
+export type RecieptDictState = Failable<Dict<RecieptType>, Dict<any>>;
+
+export type RecieptCacheSuccessAction = Action<
+  typeof RECIEPT_CACHE_SUCCESS,
+  RecieptType
+>;
+export type RecieptCacheFailAction = Action<
+  typeof RECIEPT_CACHE_FAIL,
+  Dict<any>
+>;
+
+export type RecieptCacheAction =
+  | RecieptCacheSuccessAction
+  | RecieptCacheFailAction;
+
+export type RecieptIdSuccessAction = Action<
+  typeof RECIEPT_ID_SUCCESS,
+  RecieptType
+>;
+export type RecieptIdFailAction = Action<typeof RECIEPT_ID_FAIL, Dict<any>>;
+
+export type RecieptIdAction = RecieptIdSuccessAction | RecieptIdFailAction;
+
 //
 // const userListExample: UserType[] = [];
 //

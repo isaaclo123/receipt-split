@@ -1,4 +1,5 @@
 import {
+  Dict,
   ReducerCreatorType,
   Action,
   Failable,
@@ -8,19 +9,24 @@ import {
 
 export const setDataReducer = (
   initialState: any,
-  { successType, failType }: SetDataReducerType
+  {
+    successType,
+    failType,
+    onSuccess = (a: Dict, b: any) => b,
+    onFail = (a: Dict, b: any) => b
+  }: SetDataReducerType
 ) => (state: Failable<any, any>, action: Action<string, any>) => {
   switch (action.type) {
     case successType:
       return {
         error: false,
-        data: action.payload,
+        data: onSuccess(state.data, action.payload),
         errors: initialState.errors
       };
     case failType:
       return Object.assign({}, state, {
         error: true,
-        errors: action.payload //TODO
+        errors: onFail(state.errors, action.payload)
       });
     default:
       return state;
@@ -49,4 +55,16 @@ export const applyDataReducers = <
   // console.log(myresult);
   // console.log("AFTER STATE");
   return myresult;
+};
+
+export const insertIndex = <T extends {}>(
+  state: T[],
+  newItem: T,
+  insertAt: number
+) => {
+  return [...state.slice(0, insertAt), newItem, ...state.slice(insertAt + 1)];
+};
+
+export const removeIndex = <T extends {}>(state: T[], deleteAt: number) => {
+  return [...state.slice(0, deleteAt), ...state.slice(deleteAt + 1)];
 };

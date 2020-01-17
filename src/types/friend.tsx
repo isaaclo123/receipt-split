@@ -6,7 +6,7 @@ export type FriendListSuccessAction = Action<
   typeof FRIEND_LIST_SUCCESS,
   UserType[]
 >;
-export type FriendListFailAction = Action<typeof FRIEND_LIST_FAIL, Dict>;
+export type FriendListFailAction = Action<typeof FRIEND_LIST_FAIL, Dict<any>>;
 
 export type FriendAction = FriendListSuccessAction | FriendListFailAction;
 

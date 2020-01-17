@@ -31,6 +31,7 @@ export type FriendModalProps = PropsFromRedux & {
   onClose: () => void;
 };
 
+// TODO errors.error
 const FriendModalComponent = ({
   friendState,
   addFriend,
@@ -76,7 +77,7 @@ const FriendModalComponent = ({
             </Button>
           </InputGroup.Append>
           <Form.Control.Feedback type="invalid">
-            {"PROBLEMS"}
+            {"error" in errors ? errors.error : "Unknown Error"}
           </Form.Control.Feedback>
         </InputGroup>
       </Modal.Body>

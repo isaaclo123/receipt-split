@@ -29,13 +29,15 @@ export type Action<T, P> = {
   payload: P;
 };
 
-export type Dict = {
-  [propName: string]: any;
+export type Dict<T = any> = {
+  [propName: string]: T;
 };
 
 export type SetDataReducerType = {
   successType: string;
   failType: string;
+  onSuccess?: (acc: any, cur: any) => any;
+  onFail?: (acc: any, cur: any) => any;
 };
 
 export type ReducerCreatorType = (

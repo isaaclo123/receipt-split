@@ -1,10 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import ListGroup from 'react-bootstrap/ListGroup';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { connect, ConnectedProps } from "react-redux";
 
-import { UserType } from '../types/index'
+import ListGroup from "react-bootstrap/ListGroup";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+
+import { ListOrNoneComponent, userListDiff } from "./index";
+import { UserType, RootState } from "../types/index";
 
 export interface UserSelectProps {
   show: boolean;
@@ -14,13 +17,32 @@ export interface UserSelectProps {
   onUserSelect: (arg0: UserType) => void;
 }
 
-export const UserSelectModal = ({
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux &
+  UserSelectProps & {
+    userAndFriends: UserType[];
+  };
+
+const mapStateToProps = ({ friendState, userState }: RootState) => {
+  return {
+    userAndFriends: [userState.data].concat(friendState.data)
+  };
+};
+
+const connector = connect(
+  mapStateToProps,
+  {}
+);
+
+export const UserSelectModalComponent = ({
   show,
   onHide,
   users,
   title,
-  onUserSelect
-}: UserSelectProps) => {
+  onUserSelect,
+  userAndFriends
+}: Props) => {
   return (
     <Modal
       show={show}
@@ -29,43 +51,46 @@ export const UserSelectModal = ({
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header style={{
-        borderBottom: 0
-      }}>
-        <Modal.Title id="contained-modal-title-vcenter">
-          {title}
-        </Modal.Title>
+      <Modal.Header
+        style={{
+          borderBottom: 0
+        }}
+      >
+        <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
       </Modal.Header>
-        <ListGroup>
-          {(users == null || users.length <= 0) &&
-            (<ListGroup.Item>
-              <span className="text-secondary">
-                None
-              </span>
-            </ListGroup.Item>)
+      <ListGroup>
+        <ListOrNoneComponent<UserType>
+          list={userListDiff(userAndFriends, users)}
+          noneComponent={
+            <ListGroup.Item>
+              <span className="text-secondary">None</span>
+            </ListGroup.Item>
           }
-
-          {(users != null) && users.map((user: UserType) => {
-            const {
-              username="",
-              fullname="",
-              id=-1
-            } = user
-              return (<ListGroup.Item onClick={() => {onUserSelect(user); onHide()}}>
-                <span className="float-left">
-                  {fullname}
-                </span>
-                <span className="float-right">
-                  ({username})
-                </span>
-              </ListGroup.Item>)
-          })}
-        </ListGroup>
-          <Modal.Footer style={{
-            borderTop: 0
-          }}>
+          listComponent={(user: UserType) => {
+            const { username, fullname } = user;
+            return (
+              <ListGroup.Item
+                onClick={() => {
+                  onUserSelect(user);
+                  onHide();
+                }}
+              >
+                <span className="float-left">{fullname}</span>
+                <span className="float-right">({username})</span>
+              </ListGroup.Item>
+            );
+          }}
+        />
+      </ListGroup>
+      <Modal.Footer
+        style={{
+          borderTop: 0
+        }}
+      >
         <Button onClick={onHide}>Close</Button>
       </Modal.Footer>
     </Modal>
   );
-}
+};
+
+export const UserSelectModal = connector(UserSelectModalComponent);

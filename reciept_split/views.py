@@ -199,6 +199,9 @@ def friend_add(username):
     if friend == current_identity:
         return {"error": "cannot friend yourself"}, status.HTTP_400_BAD_REQUEST
 
+    if friend in current_identity.friends or friend in friend.friends:
+        return {"error": "friend already added"}, status.HTTP_400_BAD_REQUEST
+
     if friend not in current_identity.friends:
         current_identity.friends.append(friend)
         db.session.add(current_identity)
