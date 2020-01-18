@@ -10,7 +10,10 @@ import {
   RECIEPT_CACHE_SUCCESS,
   RECIEPT_CACHE_FAIL,
   RECIEPT_LIST_SUCCESS,
-  RECIEPT_LIST_FAIL
+  RECIEPT_LIST_FAIL,
+  RECIEPT_SET_NAME,
+  RECIEPT_SET_AMOUNT,
+  RECIEPT_SET_DATE
 } from "./index";
 
 export interface RecieptPayload {
@@ -110,6 +113,9 @@ export type RecieptIdSuccessAction = Action<
 export type RecieptIdFailAction = Action<typeof RECIEPT_ID_FAIL, Dict<any>>;
 
 export type RecieptIdAction = RecieptIdSuccessAction | RecieptIdFailAction;
+
+export type RecieptSetNameAction = Action<typeof RECIEPT_SET_NAME, string>;
+export type RecieptSetAmountAction = Action<typeof RECIEPT_SET_AMOUNT, string>;
 
 //
 // const userListExample: UserType[] = [];

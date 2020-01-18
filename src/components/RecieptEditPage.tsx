@@ -12,7 +12,12 @@ import { Redirect, RouteComponentProps } from "react-router-dom";
 
 import { ListOrNoneComponent } from "./index";
 
-import { getReciept } from "../actions/index";
+import {
+  getReciept,
+  setRecieptName,
+  setRecieptAmount,
+  setRecieptDate
+} from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
 // import { saveReciept } from "../actions/saveReciept";
 
@@ -69,15 +74,11 @@ const RecieptEditPageComponent = ({
 Props) => {
   const [run, setRun] = useState(true);
 
-  const blankUserList: UserType[] = [];
-
-  const [modalState, setModalState] = useState({
-    show: false
-    // addedusers: blankUserList,
-    // modalcallback: (user: UserType) => {}
+  const [modalShow, setModalShow] = useState(false);
+  const [modalUsers, setModalUsers] = useState([]);
+  const [modalOnSelect, setModalOnSelect] = useState({
+    onSelect: (user: UserType) => {}
   });
-
-  const { show } = modalState;
 
   const reciept_id = Number(match.params.id) || -1;
 
@@ -102,6 +103,17 @@ Props) => {
     date
   }: RecieptType = recieptState.data;
 
+  const onHide = () => {
+    setModalShow(false);
+  };
+
+  const setModal = (onSelect: (arg0: UserType) => void) => {
+    setModalOnSelect({
+      onSelect
+    });
+    setModalShow(true);
+  };
+
   const onSave = () => {
     const payload = { ...recieptState.data, id };
     console.log("PAYLOADkjyyp");
@@ -114,6 +126,14 @@ Props) => {
 
   return (
     <>
+      <UserSelectModal
+        show={modalShow}
+        title={"Users"}
+        onHide={onHide}
+        users={modalUsers}
+        onSelect={modalOnSelect.onSelect}
+      />
+
       <div className="align-middle mb-3">
         <h5
           className="float-left m-0 p-0"
@@ -144,7 +164,7 @@ Props) => {
               size={40}
               type="text"
               value={date}
-              handleTextChange={(date: string) => {}}
+              handleTextChange={setRecieptDate}
             />
             <br />
           </>
@@ -152,16 +172,20 @@ Props) => {
         prefix="*"
         variant="info"
         name={name}
-        handleNameChange={(name: string) => {}}
+        handleNameChange={(name: string) => {
+          setRecieptName(name);
+        }}
         amount={amount}
-        handleAmountChange={(amount: number) => {}}
+        handleAmountChange={setRecieptAmount}
         handleDeleteClick={() => {
           alert("delete");
         }}
         users={users}
         handleUserClick={() => {}}
         handleDeleteUserClick={(i: number) => {}}
-        handleAddUserClick={() => {}}
+        handleAddUserClick={() => {
+          setModal(user => {});
+        }}
       />
       <div className="align-middle">
         <h5 className="float-left">Sub-expenses</h5>
@@ -183,7 +207,7 @@ Props) => {
           </Card>
         }
         listComponent={(
-          { name, amount, users = blankUserList }: RecieptItemType,
+          { name, amount, users = [] }: RecieptItemType,
           i = -1
         ) => {
           return (

@@ -1,25 +1,18 @@
 import { fetchRecieptById, fetchRecieptList } from "../api/index";
 
 import {
-  RootState,
+  // RootState,
   RECIEPT_ID_SUCCESS,
   RECIEPT_ID_FAIL,
   RECIEPT_LIST_FAIL,
-  RECIEPT_LIST_SUCCESS
+  RECIEPT_LIST_SUCCESS,
+  RECIEPT_SET_NAME,
+  RECIEPT_SET_AMOUNT,
+  RECIEPT_SET_DATE
 } from "../types/index";
 
-// export const setRecieptList = () => (dispatch: Dispatch) => {
-//   const action = {
-//     type: 'RECIEPT_LIST_REQUEST',
-//   }
-//
-//   console.log("GETRECIEPTLIST")
-//
-//   dispatch(action)
-// }
-
 import { ApiMiddlewareAction } from "../types/index";
-import { apiCallAction } from "./index";
+import { setValueAction, apiCallAction } from "./index";
 
 export const getRecieptList = (): ApiMiddlewareAction =>
   apiCallAction({
@@ -49,3 +42,17 @@ export const getReciept = (id: number): ApiMiddlewareAction =>
 //
 //   dispatch(action);
 // };
+
+export const setRecieptName = setValueAction<string>({
+  successType: RECIEPT_SET_NAME,
+  validate: (s: string) => {
+    console.log(s);
+    return true;
+  }
+});
+export const setRecieptAmount = setValueAction<number>({
+  successType: RECIEPT_SET_AMOUNT
+});
+export const setRecieptDate = setValueAction<string>({
+  successType: RECIEPT_SET_DATE
+});

@@ -1,6 +1,7 @@
 import { rootReducer } from "../reducers/rootReducer";
 
 export * from "./api";
+export * from "./setValue";
 export * from "./consts";
 
 export * from "./balance";

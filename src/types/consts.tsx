@@ -15,6 +15,10 @@ export const RECIEPT_SAVE_FAIL = "RECIEPT_SAVE_FAIL";
 
 export const RECIEPT_SET = "RECIEPT_SET";
 
+export const RECIEPT_SET_NAME = "RECIEPT_SET_NAME";
+export const RECIEPT_SET_AMOUNT = "RECIEPT_SET_AMOUNT";
+export const RECIEPT_SET_DATE = "RECIEPT_SET_DATE";
+
 // export const LOGIN_REQUEST = "LOGIN_REQUEST";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";

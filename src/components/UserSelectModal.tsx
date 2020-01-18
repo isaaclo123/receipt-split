@@ -6,7 +6,11 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-import { ListOrNoneComponent, userListDiff } from "./index";
+import {
+  UserListItemComponent,
+  ListOrNoneComponent,
+  userListDiff
+} from "./index";
 import { UserType, RootState } from "../types/index";
 
 export interface UserSelectProps {
@@ -14,7 +18,7 @@ export interface UserSelectProps {
   title: string;
   onHide: () => void;
   users: UserType[];
-  onUserSelect: (arg0: UserType) => void;
+  onSelect: (arg0: UserType) => void;
 }
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -25,6 +29,8 @@ type Props = PropsFromRedux &
   };
 
 const mapStateToProps = ({ friendState, userState }: RootState) => {
+  console.log("USERANDFRIENDS");
+  console.log([userState.data].concat(friendState.data));
   return {
     userAndFriends: [userState.data].concat(friendState.data)
   };
@@ -40,7 +46,7 @@ export const UserSelectModalComponent = ({
   onHide,
   users,
   title,
-  onUserSelect,
+  onSelect,
   userAndFriends
 }: Props) => {
   return (
@@ -61,25 +67,16 @@ export const UserSelectModalComponent = ({
       <ListGroup>
         <ListOrNoneComponent<UserType>
           list={userListDiff(userAndFriends, users)}
-          noneComponent={
-            <ListGroup.Item>
-              <span className="text-secondary">None</span>
-            </ListGroup.Item>
-          }
-          listComponent={(user: UserType) => {
-            const { username, fullname } = user;
-            return (
-              <ListGroup.Item
-                onClick={() => {
-                  onUserSelect(user);
-                  onHide();
-                }}
-              >
-                <span className="float-left">{fullname}</span>
-                <span className="float-right">({username})</span>
-              </ListGroup.Item>
-            );
-          }}
+          noneComponent={<UserListItemComponent />}
+          listComponent={(user: UserType) => (
+            <UserListItemComponent
+              user={user}
+              onClick={() => {
+                onSelect(user);
+                onHide();
+              }}
+            />
+          )}
         />
       </ListGroup>
       <Modal.Footer

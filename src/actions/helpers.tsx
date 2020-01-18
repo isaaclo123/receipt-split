@@ -1,10 +1,11 @@
-import { Middleware } from "redux";
+import { Middleware, Dispatch } from "redux";
 import {
   Action,
   RootState,
   ApiMiddlewareAction,
   ApiMiddlewarePayload,
-  API_MIDDLEWARE_TYPE
+  API_MIDDLEWARE_TYPE,
+  setValuePayload
 } from "../types/index";
 
 export const getToken = (getState: () => RootState) => {
@@ -89,4 +90,22 @@ export const apiCallAction = (
     type: API_MIDDLEWARE_TYPE,
     payload
   };
+};
+
+export const setValueAction = <T extends {}>({
+  successType,
+  failType = null,
+  validate = (a: T) => true
+}: setValuePayload<T>) => (payload: T) => (dispatch: Dispatch) => {
+  if (validate(payload)) {
+    dispatch({
+      type: successType,
+      payload
+    });
+  } else if (failType != null) {
+    dispatch({
+      type: failType,
+      payload
+    });
+  }
 };
