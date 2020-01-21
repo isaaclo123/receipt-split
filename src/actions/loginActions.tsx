@@ -8,7 +8,7 @@ import {
 } from "../types/index";
 import { apiCallAction } from "./index";
 
-export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
+export const setLogin = (payload: LoginPayload) =>
   apiCallAction({
     successType: LOGIN_SUCCESS,
     failType: LOGIN_FAIL,
@@ -22,7 +22,7 @@ export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
     }
   });
 
-export const setSignup = (payload: SignupPayload): ApiMiddlewareAction =>
+export const setSignup = (payload: SignupPayload) =>
   apiCallAction({
     failType: LOGIN_FAIL,
     withToken: false,

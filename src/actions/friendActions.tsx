@@ -5,13 +5,14 @@ import {
   FRIEND_ADD_SUCCESS,
   FRIEND_ADD_FAIL,
   FRIEND_LIST_SUCCESS,
-  FRIEND_LIST_FAIL
+  FRIEND_LIST_FAIL,
+  RootState
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
 import { getUser, apiCallAction } from "./index";
 
-export const getFriends = (): ApiMiddlewareAction =>
+export const getFriends = () =>
   apiCallAction({
     successType: FRIEND_LIST_SUCCESS,
     failType: FRIEND_LIST_FAIL,
@@ -19,7 +20,7 @@ export const getFriends = (): ApiMiddlewareAction =>
     apiCall: fetchFriends
   });
 
-export const addFriend = (username: string): ApiMiddlewareAction =>
+export const addFriend = (username: string) =>
   apiCallAction({
     successType: FRIEND_ADD_SUCCESS,
     failType: FRIEND_ADD_FAIL,
@@ -28,9 +29,12 @@ export const addFriend = (username: string): ApiMiddlewareAction =>
     apiCallArgs: [username]
   });
 
-export const getUserAndFriends = () => (dispatch: Dispatch) => {
+export const getUserAndFriends = () => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
   batch(() => {
-    dispatch(getUser());
-    dispatch(getFriends());
+    getUser();
+    getFriends();
   });
 };

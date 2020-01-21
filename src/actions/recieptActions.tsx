@@ -1,3 +1,4 @@
+import { Dispatch } from "redux";
 import { fetchRecieptById, fetchRecieptList } from "../api/index";
 
 import {
@@ -14,7 +15,7 @@ import {
 import { ApiMiddlewareAction } from "../types/index";
 import { setValueAction, apiCallAction } from "./index";
 
-export const getRecieptList = (): ApiMiddlewareAction =>
+export const getRecieptList = () =>
   apiCallAction({
     successType: RECIEPT_LIST_SUCCESS,
     failType: RECIEPT_LIST_FAIL,
@@ -22,7 +23,7 @@ export const getRecieptList = (): ApiMiddlewareAction =>
     apiCall: fetchRecieptList
   });
 
-export const getReciept = (id: number): ApiMiddlewareAction =>
+export const getReciept = (id: number) =>
   apiCallAction({
     successType: RECIEPT_ID_SUCCESS,
     failType: RECIEPT_ID_FAIL,
@@ -43,13 +44,23 @@ export const getReciept = (id: number): ApiMiddlewareAction =>
 //   dispatch(action);
 // };
 
-export const setRecieptName = setValueAction<string>({
-  successType: RECIEPT_SET_NAME,
-  validate: (s: string) => {
-    console.log(s);
-    return true;
-  }
-});
+// export const setRecieptName = setValueAction<string>({
+//   successType: RECIEPT_SET_NAME,
+//   validate: (s: string) => {
+//     console.log(s);
+//     return true;
+//   }
+// });
+
+export const setRecieptName = (payload: string) => (dispatch: Dispatch) => {
+  console.log("payload");
+  console.log(payload);
+  dispatch({
+    type: RECIEPT_SET_NAME,
+    payload
+  });
+};
+
 export const setRecieptAmount = setValueAction<number>({
   successType: RECIEPT_SET_AMOUNT
 });

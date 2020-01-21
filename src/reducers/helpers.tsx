@@ -33,6 +33,7 @@ export const setDataReducer = (
   }
 };
 
+// passes initialstate to front
 export const applyDataReducers = <
   S extends Failable<any, any>,
   A extends Action<string, any>

@@ -27,10 +27,10 @@ export interface RecieptPayload {
 
 // export type RecieptSetAction = Action<typeof RECIEPT_SAVE_REQUEST, RecieptType>;
 
-export interface RecieptAction {
-  type: string;
-  payload: RecieptState;
-}
+// export interface RecieptAction {
+//   type: string;
+//   payload: RecieptState;
+// }
 
 // reciept state
 
@@ -116,6 +116,12 @@ export type RecieptIdAction = RecieptIdSuccessAction | RecieptIdFailAction;
 
 export type RecieptSetNameAction = Action<typeof RECIEPT_SET_NAME, string>;
 export type RecieptSetAmountAction = Action<typeof RECIEPT_SET_AMOUNT, string>;
+
+export type RecieptAction =
+  | RecieptIdFailAction
+  | RecieptIdAction
+  | RecieptSetNameAction
+  | RecieptSetAmountAction;
 
 //
 // const userListExample: UserType[] = [];

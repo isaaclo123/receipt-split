@@ -173,6 +173,8 @@ Props) => {
         variant="info"
         name={name}
         handleNameChange={(name: string) => {
+          console.log(name);
+          console.log(setRecieptName(name));
           setRecieptName(name);
         }}
         amount={amount}

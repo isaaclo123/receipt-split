@@ -1,3 +1,5 @@
+import { Dispatch } from "redux";
+
 import {
   RootState,
   Action,
@@ -20,8 +22,8 @@ export type ApiMiddlewarePayload = {
   onSuccess?: (arg0: any) => any;
   onFail?: (arg0: any) => any;
 
-  afterSuccess?: Action<string, any> | null;
-  afterFail?: Action<string, any> | null;
+  afterSuccess?: (dispatch: Dispatch, getState: () => RootState) => void;
+  afterFail?: (dispatch: Dispatch, getState: () => RootState) => void;
 };
 
 export type ApiMiddlewareAction = Action<
