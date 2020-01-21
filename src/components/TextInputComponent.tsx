@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 export interface TextInputProps {
   value: string;
@@ -10,15 +10,14 @@ export interface TextInputProps {
 }
 
 export const TextInputComponent = ({
-    handleTextChange,
-    size=30,
-    type="text",
-    value,
-    pattern = "",
-    handleValidate = (str: string) => true
-  }: TextInputProps) => {
-
-  const [ hideInput, setHideInput ] = useState(true)
+  handleTextChange,
+  size = 30,
+  type = "text",
+  value,
+  pattern = "",
+  handleValidate = (str: string) => true
+}: TextInputProps) => {
+  const [hideInput, setHideInput] = useState(true);
   // const [ newValue, setNewValue ] = useState(value)
 
   // if (value !== newValue) {
@@ -40,18 +39,22 @@ export const TextInputComponent = ({
   // }
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log("keyparess");
     if (event.key === "Enter") {
-      setHideInput(true)
+      setHideInput(true);
     }
-  }
+  };
 
   return (
     <>
       <span
-        onClick={() => {setHideInput(false)}}
+        onClick={() => {
+          setHideInput(false);
+        }}
         style={{
           display: hideInput ? "inline" : "none"
-        }}>
+        }}
+      >
         {value}
       </span>
 
@@ -64,11 +67,14 @@ export const TextInputComponent = ({
         value={value}
         onChange={event => {
           if (handleValidate(event.currentTarget.value)) {
-            handleTextChange(event.currentTarget.value)
+            handleTextChange(event.currentTarget.value);
           }
         }}
         onKeyPress={handleKeyPress}
-        onBlur={()=>{setHideInput(true)}} />
+        onBlur={() => {
+          setHideInput(true);
+        }}
+      />
     </>
-  )
-}
+  );
+};

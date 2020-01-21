@@ -33,6 +33,28 @@ export const setDataReducer = (
   }
 };
 
+// export const editDataReducer = (initialState: any) => (
+//   state: Failable<any, any>,
+//   action: Action<string, any>
+// ) => {
+//   switch (action.type) {
+//     case RECIEPT_SET_NAME:
+//       console.log("RECIEPT_SET_NAME");
+//       const name = action.payload;
+//       console.log(name);
+//
+//       return {
+//         error: false,
+//         data: Object.assign({}, state.data, {
+//           name
+//         }),
+//         errors: {}
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
 export const applyDataReducers = <
   S extends Failable<any, any>,
   A extends Action<string, any>

@@ -54,7 +54,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { getReciept }
+  { getReciept, setRecieptName, setRecieptAmount, setRecieptDate }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -68,7 +68,10 @@ const RecieptEditPageComponent = ({
   match,
   userState,
   recieptState,
-  getReciept
+  getReciept,
+  setRecieptName,
+  setRecieptAmount,
+  setRecieptDate
 }: // getUser,
 //people
 Props) => {

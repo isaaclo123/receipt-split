@@ -2,7 +2,10 @@ import {
   RecieptState,
   RecieptIdAction,
   RECIEPT_ID_SUCCESS,
-  RECIEPT_ID_FAIL
+  RECIEPT_ID_FAIL,
+  Failable,
+  Action,
+  RECIEPT_SET_NAME
 } from "../types/index";
 
 import { setDataReducer, applyDataReducers } from "./index";
@@ -27,6 +30,28 @@ const initialState: RecieptState = {
   errors: {}
 };
 
+export const recieptEditReducer = (initialState: any) => (
+  state: Failable<any, any>,
+  action: Action<string, any>
+) => {
+  switch (action.type) {
+    case RECIEPT_SET_NAME:
+      console.log("RECIEPT_SET_NAME");
+      const name = action.payload;
+      console.log(name);
+
+      return {
+        error: false,
+        data: Object.assign({}, state.data, {
+          name
+        }),
+        errors: {}
+      };
+    default:
+      return state;
+  }
+};
+
 export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
   initialState,
   [
@@ -38,6 +63,10 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
           failType: RECIEPT_ID_FAIL
         }
       ]
+    },
+    {
+      reducerCreator: recieptEditReducer,
+      args: []
     }
   ]
 );
