@@ -5,10 +5,12 @@ import {
   RECIEPT_ID_FAIL,
   Failable,
   Action,
-  RECIEPT_SET_NAME
+  RECIEPT_SET_NAME,
+  RECIEPT_SET_AMOUNT,
+  RECIEPT_SET_DATE
 } from "../types/index";
 
-import { setDataReducer, applyDataReducers } from "./index";
+import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
 
 const initialState: RecieptState = {
   error: false,
@@ -65,8 +67,31 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       ]
     },
     {
-      reducerCreator: recieptEditReducer,
-      args: []
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_SET_NAME,
+          field: "name"
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_SET_AMOUNT,
+          field: "amount"
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_SET_DATE,
+          field: "date"
+        }
+      ]
     }
   ]
 );

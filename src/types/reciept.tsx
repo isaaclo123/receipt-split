@@ -86,9 +86,9 @@ export type RecieptItemType = {
   id?: number;
   name: string;
   amount: number;
-  users?: UserType[]; //TODO
-  reciept_id?: number;
-  reciept?: RecieptType;
+  users: UserType[]; //TODO
+  // reciept_id?: number;
+  // reciept?: RecieptType;
 };
 
 export type RecieptDictState = Failable<Dict<RecieptType>, Dict<any>>;

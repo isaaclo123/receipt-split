@@ -41,6 +41,14 @@ export type SetDataReducerType = {
   onFail?: (acc: any, cur: any) => any;
 };
 
+export type EditDataReducerType = {
+  successType: string;
+  // failType: string;
+  // onSuccess?: (acc: any, cur: any) => any;
+  // onFail?: (acc: any, cur: any) => any;
+  field: string;
+};
+
 export type ReducerCreatorType = (
   initialState: any,
   ...args: any[]

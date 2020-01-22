@@ -4,6 +4,7 @@ import {
   Action,
   Failable,
   SetDataReducerType,
+  EditDataReducerType,
   DataReducerType
 } from "../types/index";
 
@@ -33,27 +34,23 @@ export const setDataReducer = (
   }
 };
 
-// export const editDataReducer = (initialState: any) => (
-//   state: Failable<any, any>,
-//   action: Action<string, any>
-// ) => {
-//   switch (action.type) {
-//     case RECIEPT_SET_NAME:
-//       console.log("RECIEPT_SET_NAME");
-//       const name = action.payload;
-//       console.log(name);
-//
-//       return {
-//         error: false,
-//         data: Object.assign({}, state.data, {
-//           name
-//         }),
-//         errors: {}
-//       };
-//     default:
-//       return state;
-//   }
-// };
+export const editDataReducer = (
+  initialState: any,
+  { successType, field }: EditDataReducerType
+) => (state: Failable<any, any>, action: Action<string, any>) => {
+  switch (action.type) {
+    case successType:
+      return {
+        error: state.data.error,
+        data: Object.assign({}, state.data, {
+          [field]: action.payload
+        }),
+        errors: state.data.errors
+      };
+    default:
+      return state;
+  }
+};
 
 export const applyDataReducers = <
   S extends Failable<any, any>,
