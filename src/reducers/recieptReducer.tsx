@@ -3,8 +3,6 @@ import {
   RecieptIdAction,
   RECIEPT_ID_SUCCESS,
   RECIEPT_ID_FAIL,
-  Failable,
-  Action,
   RECIEPT_SET_NAME,
   RECIEPT_SET_AMOUNT,
   RECIEPT_SET_DATE
@@ -32,28 +30,6 @@ const initialState: RecieptState = {
   errors: {}
 };
 
-export const recieptEditReducer = (initialState: any) => (
-  state: Failable<any, any>,
-  action: Action<string, any>
-) => {
-  switch (action.type) {
-    case RECIEPT_SET_NAME:
-      console.log("RECIEPT_SET_NAME");
-      const name = action.payload;
-      console.log(name);
-
-      return {
-        error: false,
-        data: Object.assign({}, state.data, {
-          name
-        }),
-        errors: {}
-      };
-    default:
-      return state;
-  }
-};
-
 export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
   initialState,
   [
@@ -71,7 +47,7 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       args: [
         {
           successType: RECIEPT_SET_NAME,
-          field: "name"
+          field: [["name", null]]
         }
       ]
     },
@@ -80,7 +56,7 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       args: [
         {
           successType: RECIEPT_SET_AMOUNT,
-          field: "amount"
+          field: [["amount", null]]
         }
       ]
     },
@@ -89,7 +65,7 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       args: [
         {
           successType: RECIEPT_SET_DATE,
-          field: "date"
+          field: [["date", null]]
         }
       ]
     }

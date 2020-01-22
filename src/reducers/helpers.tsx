@@ -38,13 +38,40 @@ export const editDataReducer = (
   initialState: any,
   { successType, field }: EditDataReducerType
 ) => (state: Failable<any, any>, action: Action<string, any>) => {
+  const assign = (
+    payload: any,
+    state: any,
+    field: [string, number | null][]
+  ): any => {
+    if (field.length === 0) {
+      return payload;
+    }
+
+    const [cur, ...rest] = field;
+    const [key, index] = cur;
+
+    const newItem = assign(payload, state[key], rest);
+
+    if (index == null) {
+      return Object.assign({}, state, {
+        [key]: newItem
+      });
+    }
+
+    return Object.assign({}, state, {
+      [key]: [
+        ...state[key].slice(0, index),
+        newItem,
+        ...state[key].slice(index + 1)
+      ]
+    });
+  };
+
   switch (action.type) {
     case successType:
       return {
         error: state.data.error,
-        data: Object.assign({}, state.data, {
-          [field]: action.payload
-        }),
+        data: assign(action.payload, state.data, field),
         errors: state.data.errors
       };
     default:
