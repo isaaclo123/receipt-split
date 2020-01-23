@@ -18,6 +18,7 @@ export const RECIEPT_SET = "RECIEPT_SET";
 export const RECIEPT_SET_NAME = "RECIEPT_SET_NAME";
 export const RECIEPT_SET_AMOUNT = "RECIEPT_SET_AMOUNT";
 export const RECIEPT_SET_DATE = "RECIEPT_SET_DATE";
+export const RECIEPT_ADD_USER = "RECIEPT_ADD_USER";
 
 // export const LOGIN_REQUEST = "LOGIN_REQUEST";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -38,3 +39,6 @@ export const FRIEND_ADD_SUCCESS = "FRIEND_ADD_SUCCESS";
 export const FRIEND_ADD_FAIL = "FRIEND_ADD_FAIL";
 
 export const API_MIDDLEWARE_TYPE = "API_MIDDLEWARE_TYPE";
+
+export const EDIT_DATA_PREPEND = -1;
+export const EDIT_DATA_APPEND = -2;

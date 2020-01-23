@@ -5,7 +5,9 @@ import {
   Failable,
   SetDataReducerType,
   EditDataReducerType,
-  DataReducerType
+  DataReducerType,
+  EDIT_DATA_PREPEND,
+  EDIT_DATA_APPEND
 } from "../types/index";
 
 export const setDataReducer = (
@@ -41,37 +43,51 @@ export const editDataReducer = (
   const assign = (
     payload: any,
     state: any,
-    field: [string, number | null][]
+    field: [string, boolean][],
+    ids: number[]
   ): any => {
     if (field.length === 0) {
       return payload;
     }
 
     const [cur, ...rest] = field;
-    const [key, index] = cur;
+    const [key, hasindex] = cur;
 
-    const newItem = assign(payload, state[key], rest);
-
-    if (index == null) {
+    if (hasindex === false) {
       return Object.assign({}, state, {
-        [key]: newItem
+        [key]: assign(payload, state[key], rest, ids)
+      });
+    }
+
+    const [id, ...restIds] = ids;
+
+    if (id === EDIT_DATA_PREPEND) {
+      return Object.assign({}, state, {
+        [key]: [payload, ...state[key]]
+      });
+    }
+
+    if (id === EDIT_DATA_APPEND) {
+      return Object.assign({}, state, {
+        [key]: [...state[key], payload]
       });
     }
 
     return Object.assign({}, state, {
       [key]: [
-        ...state[key].slice(0, index),
-        newItem,
-        ...state[key].slice(index + 1)
+        ...state[key].slice(0, id),
+        assign(payload, state[key], rest, restIds),
+        ...state[key].slice(id + 1)
       ]
     });
   };
 
   switch (action.type) {
     case successType:
+      const { ids, data } = action.payload;
       return {
         error: state.data.error,
-        data: assign(action.payload, state.data, field),
+        data: assign(data, state.data, field, ids),
         errors: state.data.errors
       };
     default:
@@ -86,20 +102,10 @@ export const applyDataReducers = <
   initialState: S,
   reducers: DataReducerType[]
 ) => (state: S = initialState, action: A) => {
-  // console.log("BEFORE STATE");
-  // console.log(state);
-  // console.log("END BEFORE STATE");
-
   const myresult = reducers.reduce((accState, { reducerCreator, args }) => {
     const result = reducerCreator(initialState, ...args)(accState, action);
-    // console.log("MID STATE");
-    // console.log(result);
-    // console.log("MID STATE");
     return result;
   }, state);
-  // console.log("AFTER STATE");
-  // console.log(myresult);
-  // console.log("AFTER STATE");
   return myresult;
 };
 

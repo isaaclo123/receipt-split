@@ -5,7 +5,8 @@ import {
   RECIEPT_ID_FAIL,
   RECIEPT_SET_NAME,
   RECIEPT_SET_AMOUNT,
-  RECIEPT_SET_DATE
+  RECIEPT_SET_DATE,
+  RECIEPT_ADD_USER
 } from "../types/index";
 
 import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
@@ -47,7 +48,7 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       args: [
         {
           successType: RECIEPT_SET_NAME,
-          field: [["name", null]]
+          field: [["name", false]]
         }
       ]
     },
@@ -56,7 +57,7 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       args: [
         {
           successType: RECIEPT_SET_AMOUNT,
-          field: [["amount", null]]
+          field: [["amount", false]]
         }
       ]
     },
@@ -65,7 +66,16 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
       args: [
         {
           successType: RECIEPT_SET_DATE,
-          field: [["date", null]]
+          field: [["date", false]]
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_ADD_USER,
+          field: [["users", true]]
         }
       ]
     }

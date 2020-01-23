@@ -8,7 +8,10 @@ import {
   RECIEPT_LIST_SUCCESS,
   RECIEPT_SET_NAME,
   RECIEPT_SET_AMOUNT,
-  RECIEPT_SET_DATE
+  RECIEPT_SET_DATE,
+  RECIEPT_ADD_USER,
+  UserType,
+  EDIT_DATA_APPEND
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -56,3 +59,7 @@ export const setRecieptAmount = setValueAction<number>({
 export const setRecieptDate = setValueAction<string>({
   successType: RECIEPT_SET_DATE
 });
+export const addRecieptUser = (user: UserType) =>
+  setValueAction<UserType>({
+    successType: RECIEPT_ADD_USER
+  })(user, [EDIT_DATA_APPEND]);

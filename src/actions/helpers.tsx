@@ -96,16 +96,24 @@ export const setValueAction = <T extends {}>({
   successType,
   failType = null,
   validate = (a: T) => true
-}: setValuePayload<T>) => (payload: T) => (dispatch: Dispatch) => {
+}: setValuePayload<T>) => (payload: T, ids: number[] = []) => (
+  dispatch: Dispatch
+) => {
   if (validate(payload)) {
     dispatch({
       type: successType,
-      payload
+      payload: {
+        ids,
+        data: payload
+      }
     });
   } else if (failType != null) {
     dispatch({
       type: failType,
-      payload
+      payload: {
+        ids,
+        data: payload
+      }
     });
   }
 };

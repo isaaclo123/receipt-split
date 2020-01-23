@@ -46,7 +46,7 @@ export type EditDataReducerType = {
   // failType: string;
   // onSuccess?: (acc: any, cur: any) => any;
   // onFail?: (acc: any, cur: any) => any;
-  field: [string, number | null][];
+  field: [string, boolean][];
 };
 
 export type ReducerCreatorType = (

@@ -16,7 +16,8 @@ import {
   getReciept,
   setRecieptName,
   setRecieptAmount,
-  setRecieptDate
+  setRecieptDate,
+  addRecieptUser
 } from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
 // import { saveReciept } from "../actions/saveReciept";
@@ -54,7 +55,13 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { getReciept, setRecieptName, setRecieptAmount, setRecieptDate }
+  {
+    getReciept,
+    setRecieptName,
+    setRecieptAmount,
+    setRecieptDate,
+    addRecieptUser
+  }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -71,7 +78,8 @@ const RecieptEditPageComponent = ({
   getReciept,
   setRecieptName,
   setRecieptAmount,
-  setRecieptDate
+  setRecieptDate,
+  addRecieptUser
 }: // getUser,
 //people
 Props) => {
@@ -187,7 +195,9 @@ Props) => {
         handleUserClick={() => {}}
         handleDeleteUserClick={(i: number) => {}}
         handleAddUserClick={() => {
-          setModal(user => {});
+          setModal(user => {
+            addRecieptUser(user);
+          });
         }}
       />
       <div className="align-middle">
