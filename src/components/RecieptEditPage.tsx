@@ -17,7 +17,8 @@ import {
   setRecieptName,
   setRecieptAmount,
   setRecieptDate,
-  addRecieptUser
+  addRecieptUser,
+  deleteRecieptUser
 } from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
 // import { saveReciept } from "../actions/saveReciept";
@@ -60,7 +61,8 @@ const connector = connect(
     setRecieptName,
     setRecieptAmount,
     setRecieptDate,
-    addRecieptUser
+    addRecieptUser,
+    deleteRecieptUser
   }
 );
 
@@ -79,7 +81,8 @@ const RecieptEditPageComponent = ({
   setRecieptName,
   setRecieptAmount,
   setRecieptDate,
-  addRecieptUser
+  addRecieptUser,
+  deleteRecieptUser
 }: // getUser,
 //people
 Props) => {
@@ -188,12 +191,12 @@ Props) => {
         }}
         amount={amount}
         handleAmountChange={setRecieptAmount}
-        handleDeleteClick={() => {
-          alert("delete");
-        }}
+        handleDeleteClick={() => {}}
         users={users}
         handleUserClick={() => {}}
-        handleDeleteUserClick={(i: number) => {}}
+        handleDeleteUserClick={(i: number) => {
+          deleteRecieptUser(i);
+        }}
         handleAddUserClick={() => {
           setModal(user => {
             addRecieptUser(user);

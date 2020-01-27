@@ -7,7 +7,8 @@ import {
   EditDataReducerType,
   DataReducerType,
   EDIT_DATA_PREPEND,
-  EDIT_DATA_APPEND
+  EDIT_DATA_APPEND,
+  EDIT_DATA_DELETE_GET_INDEX
 } from "../types/index";
 
 export const setDataReducer = (
@@ -38,7 +39,7 @@ export const setDataReducer = (
 
 export const editDataReducer = (
   initialState: any,
-  { successType, field }: EditDataReducerType
+  { successType, field, isDelete = false }: EditDataReducerType
 ) => (state: Failable<any, any>, action: Action<string, any>) => {
   const assign = (
     payload: any,
@@ -60,6 +61,12 @@ export const editDataReducer = (
     }
 
     const [id, ...restIds] = ids;
+
+    if (isDelete) {
+      return Object.assign({}, state, {
+        [key]: [...state[key].slice(0, id), ...state[key].slice(id + 1)]
+      });
+    }
 
     if (id === EDIT_DATA_PREPEND) {
       return Object.assign({}, state, {

@@ -19,6 +19,7 @@ export const RECIEPT_SET_NAME = "RECIEPT_SET_NAME";
 export const RECIEPT_SET_AMOUNT = "RECIEPT_SET_AMOUNT";
 export const RECIEPT_SET_DATE = "RECIEPT_SET_DATE";
 export const RECIEPT_ADD_USER = "RECIEPT_ADD_USER";
+export const RECIEPT_DELETE_USER = "RECIEPT_DELETE_USER";
 
 // export const LOGIN_REQUEST = "LOGIN_REQUEST";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -42,3 +43,5 @@ export const API_MIDDLEWARE_TYPE = "API_MIDDLEWARE_TYPE";
 
 export const EDIT_DATA_PREPEND = -1;
 export const EDIT_DATA_APPEND = -2;
+export const EDIT_DATA_DELETE = (i: number) => -1 * i - 3;
+export const EDIT_DATA_DELETE_GET_INDEX = (j: number) => -1 * (j + 3);

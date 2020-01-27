@@ -10,8 +10,10 @@ import {
   RECIEPT_SET_AMOUNT,
   RECIEPT_SET_DATE,
   RECIEPT_ADD_USER,
+  RECIEPT_DELETE_USER,
   UserType,
-  EDIT_DATA_APPEND
+  EDIT_DATA_APPEND,
+  EDIT_DATA_DELETE
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -63,3 +65,8 @@ export const addRecieptUser = (user: UserType) =>
   setValueAction<UserType>({
     successType: RECIEPT_ADD_USER
   })(user, [EDIT_DATA_APPEND]);
+
+export const deleteRecieptUser = (id: number) =>
+  setValueAction<{}>({
+    successType: RECIEPT_DELETE_USER
+  })({}, [id]);

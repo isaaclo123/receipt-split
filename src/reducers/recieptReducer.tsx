@@ -6,7 +6,8 @@ import {
   RECIEPT_SET_NAME,
   RECIEPT_SET_AMOUNT,
   RECIEPT_SET_DATE,
-  RECIEPT_ADD_USER
+  RECIEPT_ADD_USER,
+  RECIEPT_DELETE_USER
 } from "../types/index";
 
 import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
@@ -76,6 +77,16 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
         {
           successType: RECIEPT_ADD_USER,
           field: [["users", true]]
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_DELETE_USER,
+          field: [["users", true]],
+          isDelete: true
         }
       ]
     }

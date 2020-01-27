@@ -47,6 +47,7 @@ export type EditDataReducerType = {
   // onSuccess?: (acc: any, cur: any) => any;
   // onFail?: (acc: any, cur: any) => any;
   field: [string, boolean][];
+  isDelete?: boolean;
 };
 
 export type ReducerCreatorType = (
