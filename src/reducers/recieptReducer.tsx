@@ -7,7 +7,12 @@ import {
   RECIEPT_SET_AMOUNT,
   RECIEPT_SET_DATE,
   RECIEPT_ADD_USER,
-  RECIEPT_DELETE_USER
+  RECIEPT_DELETE_USER,
+  RECIEPT_ADD_RECIEPT_ITEM,
+  RECIEPT_ITEM_SET_NAME,
+  RECIEPT_ITEM_SET_AMOUNT,
+  RECIEPT_ITEM_ADD_USER,
+  RECIEPT_ITEM_DELETE_USER
 } from "../types/index";
 
 import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
@@ -87,6 +92,24 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
           successType: RECIEPT_DELETE_USER,
           field: [["users", true]],
           isDelete: true
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_ADD_RECIEPT_ITEM,
+          field: [["reciept_items", true]]
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_ITEM_SET_AMOUNT,
+          field: [["reciept_items", true], ["amount", false]]
         }
       ]
     }

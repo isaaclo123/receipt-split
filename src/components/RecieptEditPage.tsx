@@ -18,7 +18,9 @@ import {
   setRecieptAmount,
   setRecieptDate,
   addRecieptUser,
-  deleteRecieptUser
+  addRecieptItem,
+  deleteRecieptUser,
+  setRecieptItemAmount
 } from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
 // import { saveReciept } from "../actions/saveReciept";
@@ -62,7 +64,9 @@ const connector = connect(
     setRecieptAmount,
     setRecieptDate,
     addRecieptUser,
-    deleteRecieptUser
+    deleteRecieptUser,
+    addRecieptItem,
+    setRecieptItemAmount
   }
 );
 
@@ -82,7 +86,9 @@ const RecieptEditPageComponent = ({
   setRecieptAmount,
   setRecieptDate,
   addRecieptUser,
-  deleteRecieptUser
+  deleteRecieptUser,
+  addRecieptItem,
+  setRecieptItemAmount
 }: // getUser,
 //people
 Props) => {
@@ -205,7 +211,12 @@ Props) => {
       />
       <div className="align-middle">
         <h5 className="float-left">Sub-expenses</h5>
-        <span className="float-right text-primary" onClick={() => {}}>
+        <span
+          className="float-right text-primary"
+          onClick={() => {
+            addRecieptItem();
+          }}
+        >
           + Add Item
         </span>
       </div>
@@ -222,10 +233,7 @@ Props) => {
             </Card.Body>
           </Card>
         }
-        listComponent={(
-          { name, amount, users = [] }: RecieptItemType,
-          i = -1
-        ) => {
+        listComponent={({ name, amount, users }: RecieptItemType, i = -1) => {
           return (
             <ExpenseCardComponent
               prefix="-"
@@ -233,7 +241,9 @@ Props) => {
               name={name}
               handleNameChange={(name: string) => {}}
               amount={amount}
-              handleAmountChange={(amount: number) => {}}
+              handleAmountChange={(amount: number) => {
+                setRecieptItemAmount(amount, i);
+              }}
               users={users}
               handleDeleteClick={() => {}}
               handleUserClick={(i: number) => {}}

@@ -11,8 +11,15 @@ import {
   RECIEPT_SET_DATE,
   RECIEPT_ADD_USER,
   RECIEPT_DELETE_USER,
+  RECIEPT_ADD_RECIEPT_ITEM,
+  RECIEPT_ITEM_SET_NAME,
+  RECIEPT_ITEM_SET_AMOUNT,
+  RECIEPT_ITEM_ADD_USER,
+  RECIEPT_ITEM_DELETE_USER,
+  RecieptItemType,
   UserType,
   EDIT_DATA_APPEND,
+  EDIT_DATA_PREPEND,
   EDIT_DATA_DELETE
 } from "../types/index";
 
@@ -70,3 +77,20 @@ export const deleteRecieptUser = (id: number) =>
   setValueAction<{}>({
     successType: RECIEPT_DELETE_USER
   })({}, [id]);
+
+export const addRecieptItem = () =>
+  setValueAction<RecieptItemType>({
+    successType: RECIEPT_ADD_RECIEPT_ITEM
+  })(
+    {
+      name: "New Reciept Item",
+      amount: 0,
+      users: []
+    },
+    [EDIT_DATA_PREPEND]
+  );
+
+export const setRecieptItemAmount = (amount: number, id: number) =>
+  setValueAction<number>({
+    successType: RECIEPT_ITEM_SET_AMOUNT
+  })(amount, [id]);

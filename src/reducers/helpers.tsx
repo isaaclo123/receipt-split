@@ -24,7 +24,11 @@ export const setDataReducer = (
     case successType:
       return {
         error: false,
-        data: onSuccess(state.data, action.payload),
+        data: Object.assign(
+          {},
+          state.data,
+          onSuccess(state.data, action.payload) // merge data
+        ),
         errors: initialState.errors
       };
     case failType:
@@ -69,6 +73,12 @@ export const editDataReducer = (
     }
 
     if (id === EDIT_DATA_PREPEND) {
+      console.log("EDITDATAPREPEND");
+      console.log(state);
+      console.log(key);
+      console.log(state[key]);
+      console.log("EDITDATAPREPEND");
+
       return Object.assign({}, state, {
         [key]: [payload, ...state[key]]
       });
