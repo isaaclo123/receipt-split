@@ -154,6 +154,8 @@ Props) => {
         onSelect={modalOnSelect.onSelect}
       />
 
+      <p>{JSON.stringify(recieptState)}</p>
+
       <div className="align-middle mb-3">
         <h5
           className="float-left m-0 p-0"

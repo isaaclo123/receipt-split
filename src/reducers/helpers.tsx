@@ -27,7 +27,7 @@ export const setDataReducer = (
         data: Object.assign(
           {},
           state.data,
-          onSuccess(state.data, action.payload) // merge data
+          onSuccess(state.data, action.payload) // merge data TODO: check as dict
         ),
         errors: initialState.errors
       };
@@ -56,9 +56,20 @@ export const editDataReducer = (
     }
 
     const [cur, ...rest] = field;
-    const [key, hasindex] = cur;
+    const [key, hasIndex] = cur;
 
-    if (hasindex === false) {
+    console.log("rest, key, hasIndex START");
+    console.log("rest");
+    console.log(rest);
+    console.log("key");
+    console.log(key);
+    console.log("hasIndex");
+    console.log(hasIndex);
+    console.log("state");
+    console.log(state);
+    console.log("rest, key, hasIndex END");
+
+    if (hasIndex === false) {
       return Object.assign({}, state, {
         [key]: assign(payload, state[key], rest, ids)
       });
@@ -90,10 +101,21 @@ export const editDataReducer = (
       });
     }
 
+    // edit
+    // console.log("DEFAULT assign");
+    // if (Array.isArray(state)) {
+    //   return [
+    //       ...state[key].slice(0, id),
+    //       assign(payload, state[key], rest, restIds),
+    //       ...state[key].slice(id + 1)
+    //     ];
+
+    // }
+
     return Object.assign({}, state, {
       [key]: [
         ...state[key].slice(0, id),
-        assign(payload, state[key], rest, restIds),
+        assign(payload, state[key][id], rest, restIds),
         ...state[key].slice(id + 1)
       ]
     });
