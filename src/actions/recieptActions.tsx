@@ -12,6 +12,7 @@ import {
   RECIEPT_ADD_USER,
   RECIEPT_DELETE_USER,
   RECIEPT_ADD_RECIEPT_ITEM,
+  RECIEPT_DELETE_RECIEPT_ITEM,
   RECIEPT_ITEM_SET_NAME,
   RECIEPT_ITEM_SET_AMOUNT,
   RECIEPT_ITEM_ADD_USER,
@@ -19,8 +20,7 @@ import {
   RecieptItemType,
   UserType,
   EDIT_DATA_APPEND,
-  EDIT_DATA_PREPEND,
-  EDIT_DATA_DELETE
+  EDIT_DATA_PREPEND
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -89,6 +89,16 @@ export const addRecieptItem = () =>
     },
     [EDIT_DATA_PREPEND]
   );
+
+export const deleteRecieptItem = (id: number) =>
+  setValueAction<{}>({
+    successType: RECIEPT_DELETE_RECIEPT_ITEM
+  })({}, [id]);
+
+export const setRecieptItemName = (name: string, id: number) =>
+  setValueAction<string>({
+    successType: RECIEPT_ITEM_SET_NAME
+  })(name, [id]);
 
 export const setRecieptItemAmount = (amount: number, id: number) =>
   setValueAction<number>({

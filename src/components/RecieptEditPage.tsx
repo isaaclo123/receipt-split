@@ -19,7 +19,9 @@ import {
   setRecieptDate,
   addRecieptUser,
   addRecieptItem,
+  deleteRecieptItem,
   deleteRecieptUser,
+  setRecieptItemName,
   setRecieptItemAmount
 } from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
@@ -66,6 +68,8 @@ const connector = connect(
     addRecieptUser,
     deleteRecieptUser,
     addRecieptItem,
+    deleteRecieptItem,
+    setRecieptItemName,
     setRecieptItemAmount
   }
 );
@@ -88,6 +92,8 @@ const RecieptEditPageComponent = ({
   addRecieptUser,
   deleteRecieptUser,
   addRecieptItem,
+  deleteRecieptItem,
+  setRecieptItemName,
   setRecieptItemAmount
 }: // getUser,
 //people
@@ -241,13 +247,17 @@ Props) => {
               prefix="-"
               variant="danger"
               name={name}
-              handleNameChange={(name: string) => {}}
+              handleNameChange={(name: string) => {
+                setRecieptItemName(name, i);
+              }}
               amount={amount}
               handleAmountChange={(amount: number) => {
                 setRecieptItemAmount(amount, i);
               }}
               users={users}
-              handleDeleteClick={() => {}}
+              handleDeleteClick={() => {
+                deleteRecieptItem(i);
+              }}
               handleUserClick={(i: number) => {}}
               handleDeleteUserClick={(i: number) => {}}
               handleAddUserClick={() => {}}
@@ -281,17 +291,5 @@ Props) => {
     </>
   );
 };
-
-//       <UserSelectModal
-//         show={show}
-//         onHide={() => {
-//           setModalState({
-//             show: false
-//           });
-//         }}
-//         users={[]}
-//         title="Friends"
-//         onUserSelect={() => {}}
-//       />
 
 export const RecieptEditPage = connector(RecieptEditPageComponent);

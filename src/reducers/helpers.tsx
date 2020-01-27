@@ -7,8 +7,7 @@ import {
   EditDataReducerType,
   DataReducerType,
   EDIT_DATA_PREPEND,
-  EDIT_DATA_APPEND,
-  EDIT_DATA_DELETE_GET_INDEX
+  EDIT_DATA_APPEND
 } from "../types/index";
 
 export const setDataReducer = (
@@ -101,17 +100,7 @@ export const editDataReducer = (
       });
     }
 
-    // edit
-    // console.log("DEFAULT assign");
-    // if (Array.isArray(state)) {
-    //   return [
-    //       ...state[key].slice(0, id),
-    //       assign(payload, state[key], rest, restIds),
-    //       ...state[key].slice(id + 1)
-    //     ];
-
-    // }
-
+    // with ID
     return Object.assign({}, state, {
       [key]: [
         ...state[key].slice(0, id),
