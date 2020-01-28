@@ -22,7 +22,9 @@ import {
   deleteRecieptItem,
   deleteRecieptUser,
   setRecieptItemName,
-  setRecieptItemAmount
+  setRecieptItemAmount,
+  addRecieptItemUser,
+  deleteRecieptItemUser
 } from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
 // import { saveReciept } from "../actions/saveReciept";
@@ -70,7 +72,9 @@ const connector = connect(
     addRecieptItem,
     deleteRecieptItem,
     setRecieptItemName,
-    setRecieptItemAmount
+    setRecieptItemAmount,
+    addRecieptItemUser,
+    deleteRecieptItemUser
   }
 );
 
@@ -94,7 +98,9 @@ const RecieptEditPageComponent = ({
   addRecieptItem,
   deleteRecieptItem,
   setRecieptItemName,
-  setRecieptItemAmount
+  setRecieptItemAmount,
+  addRecieptItemUser,
+  deleteRecieptItemUser
 }: // getUser,
 //people
 Props) => {
@@ -159,8 +165,6 @@ Props) => {
         users={modalUsers}
         onSelect={modalOnSelect.onSelect}
       />
-
-      <p>{JSON.stringify(recieptState)}</p>
 
       <div className="align-middle mb-3">
         <h5
@@ -259,8 +263,14 @@ Props) => {
                 deleteRecieptItem(i);
               }}
               handleUserClick={(i: number) => {}}
-              handleDeleteUserClick={(i: number) => {}}
-              handleAddUserClick={() => {}}
+              handleDeleteUserClick={(j: number) => {
+                deleteRecieptItemUser(i, j);
+              }}
+              handleAddUserClick={() => {
+                setModal(user => {
+                  addRecieptItemUser(user, i);
+                });
+              }}
             />
           );
         }}

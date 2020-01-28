@@ -40,6 +40,7 @@ export const getReciept = (id: number): ApiMiddlewareAction =>
     failType: RECIEPT_ID_FAIL,
     withToken: true,
     // shouldCallApi: (state: RootState) => state.recieptDictState.data[id], TODO
+    // onSuccess: (cur: any) => Object.assign({}, prev, cur),
     apiCall: fetchRecieptById,
     apiCallArgs: [id]
   });
@@ -104,3 +105,13 @@ export const setRecieptItemAmount = (amount: number, id: number) =>
   setValueAction<number>({
     successType: RECIEPT_ITEM_SET_AMOUNT
   })(amount, [id]);
+
+export const addRecieptItemUser = (user: UserType, id: number) =>
+  setValueAction<UserType>({
+    successType: RECIEPT_ITEM_ADD_USER
+  })(user, [id, EDIT_DATA_APPEND]);
+
+export const deleteRecieptItemUser = (id: number, id2: number) =>
+  setValueAction<{}>({
+    successType: RECIEPT_ITEM_DELETE_USER
+  })({}, [id, id2]);

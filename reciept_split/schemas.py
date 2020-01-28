@@ -113,7 +113,6 @@ class BalanceSchema(ma.ModelSchema):
         return fromuser
 
 
-
 class RecieptItemSchema(ma.ModelSchema):
     class Meta:
         model = RecieptItem

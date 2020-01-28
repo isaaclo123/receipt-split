@@ -132,6 +132,25 @@ export const recieptReducer = applyDataReducers<RecieptState, RecieptIdAction>(
           field: [["reciept_items", true], ["amount", false]]
         }
       ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_ITEM_ADD_USER,
+          field: [["reciept_items", true], ["users", true]]
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECIEPT_ITEM_DELETE_USER,
+          field: [["reciept_items", true], ["users", true]],
+          isDelete: true
+        }
+      ]
     }
   ]
 );

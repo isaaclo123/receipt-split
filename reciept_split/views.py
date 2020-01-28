@@ -68,7 +68,10 @@ def reciept_create():
             "amount": 0.0,
             "date": str(date.today()),
             "user": user_schema.dump(current_identity),
-            "users": []
+            "users": [],
+            "reciept_items": [],
+            "balances": [],
+            "resolved": False
         }, status.HTTP_200_OK
 
     if not request.is_json:
