@@ -1,4 +1,8 @@
-import { fetchRecieptById, fetchRecieptList } from "../api/index";
+import {
+  fetchRecieptById,
+  fetchRecieptList,
+  saveRecieptById
+} from "../api/index";
 
 import {
   // RootState,
@@ -17,6 +21,7 @@ import {
   RECIEPT_ITEM_SET_AMOUNT,
   RECIEPT_ITEM_ADD_USER,
   RECIEPT_ITEM_DELETE_USER,
+  RecieptType,
   RecieptItemType,
   UserType,
   EDIT_DATA_APPEND,
@@ -45,6 +50,18 @@ export const getReciept = (id: number): ApiMiddlewareAction =>
     apiCallArgs: [id]
   });
 
+export const saveReciept = (
+  id: number,
+  payload: RecieptType
+): ApiMiddlewareAction =>
+  apiCallAction({
+    successType: RECIEPT_ID_SUCCESS,
+    failType: RECIEPT_ID_FAIL,
+    withToken: true,
+    apiCall: saveRecieptById,
+    apiCallArgs: [id, payload]
+  });
+
 // export const getReciept = (payload: RecieptPayload) => (dispatch: Dispatch) => {
 //   console.log("getReciept");
 //   console.log(payload);
@@ -57,11 +74,7 @@ export const getReciept = (id: number): ApiMiddlewareAction =>
 // };
 
 export const setRecieptName = setValueAction<string>({
-  successType: RECIEPT_SET_NAME,
-  validate: (s: string) => {
-    console.log(s);
-    return true;
-  }
+  successType: RECIEPT_SET_NAME
 });
 export const setRecieptAmount = setValueAction<number>({
   successType: RECIEPT_SET_AMOUNT

@@ -24,7 +24,8 @@ import {
   setRecieptItemName,
   setRecieptItemAmount,
   addRecieptItemUser,
-  deleteRecieptItemUser
+  deleteRecieptItemUser,
+  saveReciept
 } from "../actions/index";
 // import { setReciept } from "../actions/setReciept";
 // import { saveReciept } from "../actions/saveReciept";
@@ -74,7 +75,8 @@ const connector = connect(
     setRecieptItemName,
     setRecieptItemAmount,
     addRecieptItemUser,
-    deleteRecieptItemUser
+    deleteRecieptItemUser,
+    saveReciept
   }
 );
 
@@ -100,7 +102,8 @@ const RecieptEditPageComponent = ({
   setRecieptItemName,
   setRecieptItemAmount,
   addRecieptItemUser,
-  deleteRecieptItemUser
+  deleteRecieptItemUser,
+  saveReciept
 }: // getUser,
 //people
 Props) => {
@@ -126,12 +129,12 @@ Props) => {
 
   const {
     id = -1,
-    balances = [],
+    balances,
     name,
     amount,
     user,
-    users = [],
-    reciept_items = [],
+    users,
+    reciept_items,
     date
   }: RecieptType = recieptState.data;
 
@@ -147,13 +150,9 @@ Props) => {
   };
 
   const onSave = () => {
-    const payload = { ...recieptState.data, id };
-    console.log("PAYLOADkjyyp");
-    console.log(payload);
-    console.log("PAYLOADkjyyp");
-    // saveReciept(recieptState.reciept); TODO
-    // getUser();
-    console.log("GOT USER");
+    console.log(id);
+    console.log(recieptState);
+    saveReciept(id, recieptState.data);
   };
 
   return (
