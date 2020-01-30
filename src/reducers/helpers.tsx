@@ -72,7 +72,9 @@ export const editDataReducer = (
 
     const [id, ...restIds] = ids;
 
-    if (isDelete) {
+    // hasIndex is true
+
+    if (isDelete && !rest.length) {
       return Object.assign({}, state, {
         [key]: [...state[key].slice(0, id), ...state[key].slice(id + 1)]
       });
