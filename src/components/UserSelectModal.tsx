@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
@@ -11,6 +11,7 @@ import {
   ListOrNoneComponent,
   userListDiff
 } from "./index";
+import { getUserAndFriends } from "../actions/index";
 import { UserType, RootState } from "../types/index";
 
 export interface UserSelectProps {
@@ -19,14 +20,12 @@ export interface UserSelectProps {
   onHide: () => void;
   users: UserType[];
   onSelect: (arg0: UserType) => void;
+  allUsers: UserType[];
 }
 
-// type PropsFromRedux = ConnectedProps<typeof connector>;
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = UserSelectProps & {
-  // userAndFriends: UserType[];
-  allUsers: UserType[];
-};
+type Props = PropsFromRedux & UserSelectProps;
 
 // const mapStateToProps = ({ friendState, userState }: RootState) => {
 //   return {
@@ -34,10 +33,10 @@ type Props = UserSelectProps & {
 //   };
 // };
 //
-// const connector = connect(
-//   mapStateToProps,
-//   {}
-// );
+const connector = connect(
+  null,
+  { getUserAndFriends }
+);
 
 export const UserSelectModalComponent = ({
   show,
@@ -45,8 +44,17 @@ export const UserSelectModalComponent = ({
   users,
   title,
   onSelect,
+  getUserAndFriends,
   allUsers
 }: Props) => {
+  // gets user info once
+  const [run, setRun] = useState(true);
+
+  if (run) {
+    getUserAndFriends();
+    setRun(false);
+  }
+
   return (
     <Modal
       show={show}
@@ -88,4 +96,4 @@ export const UserSelectModalComponent = ({
   );
 };
 
-export const UserSelectModal = UserSelectModalComponent;
+export const UserSelectModal = connector(UserSelectModalComponent);
