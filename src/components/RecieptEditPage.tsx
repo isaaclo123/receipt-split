@@ -53,8 +53,10 @@ type MatchParams = {
 };
 
 const mapStateToProps = (state: RootState) => {
-  const { recieptState, userState } = state;
+  const { recieptState, userState, friendState } = state;
+  console.log([userState.data].concat(friendState.data));
   return {
+    userAndFriends: [userState.data].concat(friendState.data),
     // people: userState.user.friends.concat(userState.user),
     recieptState,
     userState
@@ -89,6 +91,7 @@ type Props = PropsFromRedux &
 
 const RecieptEditPageComponent = ({
   match,
+  userAndFriends,
   userState,
   recieptState,
   getReciept,
@@ -107,25 +110,22 @@ const RecieptEditPageComponent = ({
 }: // getUser,
 //people
 Props) => {
+  const blankUsers: UserType[] = [];
   const [run, setRun] = useState(true);
 
   const [modalShow, setModalShow] = useState(false);
-  const [modalUsers, setModalUsers] = useState([]);
+  const [modalUsers, setModalUsers] = useState(blankUsers);
+  const [modalAllUsers, setModalAllUsers] = useState(blankUsers);
   const [modalOnSelect, setModalOnSelect] = useState({
     onSelect: (user: UserType) => {}
   });
 
   const reciept_id = Number(match.params.id) || -1;
 
-  console.log("RECIEPTID");
-  console.log(reciept_id);
-  console.log("RECIEPTID");
-
   if (run) {
     getReciept(reciept_id);
     setRun(false);
   }
-  console.log(recieptState);
 
   const {
     id = -1,
@@ -138,20 +138,26 @@ Props) => {
     date
   }: RecieptType = recieptState.data;
 
+  const allUsers = users;
+
   const onHide = () => {
     setModalShow(false);
   };
 
-  const setModal = (onSelect: (arg0: UserType) => void) => {
+  const setModal = (
+    curUsers: UserType[],
+    allUsers: UserType[],
+    onSelect: (arg0: UserType) => void
+  ) => {
     setModalOnSelect({
       onSelect
     });
+    setModalUsers(curUsers);
+    setModalAllUsers(allUsers);
     setModalShow(true);
   };
 
   const onSave = () => {
-    console.log(id);
-    console.log(recieptState);
     saveReciept(id, recieptState.data);
   };
 
@@ -162,6 +168,7 @@ Props) => {
         title={"Users"}
         onHide={onHide}
         users={modalUsers}
+        allUsers={modalAllUsers}
         onSelect={modalOnSelect.onSelect}
       />
 
@@ -215,7 +222,7 @@ Props) => {
           deleteRecieptUser(i);
         }}
         handleAddUserClick={() => {
-          setModal(user => {
+          setModal(users, userAndFriends, user => {
             addRecieptUser(user);
           });
         }}
@@ -266,7 +273,7 @@ Props) => {
                 deleteRecieptItemUser(i, j);
               }}
               handleAddUserClick={() => {
-                setModal(user => {
+                setModal(users, allUsers, user => {
                   addRecieptItemUser(user, i);
                 });
               }}

@@ -21,25 +21,23 @@ export interface UserSelectProps {
   onSelect: (arg0: UserType) => void;
 }
 
-type PropsFromRedux = ConnectedProps<typeof connector>;
+// type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux &
-  UserSelectProps & {
-    userAndFriends: UserType[];
-  };
-
-const mapStateToProps = ({ friendState, userState }: RootState) => {
-  console.log("USERANDFRIENDS");
-  console.log([userState.data].concat(friendState.data));
-  return {
-    userAndFriends: [userState.data].concat(friendState.data)
-  };
+type Props = UserSelectProps & {
+  // userAndFriends: UserType[];
+  allUsers: UserType[];
 };
 
-const connector = connect(
-  mapStateToProps,
-  {}
-);
+// const mapStateToProps = ({ friendState, userState }: RootState) => {
+//   return {
+//     userAndFriends: [userState.data].concat(friendState.data)
+//   };
+// };
+//
+// const connector = connect(
+//   mapStateToProps,
+//   {}
+// );
 
 export const UserSelectModalComponent = ({
   show,
@@ -47,7 +45,7 @@ export const UserSelectModalComponent = ({
   users,
   title,
   onSelect,
-  userAndFriends
+  allUsers
 }: Props) => {
   return (
     <Modal
@@ -66,7 +64,7 @@ export const UserSelectModalComponent = ({
       </Modal.Header>
       <ListGroup>
         <ListOrNoneComponent<UserType>
-          list={userListDiff(userAndFriends, users)}
+          list={userListDiff(allUsers, users)}
           noneComponent={<UserListItemComponent />}
           listComponent={(user: UserType) => (
             <UserListItemComponent
@@ -90,4 +88,4 @@ export const UserSelectModalComponent = ({
   );
 };
 
-export const UserSelectModal = connector(UserSelectModalComponent);
+export const UserSelectModal = UserSelectModalComponent;
