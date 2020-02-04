@@ -1,12 +1,12 @@
 import {
-  RecieptData,
-  RecieptAction,
-  RecieptState,
+  ReceiptData,
+  ReceiptAction,
+  ReceiptState,
 } from '../types/index'
 
-export const initialReciept = {
+export const initialReceipt = {
   "date": "2019-03-02",
-  "reciept_items": [],
+  "receipt_items": [],
   "users": [],
   "amount": 0,
   "balances": [],
@@ -15,17 +15,17 @@ export const initialReciept = {
     "id": 1,
     "fullname": "isaac lo"
   },
-  "name": "New Reciept"
+  "name": "New Receipt"
 }
 
-const initialState: RecieptState = {
-  reciept: null,
+const initialState: ReceiptState = {
+  receipt: null,
 }
 
-export default (state:RecieptState = initialState, {
+export default (state:ReceiptState = initialState, {
   payload,
   type
-}: RecieptAction) => {
+}: ReceiptAction) => {
   if (payload == null) {
     return state
   }

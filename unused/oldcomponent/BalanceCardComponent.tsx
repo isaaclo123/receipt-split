@@ -50,7 +50,7 @@ export const BalanceCardComponent = ({
         to_user_id = -1,
         from_user_id = -1,
         amount,
-        reciept
+        receipt
       }: BalanceType) => {
 
         const props: BalanceProps = {
@@ -58,7 +58,7 @@ export const BalanceCardComponent = ({
           variant: color,
           prefix,
           descriptor: "for",
-          name: (reciept == null) ? "Unknown" : reciept.name,
+          name: (receipt == null) ? "Unknown" : receipt.name,
           handleClick: () => {},
           buttons: [listButton],
           amount,

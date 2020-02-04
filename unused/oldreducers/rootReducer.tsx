@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 
-import { loginReducer, recieptListReducer } from "./index";
+import { loginReducer, receiptListReducer } from "./index";
 
 export const rootReducer = combineReducers({
   loginState: loginReducer,
-  recieptListState: recieptListReducer
+  receiptListState: receiptListReducer
   // userState: userReducer,
-  // recieptState: recieptReducer
+  // receiptState: receiptReducer
 });

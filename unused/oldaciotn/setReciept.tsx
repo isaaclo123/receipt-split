@@ -1,12 +1,12 @@
 import { Dispatch } from "redux";
 
-import { fetchRecieptById } from "../api/index";
+import { fetchReceiptById } from "../api/index";
 
 import { RootState } from "../reducers/index";
 
-import { RecieptAction, RecieptType } from "../types/index";
+import { ReceiptAction, ReceiptType } from "../types/index";
 
-export const setReciept = (payload: RecieptType) => async (
+export const setReceipt = (payload: ReceiptType) => async (
   dispatch: Dispatch,
   getState: () => RootState
 ) => {
@@ -14,12 +14,12 @@ export const setReciept = (payload: RecieptType) => async (
 
   const { id = -1 } = payload;
 
-  console.log("setReciept");
+  console.log("setReceipt");
   console.log(payload);
-  const action: RecieptAction = {
+  const action: ReceiptAction = {
     type: "RECIEPT_SET",
     payload: {
-      reciept: payload
+      receipt: payload
     }
   };
 

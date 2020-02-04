@@ -12,26 +12,26 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import { LinkContainer } from 'react-router-bootstrap'
 
-import { getRecieptList } from '../actions/getReciept'
-import { RecieptProps, RecieptListItemComponent } from './RecieptListItemComponent';
-import { RecieptType, RecieptListState } from '../types/index'
+import { getReceiptList } from '../actions/getReceipt'
+import { ReceiptProps, ReceiptListItemComponent } from './ReceiptListItemComponent';
+import { ReceiptType, ReceiptListState } from '../types/index'
 
-const mapStateToProps = (state: RecieptListState ) => {
+const mapStateToProps = (state: ReceiptListState ) => {
   return state
 }
 
 const connector = connect(
   mapStateToProps,
-  { getRecieptList }
+  { getReceiptList }
 )
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & RouteComponentProps<{}> & {
-  recieptListState?: RecieptListState
+  receiptListState?: ReceiptListState
 }
 
-const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
+const ReceiptPage = ({match, receiptListState, getReceiptList}: Props) => {
   const [ redirect, setRedirect ] = useState({
     redirect: false,
     id: -1,
@@ -42,18 +42,18 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
   // gets user info once
   if (run) {
     setRun(false)
-    getRecieptList()
+    getReceiptList()
   }
 
   if (redirect.redirect) {
     return <Redirect to={`${match.url}/edit/${redirect.id}`} />
   }
 
-  if (recieptListState == null) {
+  if (receiptListState == null) {
     return <Redirect to={'/app'} />
   }
 
-  const recieptEdit = (id: number) => {
+  const receiptEdit = (id: number) => {
     // console.log(`${match.url}/edit/${id}`)
     // history.push(`${match.url}/edit/${id}`)
     setRedirect({
@@ -62,12 +62,12 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
     })
   }
 
-  const { reciepts } = recieptListState
+  const { receipts } = receiptListState
 
   return (
     <>
       <div className="align-middle">
-        <h5 className="float-left">My Reciepts</h5>
+        <h5 className="float-left">My Receipts</h5>
 
         <LinkContainer to={`${match.url}/edit/-1`}>
           <span className="float-right text-primary">+ New</span>
@@ -77,30 +77,30 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
       <h5 />
 
       <ListGroup className="mb-3">
-        {(reciepts == null || reciepts.length <= 0) &&
+        {(receipts == null || receipts.length <= 0) &&
           (<ListGroup.Item>
             <span className="text-secondary">
               None
             </span>
           </ListGroup.Item>)
         }
-        {reciepts.map(({
+        {receipts.map(({
           name="",
           amount=-1,
           date="",
           id=-1,
-          }: RecieptType) => {
+          }: ReceiptType) => {
             console.log(`ID ${id}`)
 
-          const props: RecieptProps = {
+          const props: ReceiptProps = {
             pending: true,
-            handleNameClick: () => {recieptEdit(id)},
-            handleViewClick: () => {recieptEdit(id)},
+            handleNameClick: () => {receiptEdit(id)},
+            handleViewClick: () => {receiptEdit(id)},
             amount,
             name
           }
           return (
-            <RecieptListItemComponent
+            <ReceiptListItemComponent
               key={id}
               {...props}/>
           )
@@ -110,4 +110,4 @@ const RecieptPage = ({match, recieptListState, getRecieptList}: Props) => {
   )
 }
 
-export default connector(RecieptPage)
+export default connector(ReceiptPage)

@@ -1,4 +1,4 @@
-import { LoginPayload, SignupPayload, RecieptType } from "../types/index";
+import { LoginPayload, SignupPayload, ReceiptType } from "../types/index";
 import { fetchData } from "./helpers";
 
 export const SERVER_URL = `http://localhost:5000`;
@@ -16,22 +16,22 @@ export const fetchLogin = (payload: LoginPayload) =>
 export const fetchSignup = (payload: SignupPayload) =>
   fetchData("signup", "POST", payload);
 
-// reciept
+// receipt
 
-export const fetchRecieptList = (token: string) =>
-  fetchData("reciept", "GET", null, token);
+export const fetchReceiptList = (token: string) =>
+  fetchData("receipt", "GET", null, token);
 
-export const saveRecieptById = (
+export const saveReceiptById = (
   id: number,
-  payload: RecieptType,
+  payload: ReceiptType,
   token: string
-) => fetchData(`reciept/${id}`, "PUT", payload, token);
+) => fetchData(`receipt/${id}`, "PUT", payload, token);
 
-export const fetchRecieptById = (
+export const fetchReceiptById = (
   id: number,
-  // payload: RecieptType,
+  // payload: ReceiptType,
   token: string
-) => fetchData(`reciept/${id}`, "GET", null, token);
+) => fetchData(`receipt/${id}`, "GET", null, token);
 
 // user
 

@@ -3,10 +3,10 @@ import thunk from "redux-thunk";
 import { apiCallMiddleware } from "./actions/index";
 import { rootReducer } from "./reducers/index";
 
-// import { recieptListSaga } from "./sagas/recieptListSaga";
-// import { recieptSaga } from "./sagas/recieptSaga";
+// import { receiptListSaga } from "./sagas/receiptListSaga";
+// import { receiptSaga } from "./sagas/receiptSaga";
 // import { userSaga } from "./sagas/userSaga";
-// import { saveRecieptSaga } from "./sagas/saveRecieptSaga";
+// import { saveReceiptSaga } from "./sagas/saveReceiptSaga";
 
 export default function configureStore() {
   // const sagaMiddleware = createSagaMiddleware();
@@ -18,10 +18,10 @@ export default function configureStore() {
 
   // sagaMiddleware.run(loginSaga)
   // sagaMiddleware.run(signupSaga);
-  // sagaMiddleware.run(recieptListSaga);
-  // sagaMiddleware.run(recieptSaga);
+  // sagaMiddleware.run(receiptListSaga);
+  // sagaMiddleware.run(receiptSaga);
   // sagaMiddleware.run(userSaga);
-  // sagaMiddleware.run(saveRecieptSaga);
+  // sagaMiddleware.run(saveReceiptSaga);
 
   return store;
 }

@@ -1,4 +1,4 @@
-# Reciept-split
+# Receipt-split
 
 1. Project Type: Plan A or B or C
 
@@ -10,11 +10,11 @@
 
 3. Link to live Application:
 
-    * http://reciept-split.herokuapp.com/
+    * http://receipt-split.herokuapp.com/
 
 4. Link to Github Code Repository: Make sure that you provide the link to project code and not the link to your homepage of GitHub repository.
 
-    * https://github.com/isaaclo123/reciept-split
+    * https://github.com/isaaclo123/receipt-split
 
 5. List of Technologies/API's Used
 
@@ -27,7 +27,7 @@
 
     * this project is an application that allows people to share the costs of receipts. When one
       enters the site for the first time, they are shown a balance page. If one goes to "receipts",
-      they have the option to add new receipts and view created reciepts. When one creates a
+      they have the option to add new receipts and view created receipts. When one creates a
       receipt, they have to option to add other users to share the cost of the receipt, as well as
       change some other receipt information, such as the date in "YYYY-MM-DD" format, or the receipt
       name. They have the option to add receipt items. These receipt items can have users added to
@@ -42,9 +42,9 @@
 
     * there is a controller for getting user information, such as friends, and balances "/user"
     * there is a controller for creating (GET), updating (PUT), and deleting (DELETE (unused))
-      reciepts with a certain id
-    * there is a controller for getting default reciept information (GET) and creating (PUT)
-      reciepts, "/reciept/-1"
+      receipts with a certain id
+    * there is a controller for getting default receipt information (GET) and creating (PUT)
+      receipts, "/receipt/-1"
     * there is a controller for adding friends (POST empty) "/friends/:username"
 
 8. List of Views and their short description (No more than 50 words for each view)
@@ -52,21 +52,21 @@
     * the balances page contains a list of overall balances, that have been calculated from the
       receipts. It contains balances you must pay other users and balances other users owe you. It
       also includes balances you pay yourself within it. "/app/balance"
-    * the receipts page contains a list of reciepts "app/reciept". You are able to edit receipts if
-      you own them, by clicking on them "app/reciept/:id".
+    * the receipts page contains a list of receipts "app/receipt". You are able to edit receipts if
+      you own them, by clicking on them "app/receipt/:id".
     * the people page contains a list of friends you have, with username on a list on the left and
     * fullname on the right. There is an "add friend" link that opens a modal to add a friend by
       username.
 
 9. List of Tables, their Structure and short description
 
-    * User: contains username, a password hash, fullname, and references to balances and reciept
+    * User: contains username, a password hash, fullname, and references to balances and receipt
       items, and friends (a list of other users)
     * Receipt: contains the name and date of a receipt, with the creating user (user). Has a decimal
-      amount, indicating the amount the reciept cost, and a list of users, or the people who are
-      included in the cost of the reciept. It contains a list of reciept_items, and a list of
+      amount, indicating the amount the receipt cost, and a list of users, or the people who are
+      included in the cost of the receipt. It contains a list of receipt_items, and a list of
       balances that are calculated.
-    * Reciept item: an item whose cost is only shared by some of the people in the reciept. Contains
+    * Receipt item: an item whose cost is only shared by some of the people in the receipt. Contains
       an amount, a list of users sharing the item, and a name.
     * Balance: represents something a user must pay. contains a to_user and a from_user and an
       amount. the "to_user" must pay the "from_user" "amount"

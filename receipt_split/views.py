@@ -9,9 +9,9 @@ import simplejson
 
 from .meta import db
 from .auth import identity
-from .models import User, Reciept
-from .schemas import UserSchema, RecieptSchema, BalanceSchema
-from .forms import RecieptForm
+from .models import User, Receipt
+from .schemas import UserSchema, ReceiptSchema, BalanceSchema
+from .forms import ReceiptForm
 from .helpers import calculate_balances
 
 import requests
@@ -25,8 +25,8 @@ users_schema = UserSchema(many=True)
 
 balances_schema = BalanceSchema(many=True)
 
-reciept_schema = RecieptSchema()
-reciepts_schema = RecieptSchema(many=True, exclude=('reciept_items',
+receipt_schema = ReceiptSchema()
+receipts_schema = ReceiptSchema(many=True, exclude=('receipt_items',
                                                     'balances', 'users'))
 
 
@@ -35,41 +35,41 @@ reciepts_schema = RecieptSchema(many=True, exclude=('reciept_items',
 def balance_list():
     balances_to = balances_schema.dump(current_identity.balances_to_user)
     balances_from = balances_schema.dump(current_identity.balances_from_user)
-    # reciepts_owned_map = {r["id"]: True for r in reciepts_owned}
+    # receipts_owned_map = {r["id"]: True for r in receipts_owned}
 
     all_balances = balances_to + balances_from
 
     return all_balances, status.HTTP_200_OK
 
 
-@views.route('/reciept', methods=['GET'])
+@views.route('/receipt', methods=['GET'])
 @jwt_required()
-def reciept_list():
-    reciepts_owned = reciepts_schema.dump(current_identity.reciepts_owned)
-    reciepts_owned_map = {r["id"]: True for r in reciepts_owned}
+def receipt_list():
+    receipts_owned = receipts_schema.dump(current_identity.receipts_owned)
+    receipts_owned_map = {r["id"]: True for r in receipts_owned}
 
-    reciepts_in = reciepts_schema.dump(current_identity.reciepts_in)
-    reciept_notin_owned = [
-        r for r in reciepts_in if r["id"] not in reciepts_owned_map
+    receipts_in = receipts_schema.dump(current_identity.receipts_in)
+    receipt_notin_owned = [
+        r for r in receipts_in if r["id"] not in receipts_owned_map
     ]
 
-    all_reciepts = reciepts_owned + reciept_notin_owned
+    all_receipts = receipts_owned + receipt_notin_owned
 
-    return all_reciepts, status.HTTP_200_OK
+    return all_receipts, status.HTTP_200_OK
 
 
-@views.route('/reciept/-1', methods=['GET', 'POST', 'PUT'])
+@views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
 # @cross_origin(headers=['Content-Type', 'Authorization'])
 @jwt_required()
-def reciept_create():
+def receipt_create():
     if request.method == 'GET':
         return {
-            "name": "New Reciept",
+            "name": "New Receipt",
             "amount": 0.0,
             "date": str(date.today()),
             "user": user_schema.dump(current_identity),
             "users": [],
-            "reciept_items": [],
+            "receipt_items": [],
             "balances": [],
             "resolved": False
         }, status.HTTP_200_OK
@@ -82,50 +82,50 @@ def reciept_create():
         del json_data["id"]
     print(json_data)
 
-    form = RecieptForm.from_json(json_data)
+    form = ReceiptForm.from_json(json_data)
     if not form.validate():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     json_data["balances"] = calculate_balances(json_data)
-    reciept_data = reciept_schema.load(json_data)
+    receipt_data = receipt_schema.load(json_data)
     print("RECPTDATAJk-===================")
-    print(reciept_data)
+    print(receipt_data)
     print("RECPTDATAJk-===================")
 
-    reciept_data.user = current_identity
+    receipt_data.user = current_identity
 
-    db.session.add(reciept_data)
+    db.session.add(receipt_data)
     db.session.commit()
 
-    reciept_dump = reciept_schema.dump(reciept_data)
+    receipt_dump = receipt_schema.dump(receipt_data)
 
-    return reciept_dump, status.HTTP_201_CREATED
+    return receipt_dump, status.HTTP_201_CREATED
 
 
-@views.route('/reciept/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
+@views.route('/receipt/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
-def reciept_by_id(id):
+def receipt_by_id(id):
     print("ID---------")
     print(id)
     print("ID---------")
-    reciept = Reciept.query.get(id)
-    print(reciept)
+    receipt = Receipt.query.get(id)
+    print(receipt)
 
-    if not reciept:
-        return {"error": "Reciept with id does not exist"},\
+    if not receipt:
+        return {"error": "Receipt with id does not exist"},\
                 status.HTTP_404_NOT_FOUND
-    print(reciept)
+    print(receipt)
 
     if request.method == 'GET':
-        reciept_dump = reciept_schema.dump(reciept)
-        return reciept_dump, status.HTTP_200_OK
+        receipt_dump = receipt_schema.dump(receipt)
+        return receipt_dump, status.HTTP_200_OK
 
-    if reciept.user != current_identity:
-        return {"error": "Your do not own this reciept"},\
+    if receipt.user != current_identity:
+        return {"error": "Your do not own this receipt"},\
                 status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
-        db.session.delete(reciept)
+        db.session.delete(receipt)
         db.session.commit()
         return {"message": "Success"}, status.HTTP_200_OK
 
@@ -134,7 +134,7 @@ def reciept_by_id(id):
         return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
 
     print("--------reciptuser")
-    print(reciept.user)
+    print(receipt.user)
     print("--------reciptuser")
 
     print("--------reciptuser")
@@ -143,7 +143,7 @@ def reciept_by_id(id):
 
     print(json_data)
 
-    form = RecieptForm.from_json(json_data)
+    form = ReceiptForm.from_json(json_data)
     print("AFTERFORM")
     print(form)
     if not form.validate():
@@ -151,32 +151,32 @@ def reciept_by_id(id):
 
     if request.method == 'PUT' or request.method == 'PATCH':
         # json_data["id"] = id
-        # reciept.query.update(json_data)
-        print("reciept_data")
+        # receipt.query.update(json_data)
+        print("receipt_data")
         # delete old balances
-        for oldbalance in reciept.balances:
+        for oldbalance in receipt.balances:
             db.session.delete(oldbalance)
 
         json_data["balances"] = calculate_balances(json_data)
         print(json_data["balances"])
-        reciept_data = reciept_schema.load(json_data, session=db.session)
+        receipt_data = receipt_schema.load(json_data, session=db.session)
 
         print("RECPTDATAJk-===================")
-        print(reciept_data.balances)
+        print(receipt_data.balances)
         print("RECPTDATAJk-===================")
-        print(reciept_data)
-        print("afterreciept_data")
-        # print(reciept_data)
+        print(receipt_data)
+        print("afterreceipt_data")
+        # print(receipt_data)
 
-        # db.session.merge(reciept_data)
+        # db.session.merge(receipt_data)
         db.session.commit()
 
         print("AFTERALL+__________")
-        print(reciept.user)
+        print(receipt.user)
         print("AFTERALL+__________")
 
-        reciept_dump = reciept_schema.dump(reciept_data)
-        return reciept_dump, status.HTTP_200_OK
+        receipt_dump = receipt_schema.dump(receipt_data)
+        return receipt_dump, status.HTTP_200_OK
 
     return {"error": "should not get here"}, status.HTTP_400_BAD_REQUEST
 

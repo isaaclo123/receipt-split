@@ -9,63 +9,63 @@ import ListGroup from "react-bootstrap/ListGroup";
 
 import { LinkContainer } from "react-router-bootstrap";
 
-import { getRecieptList } from "../actions/index";
+import { getReceiptList } from "../actions/index";
 
 import {
   ListOrNoneComponent,
-  RecieptProps,
-  RecieptListItemComponent
+  ReceiptProps,
+  ReceiptListItemComponent
 } from "./index";
 
 import {
   RootState,
-  RecieptSummaryType,
-  RecieptListState
+  ReceiptSummaryType,
+  ReceiptListState
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
-  const { recieptListState } = state;
+  const { receiptListState } = state;
   return {
-    recieptListState
+    receiptListState
   };
 };
 
 const connector = connect(
   mapStateToProps,
-  { getRecieptList }
+  { getReceiptList }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux &
   RouteComponentProps<{}> & {
-    recieptListState?: RecieptListState;
+    receiptListState?: ReceiptListState;
   };
 
-const RecieptPageComponent = ({
+const ReceiptPageComponent = ({
   match,
   history,
-  recieptListState,
-  getRecieptList
+  receiptListState,
+  getReceiptList
 }: Props) => {
   const [run, setRun] = useState(true);
 
   // gets user info once
   if (run) {
     setRun(false);
-    getRecieptList();
+    getReceiptList();
   }
 
-  const recieptEdit = (id: number) => {
+  const receiptEdit = (id: number) => {
     history.push(`${match.url}/edit/${id}`);
   };
 
-  const reciepts = recieptListState.data;
+  const receipts = receiptListState.data;
 
   return (
     <>
       <div className="align-middle">
-        <h5 className="float-left">My Reciepts</h5>
+        <h5 className="float-left">My Receipts</h5>
 
         <LinkContainer to={`${match.url}/edit/-1`}>
           <a onClick={() => {}} className="float-right">
@@ -76,26 +76,26 @@ const RecieptPageComponent = ({
       <br />
       <h5 />
       <ListGroup className="mb-3">
-        <ListOrNoneComponent<RecieptSummaryType>
-          list={reciepts}
+        <ListOrNoneComponent<ReceiptSummaryType>
+          list={receipts}
           listComponent={({
             name = "",
             amount = -1,
             date = "",
             id = -1
-          }: RecieptSummaryType) => {
-            const props: RecieptProps = {
+          }: ReceiptSummaryType) => {
+            const props: ReceiptProps = {
               pending: true,
               handleNameClick: () => {
-                recieptEdit(id);
+                receiptEdit(id);
               },
               handleViewClick: () => {
-                recieptEdit(id);
+                receiptEdit(id);
               },
               amount,
               name
             };
-            return <RecieptListItemComponent key={id} {...props} />;
+            return <ReceiptListItemComponent key={id} {...props} />;
           }}
           noneComponent={
             <ListGroup.Item>
@@ -108,4 +108,4 @@ const RecieptPageComponent = ({
   );
 };
 
-export const RecieptPage = connector(RecieptPageComponent);
+export const ReceiptPage = connector(ReceiptPageComponent);

@@ -1,1 +1,1 @@
-web: gunicorn "reciept_split:create_app()"
+web: gunicorn "receipt_split:create_app()"

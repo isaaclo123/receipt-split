@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 
 import {
-  RecieptRequestAction,
-  RecieptData
+  ReceiptRequestAction,
+  ReceiptData
 } from '../types/index'
 
-// export const setRecieptList = () => (dispatch: Dispatch) => {
+// export const setReceiptList = () => (dispatch: Dispatch) => {
 //   const action = {
 //     type: 'RECIEPT_LIST_REQUEST',
 //   }
@@ -15,7 +15,7 @@ import {
 //   dispatch(action)
 // }
 
-export const getRecieptList = () => (dispatch: Dispatch) => {
+export const getReceiptList = () => (dispatch: Dispatch) => {
   const action = {
     type: 'RECIEPT_LIST_REQUEST',
   }
@@ -25,10 +25,10 @@ export const getRecieptList = () => (dispatch: Dispatch) => {
   dispatch(action)
 }
 
-export const getReciept = (payload: RecieptData) => (dispatch: Dispatch) => {
-  console.log("getReciept")
+export const getReceipt = (payload: ReceiptData) => (dispatch: Dispatch) => {
+  console.log("getReceipt")
   console.log(payload)
-  const action: RecieptRequestAction = {
+  const action: ReceiptRequestAction = {
     type: 'RECIEPT_ID_REQUEST',
     payload
   }

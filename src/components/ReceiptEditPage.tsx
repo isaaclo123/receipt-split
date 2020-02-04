@@ -13,27 +13,27 @@ import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ListOrNoneComponent } from "./index";
 
 import {
-  getReciept,
-  setRecieptName,
-  setRecieptAmount,
-  setRecieptDate,
-  addRecieptUser,
-  addRecieptItem,
-  deleteRecieptItem,
-  deleteRecieptUser,
-  setRecieptItemName,
-  setRecieptItemAmount,
-  addRecieptItemUser,
-  deleteRecieptItemUser,
-  saveReciept
+  getReceipt,
+  setReceiptName,
+  setReceiptAmount,
+  setReceiptDate,
+  addReceiptUser,
+  addReceiptItem,
+  deleteReceiptItem,
+  deleteReceiptUser,
+  setReceiptItemName,
+  setReceiptItemAmount,
+  addReceiptItemUser,
+  deleteReceiptItemUser,
+  saveReceipt
 } from "../actions/index";
-// import { setReciept } from "../actions/setReciept";
-// import { saveReciept } from "../actions/saveReciept";
+// import { setReceipt } from "../actions/setReceipt";
+// import { saveReceipt } from "../actions/saveReceipt";
 
 import {
-  RecieptType,
-  RecieptItemType,
-  RecieptState,
+  ReceiptType,
+  ReceiptItemType,
+  ReceiptState,
   UserType,
   BalanceType,
   RootState
@@ -53,12 +53,12 @@ type MatchParams = {
 };
 
 const mapStateToProps = (state: RootState) => {
-  const { recieptState, userState, friendState } = state;
+  const { receiptState, userState, friendState } = state;
   console.log([userState.data].concat(friendState.data));
   return {
     userAndFriends: [userState.data].concat(friendState.data),
     // people: userState.user.friends.concat(userState.user),
-    recieptState,
+    receiptState,
     userState
   };
 };
@@ -66,19 +66,19 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(
   mapStateToProps,
   {
-    getReciept,
-    setRecieptName,
-    setRecieptAmount,
-    setRecieptDate,
-    addRecieptUser,
-    deleteRecieptUser,
-    addRecieptItem,
-    deleteRecieptItem,
-    setRecieptItemName,
-    setRecieptItemAmount,
-    addRecieptItemUser,
-    deleteRecieptItemUser,
-    saveReciept
+    getReceipt,
+    setReceiptName,
+    setReceiptAmount,
+    setReceiptDate,
+    addReceiptUser,
+    deleteReceiptUser,
+    addReceiptItem,
+    deleteReceiptItem,
+    setReceiptItemName,
+    setReceiptItemAmount,
+    addReceiptItemUser,
+    deleteReceiptItemUser,
+    saveReceipt
   }
 );
 
@@ -86,27 +86,27 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux &
   RouteComponentProps<MatchParams> & {
-    recieptState?: RecieptState;
+    receiptState?: ReceiptState;
   };
 
-const RecieptEditPageComponent = ({
+const ReceiptEditPageComponent = ({
   match,
   userAndFriends,
   userState,
-  recieptState,
-  getReciept,
-  setRecieptName,
-  setRecieptAmount,
-  setRecieptDate,
-  addRecieptUser,
-  deleteRecieptUser,
-  addRecieptItem,
-  deleteRecieptItem,
-  setRecieptItemName,
-  setRecieptItemAmount,
-  addRecieptItemUser,
-  deleteRecieptItemUser,
-  saveReciept
+  receiptState,
+  getReceipt,
+  setReceiptName,
+  setReceiptAmount,
+  setReceiptDate,
+  addReceiptUser,
+  deleteReceiptUser,
+  addReceiptItem,
+  deleteReceiptItem,
+  setReceiptItemName,
+  setReceiptItemAmount,
+  addReceiptItemUser,
+  deleteReceiptItemUser,
+  saveReceipt
 }: // getUser,
 //people
 Props) => {
@@ -120,10 +120,10 @@ Props) => {
     onSelect: (user: UserType) => {}
   });
 
-  const reciept_id = Number(match.params.id) || -1;
+  const receipt_id = Number(match.params.id) || -1;
 
   if (run) {
-    getReciept(reciept_id);
+    getReceipt(receipt_id);
     setRun(false);
   }
 
@@ -134,9 +134,9 @@ Props) => {
     amount,
     user,
     users,
-    reciept_items,
+    receipt_items,
     date
-  }: RecieptType = recieptState.data;
+  }: ReceiptType = receiptState.data;
 
   const allUsers = users;
 
@@ -158,7 +158,7 @@ Props) => {
   };
 
   const onSave = () => {
-    saveReciept(id, recieptState.data);
+    saveReceipt(id, receiptState.data);
   };
 
   return (
@@ -177,7 +177,7 @@ Props) => {
           className="float-left m-0 p-0"
           style={{ display: "inline", lineHeight: "2rem" }}
         >
-          Reciept Info
+          Receipt Info
         </h5>
         <Button
           size="sm"
@@ -202,7 +202,7 @@ Props) => {
               size={40}
               type="text"
               value={date}
-              handleTextChange={setRecieptDate}
+              handleTextChange={setReceiptDate}
             />
             <br />
           </>
@@ -211,19 +211,19 @@ Props) => {
         variant="info"
         name={name}
         handleNameChange={(name: string) => {
-          setRecieptName(name);
+          setReceiptName(name);
         }}
         amount={amount}
-        handleAmountChange={setRecieptAmount}
+        handleAmountChange={setReceiptAmount}
         handleDeleteClick={() => {}}
         users={users}
         handleUserClick={() => {}}
         handleDeleteUserClick={(i: number) => {
-          deleteRecieptUser(i);
+          deleteReceiptUser(i);
         }}
         handleAddUserClick={() => {
           setModal(users, userAndFriends, user => {
-            addRecieptUser(user);
+            addReceiptUser(user);
           });
         }}
       />
@@ -232,7 +232,7 @@ Props) => {
         <span
           className="float-right text-primary"
           onClick={() => {
-            addRecieptItem();
+            addReceiptItem();
           }}
         >
           + Add Item
@@ -240,8 +240,8 @@ Props) => {
       </div>
       <br />
       <h5 />
-      <ListOrNoneComponent<RecieptItemType>
-        list={reciept_items}
+      <ListOrNoneComponent<ReceiptItemType>
+        list={receipt_items}
         noneComponent={
           <Card className="mb-3">
             <Card.Body>
@@ -251,30 +251,30 @@ Props) => {
             </Card.Body>
           </Card>
         }
-        listComponent={({ name, amount, users }: RecieptItemType, i = -1) => {
+        listComponent={({ name, amount, users }: ReceiptItemType, i = -1) => {
           return (
             <ExpenseCardComponent
               prefix="-"
               variant="danger"
               name={name}
               handleNameChange={(name: string) => {
-                setRecieptItemName(name, i);
+                setReceiptItemName(name, i);
               }}
               amount={amount}
               handleAmountChange={(amount: number) => {
-                setRecieptItemAmount(amount, i);
+                setReceiptItemAmount(amount, i);
               }}
               users={users}
               handleDeleteClick={() => {
-                deleteRecieptItem(i);
+                deleteReceiptItem(i);
               }}
               handleUserClick={(i: number) => {}}
               handleDeleteUserClick={(j: number) => {
-                deleteRecieptItemUser(i, j);
+                deleteReceiptItemUser(i, j);
               }}
               handleAddUserClick={() => {
                 setModal(users, allUsers, user => {
-                  addRecieptItemUser(user, i);
+                  addReceiptItemUser(user, i);
                 });
               }}
             />
@@ -308,4 +308,4 @@ Props) => {
   );
 };
 
-export const RecieptEditPage = connector(RecieptEditPageComponent);
+export const ReceiptEditPage = connector(ReceiptEditPageComponent);

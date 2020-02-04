@@ -11,7 +11,7 @@ export const NavComponent = (props: RouteComponentProps<{}>) => {
   const { match } = props;
   return (
     <Navbar variant="dark" bg="dark">
-      <Navbar.Brand>Reciept Split App</Navbar.Brand>
+      <Navbar.Brand>Receipt Split App</Navbar.Brand>
 
       <Navbar.Collapse>
         <Nav className="mr-auto" />
@@ -21,8 +21,8 @@ export const NavComponent = (props: RouteComponentProps<{}>) => {
             <Nav.Link>Balances</Nav.Link>
           </LinkContainer>
 
-          <LinkContainer to={`${match.url}/reciepts`}>
-            <Nav.Link>Reciepts</Nav.Link>
+          <LinkContainer to={`${match.url}/receipts`}>
+            <Nav.Link>Receipts</Nav.Link>
           </LinkContainer>
 
           <LinkContainer to={`${match.url}/people`}>

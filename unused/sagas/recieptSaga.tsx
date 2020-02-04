@@ -1,33 +1,33 @@
 import { select, call, put, takeLatest } from 'redux-saga/effects'
 
-import { fetchRecieptById } from '../api/index'
+import { fetchReceiptById } from '../api/index'
 
-import { RecieptData, RecieptType, RecieptState, RecieptRequestAction } from '../types/index'
+import { ReceiptData, ReceiptType, ReceiptState, ReceiptRequestAction } from '../types/index'
 
 const getToken = (state:any) => state.loginState.token
 
-function* fetchRecieptWorker(action: any) {
-  const { payload }: RecieptRequestAction = action
-  const { id=-1 }: RecieptData = payload
+function* fetchReceiptWorker(action: any) {
+  const { payload }: ReceiptRequestAction = action
+  const { id=-1 }: ReceiptData = payload
   try {
       const token = yield select(getToken);
 
-      const recieptData: RecieptType = yield call(fetchRecieptById, token, id);
+      const receiptData: ReceiptType = yield call(fetchReceiptById, token, id);
 
-      const recieptPayload: RecieptState = {
-        reciept: recieptData
+      const receiptPayload: ReceiptState = {
+        receipt: receiptData
       }
 
-      yield put({type: "RECIEPT_ID_SUCCESS", payload: recieptPayload});
+      yield put({type: "RECIEPT_ID_SUCCESS", payload: receiptPayload});
   } catch (e) {
-      const recieptPayload: RecieptState = {
-        reciept: null
+      const receiptPayload: ReceiptState = {
+        receipt: null
       }
 
-      yield put({type: "RECIEPT_ID_FAIL", payload: recieptPayload});
+      yield put({type: "RECIEPT_ID_FAIL", payload: receiptPayload});
   }
 }
 
-export function* recieptSaga() {
-  yield takeLatest("RECIEPT_ID_REQUEST", fetchRecieptWorker);
+export function* receiptSaga() {
+  yield takeLatest("RECIEPT_ID_REQUEST", fetchReceiptWorker);
 }

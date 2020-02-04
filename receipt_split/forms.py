@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
 
-from .models import User, Reciept, RecieptItem, Balance, Payment
+from .models import User, Receipt, ReceiptItem, Balance, Payment
 from .meta import db
 
 BaseModelForm = model_form_factory(FlaskForm)
@@ -18,14 +18,14 @@ class UserForm(ModelForm):
         model = User
 
 
-class RecieptForm(ModelForm):
+class ReceiptForm(ModelForm):
     class Meta:
-        model = Reciept
+        model = Receipt
 
 
-class RecieptItemForm(ModelForm):
+class ReceiptItemForm(ModelForm):
     class Meta:
-        model = RecieptItem
+        model = ReceiptItem
 
 
 class BalanceForm(ModelForm):

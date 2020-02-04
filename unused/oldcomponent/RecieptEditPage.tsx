@@ -13,11 +13,11 @@ import {
   RouteComponentProps
 } from 'react-router-dom'
 
-import { getReciept } from '../actions/getReciept'
-import { setReciept } from '../actions/setReciept'
-import { saveReciept } from '../actions/saveReciept'
+import { getReceipt } from '../actions/getReceipt'
+import { setReceipt } from '../actions/setReceipt'
+import { saveReceipt } from '../actions/saveReceipt'
 
-import { RecieptType, RecieptItemType, RecieptState, UserType, RecieptItemTypeDefault, BalanceType } from '../types/index'
+import { ReceiptType, ReceiptItemType, ReceiptState, UserType, ReceiptItemTypeDefault, BalanceType } from '../types/index'
 
 import { BadgeListProps, BadgeListComponent } from './BadgeListComponent';
 
@@ -32,33 +32,33 @@ type MatchParams = {
 }
 
 const mapStateToProps = (state: any) => {
-  const { recieptState, userState } = state
+  const { receiptState, userState } = state
   return {
     people: userState.user.friends.concat(userState.user),
-    recieptState,
+    receiptState,
     userState
   }
 }
 
 const connector = connect(
   mapStateToProps,
-  { getReciept, setReciept, saveReciept, getUser }
+  { getReceipt, setReceipt, saveReceipt, getUser }
 )
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & RouteComponentProps<MatchParams> & {
-  recieptState?: RecieptState
+  receiptState?: ReceiptState
 }
 
 
-const RecieptEditPage = ({
+const ReceiptEditPage = ({
   match,
   userState,
-  recieptState,
-  setReciept,
-  saveReciept,
-  getReciept,
+  receiptState,
+  setReceipt,
+  saveReceipt,
+  getReceipt,
   getUser,
   people
 }: Props) => {
@@ -74,32 +74,32 @@ const RecieptEditPage = ({
 
   const {show, addedusers, modalcallback} = modalState
 
-  const reciept_id = Number(match.params.id) || -1
+  const receipt_id = Number(match.params.id) || -1
 
   console.log("RECIEPTID")
-  console.log(reciept_id)
+  console.log(receipt_id)
   console.log("RECIEPTID")
 
   if (run) {
-    getReciept({id: reciept_id})
+    getReceipt({id: receipt_id})
     setRun(false)
   }
-  console.log(recieptState)
+  console.log(receiptState)
 
-  if (recieptState == null || recieptState.reciept == null) {
-    return (<Redirect to={`${match.url}/reciepts`} />)
+  if (receiptState == null || receiptState.receipt == null) {
+    return (<Redirect to={`${match.url}/receipts`} />)
   }
 
-  const { reciept } = recieptState
+  const { receipt } = receiptState
 
-  const { id=-1, balances = [], name, amount, user, users = [], reciept_items = [], date }: RecieptType = reciept
+  const { id=-1, balances = [], name, amount, user, users = [], receipt_items = [], date }: ReceiptType = receipt
 
   const onSave = () => {
-    const payload = {...recieptState.reciept, id}
+    const payload = {...receiptState.receipt, id}
     console.log("PAYLOADkjyyp")
     console.log(payload)
     console.log("PAYLOADkjyyp")
-    saveReciept(recieptState.reciept)
+    saveReceipt(receiptState.receipt)
     getUser()
     console.log("GOT USER")
   }
@@ -119,7 +119,7 @@ const RecieptEditPage = ({
     })
   }
 
-  const insertIndex = (state:RecieptItemType[], newItem:RecieptItemType, insertAt:number) => {
+  const insertIndex = (state:ReceiptItemType[], newItem:ReceiptItemType, insertAt:number) => {
     return [
       ...state.slice(0, insertAt),
       newItem,
@@ -127,7 +127,7 @@ const RecieptEditPage = ({
     ]
   }
 
-  const deleteIndex = (state:RecieptItemType[], deleteAt:number) => {
+  const deleteIndex = (state:ReceiptItemType[], deleteAt:number) => {
     return [
       ...state.slice(0, deleteAt),
       ...state.slice(deleteAt+1)
@@ -148,7 +148,7 @@ const RecieptEditPage = ({
         onUserSelect={modalcallback} />
 
       <div className="align-middle mb-3">
-        <h5 className="float-left m-0 p-0" style={{display: "inline", lineHeight: "2rem"}}>Reciept Info</h5>
+        <h5 className="float-left m-0 p-0" style={{display: "inline", lineHeight: "2rem"}}>Receipt Info</h5>
         <Button size="sm" className="float-right"
           onClick={() => {
             onSave()
@@ -165,8 +165,8 @@ const RecieptEditPage = ({
               type="text"
               value={date}
               handleTextChange={(date:string) => {
-                setReciept({
-                  ...reciept,
+                setReceipt({
+                  ...receipt,
                   date
                 })
               }}
@@ -179,8 +179,8 @@ const RecieptEditPage = ({
 
         name={name}
         handleNameChange={(name:string) => {
-          setReciept({
-            ...reciept,
+          setReceipt({
+            ...receipt,
             name
           })
           console.log(name)
@@ -188,8 +188,8 @@ const RecieptEditPage = ({
 
         amount={amount}
         handleAmountChange={(amount:number) => {
-          setReciept({
-            ...reciept,
+          setReceipt({
+            ...receipt,
             amount
           })
         }}
@@ -200,8 +200,8 @@ const RecieptEditPage = ({
         handleUserClick={() => {}}
 
         handleDeleteUserClick={(i:number) => {
-          setReciept({
-            ...reciept,
+          setReceipt({
+            ...receipt,
             users: removeIndex(users, i)
           })
         }}
@@ -211,8 +211,8 @@ const RecieptEditPage = ({
             show: true,
             addedusers: users,
             modalcallback: (user: UserType) => {
-              setReciept({
-                ...reciept,
+              setReceipt({
+                ...receipt,
                 users: users.concat([user])
               })
             }
@@ -225,16 +225,16 @@ const RecieptEditPage = ({
         <span
           className="float-right text-primary"
           onClick={() => {
-            setReciept({
-              ...reciept,
-              reciept_items: [RecieptItemTypeDefault].concat(reciept_items)
+            setReceipt({
+              ...receipt,
+              receipt_items: [ReceiptItemTypeDefault].concat(receipt_items)
             })
           }}>+ Add Item</span>
       </div>
       <br />
       <h5 />
 
-      {(reciept_items == null || reciept_items.length <= 0) &&
+      {(receipt_items == null || receipt_items.length <= 0) &&
         (<Card className="mb-3">
           <Card.Body>
             <Card.Title>
@@ -246,21 +246,21 @@ const RecieptEditPage = ({
         </Card>)
       }
 
-      {(reciept_items != null) && reciept_items.map(({
+      {(receipt_items != null) && receipt_items.map(({
           name, amount, users=blankUserList
-        }: RecieptItemType, i:number) => {
+        }: ReceiptItemType, i:number) => {
         return (<ExpenseCardComponent
                   prefix="-"
                   variant="danger"
 
                   name={name}
                   handleNameChange={(name:string) => {
-                    setReciept({
-                      ...reciept,
-                      reciept_items: insertIndex(
-                        reciept_items,
+                    setReceipt({
+                      ...receipt,
+                      receipt_items: insertIndex(
+                        receipt_items,
                         {
-                          ...reciept_items[i],
+                          ...receipt_items[i],
                           name
                         },
                         i
@@ -270,12 +270,12 @@ const RecieptEditPage = ({
 
                   amount={amount}
                   handleAmountChange={(amount:number) => {
-                    setReciept({
-                      ...reciept,
-                      reciept_items: insertIndex(
-                        reciept_items,
+                    setReceipt({
+                      ...receipt,
+                      receipt_items: insertIndex(
+                        receipt_items,
                         {
-                          ...reciept_items[i],
+                          ...receipt_items[i],
                           amount
                         },
                         i
@@ -286,9 +286,9 @@ const RecieptEditPage = ({
                   users={users}
 
                   handleDeleteClick={() => {
-                    setReciept({
-                      ...reciept,
-                      reciept_items: deleteIndex(reciept_items, i)
+                    setReceipt({
+                      ...receipt,
+                      receipt_items: deleteIndex(receipt_items, i)
                     })
                   }}
 
@@ -296,11 +296,11 @@ const RecieptEditPage = ({
 
                   handleDeleteUserClick={(i:number) => {
                     const removebadgeuser:UserType[] = removeIndex(users, i)
-                    setReciept({
-                      ...reciept,
-                      reciept_items: insertIndex(
-                        reciept_items, {
-                          ...reciept_items[i],
+                    setReceipt({
+                      ...receipt,
+                      receipt_items: insertIndex(
+                        receipt_items, {
+                          ...receipt_items[i],
                           users: removebadgeuser
                         }, i)
                       })
@@ -311,12 +311,12 @@ const RecieptEditPage = ({
                       show: true,
                       addedusers: users,
                       modalcallback: (user: UserType) => {
-                        setReciept({
-                          ...reciept,
-                          reciept_items: insertIndex(
-                            reciept_items,
+                        setReceipt({
+                          ...receipt,
+                          receipt_items: insertIndex(
+                            receipt_items,
                             {
-                              ...reciept_items[i],
+                              ...receipt_items[i],
                               users: users.concat([user])
                             },
                             i)
@@ -353,4 +353,4 @@ const RecieptEditPage = ({
   )
 }
 
-export default connector(RecieptEditPage)
+export default connector(ReceiptEditPage)

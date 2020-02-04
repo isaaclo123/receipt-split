@@ -18,7 +18,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 import { getUser } from '../actions/getUser'
-import { RecieptProps, RecieptListItemComponent } from './RecieptListItemComponent';
+import { ReceiptProps, ReceiptListItemComponent } from './ReceiptListItemComponent';
 import { UserType, UserState, LoginState } from '../types/index'
 
 const mapStateToProps = (state: any) => {

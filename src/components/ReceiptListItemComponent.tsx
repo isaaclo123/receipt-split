@@ -9,7 +9,7 @@ import {
   ButtonProps,
 } from '../types/index';
 
-export interface RecieptProps {
+export interface ReceiptProps {
   amount: number,
   name: string,
   pending: boolean,
@@ -17,14 +17,14 @@ export interface RecieptProps {
   handleViewClick: () => void,
 }
 
-export const RecieptListItemComponent = ({
+export const ReceiptListItemComponent = ({
   amount,
   name,
   pending,
 
   handleNameClick,
   handleViewClick,
-}: RecieptProps) => {
+}: ReceiptProps) => {
   // const buttons: ButtonProps[] = pending ? [{
   //     variant: "success",
   //     text: "RESOLVED",

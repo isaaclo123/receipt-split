@@ -1,4 +1,4 @@
-import { UserType, RecieptType } from "./index";
+import { UserType, ReceiptType } from "./index";
 
 export type BalanceType = {
   id?: number;
@@ -7,5 +7,5 @@ export type BalanceType = {
   to_user_id?: number;
   from_user_id?: number;
   amount: number;
-  reciept?: RecieptType;
+  receipt?: ReceiptType;
 };

@@ -5,14 +5,14 @@ def get_userkey(user):
     return str(user.get("id", "-1")) + " - " + user.get("username", " ")
 
 
-def calculate_balances(reciept):
+def calculate_balances(receipt):
     """
     takes python serializer dict and calculates balances
     """
-    owner = reciept.get("user")
-    users = reciept.get("users")
-    total_amount = reciept.get("amount")
-    reciept_items = reciept.get("reciept_items", [])
+    owner = receipt.get("user")
+    users = receipt.get("users")
+    total_amount = receipt.get("amount")
+    receipt_items = receipt.get("receipt_items", [])
 
     # error check
     if owner is None or users is None or total_amount is None:
@@ -31,7 +31,7 @@ def calculate_balances(reciept):
             "amount": total_amount
         }]
 
-    # subtotals = sum([i.get("amount", 0.0) for i in reciept_items])
+    # subtotals = sum([i.get("amount", 0.0) for i in receipt_items])
     total_without_subitems = total_amount
 
     print("           num_users")
@@ -43,11 +43,11 @@ def calculate_balances(reciept):
         for u in users
     }
 
-    print("           I in reciept items before balancesuser")
+    print("           I in receipt items before balancesuser")
     print(users)
     print("           balancesuser")
 
-    for i in reciept_items:
+    for i in receipt_items:
         print("RECIEPT ITEM")
         print(i)
         subtotal = i.get("amount", 0)

@@ -1,14 +1,14 @@
 import { Dispatch } from 'redux';
 
 import {
-  RecieptSetAction,
-  RecieptType,
+  ReceiptSetAction,
+  ReceiptType,
 } from '../types/index'
 
-export const saveReciept = (payload: RecieptType) => (dispatch: Dispatch) => {
-  console.log("saveReciept")
+export const saveReceipt = (payload: ReceiptType) => (dispatch: Dispatch) => {
+  console.log("saveReceipt")
   console.log(payload)
-  const action: RecieptSetAction = {
+  const action: ReceiptSetAction = {
     type: 'RECIEPT_SAVE_REQUEST',
     payload
   }

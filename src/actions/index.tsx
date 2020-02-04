@@ -1,7 +1,7 @@
 export * from "./helpers";
-export * from "./recieptActions";
+export * from "./receiptActions";
 export * from "./userActions";
-// export * from "./saveReciept";
+// export * from "./saveReceipt";
 export * from "./loginActions";
 export * from "./friendActions";
-// export * from "./setReciept";
+// export * from "./setReceipt";

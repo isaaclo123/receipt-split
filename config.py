@@ -18,7 +18,7 @@ class Config(object):
     JWT_EXPIRATION_DELTA = datetime.timedelta(weeks=999)
 
     DEFAULT_PARSERS = [
-        'reciept_split.parsers.SimpleJsonParser',
+        'receipt_split.parsers.SimpleJsonParser',
         # 'flask.ext.api.parsers.JSONParser',
         'flask_api.parsers.URLEncodedParser',
         'flask_api.parsers.MultiPartParser'

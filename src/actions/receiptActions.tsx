@@ -1,7 +1,7 @@
 import {
-  fetchRecieptById,
-  fetchRecieptList,
-  saveRecieptById
+  fetchReceiptById,
+  fetchReceiptList,
+  saveReceiptById
 } from "../api/index";
 
 import {
@@ -21,8 +21,8 @@ import {
   RECIEPT_ITEM_SET_AMOUNT,
   RECIEPT_ITEM_ADD_USER,
   RECIEPT_ITEM_DELETE_USER,
-  RecieptType,
-  RecieptItemType,
+  ReceiptType,
+  ReceiptItemType,
   UserType,
   EDIT_DATA_APPEND,
   EDIT_DATA_PREPEND
@@ -31,41 +31,41 @@ import {
 import { ApiMiddlewareAction } from "../types/index";
 import { setValueAction, apiCallAction } from "./index";
 
-export const getRecieptList = (): ApiMiddlewareAction =>
+export const getReceiptList = (): ApiMiddlewareAction =>
   apiCallAction({
     successType: RECIEPT_LIST_SUCCESS,
     failType: RECIEPT_LIST_FAIL,
     withToken: true,
-    apiCall: fetchRecieptList
+    apiCall: fetchReceiptList
   });
 
-export const getReciept = (id: number): ApiMiddlewareAction =>
+export const getReceipt = (id: number): ApiMiddlewareAction =>
   apiCallAction({
     successType: RECIEPT_ID_SUCCESS,
     failType: RECIEPT_ID_FAIL,
     withToken: true,
-    // shouldCallApi: (state: RootState) => state.recieptDictState.data[id], TODO
+    // shouldCallApi: (state: RootState) => state.receiptDictState.data[id], TODO
     // onSuccess: (cur: any) => Object.assign({}, prev, cur),
-    apiCall: fetchRecieptById,
+    apiCall: fetchReceiptById,
     apiCallArgs: [id]
   });
 
-export const saveReciept = (
+export const saveReceipt = (
   id: number,
-  payload: RecieptType
+  payload: ReceiptType
 ): ApiMiddlewareAction =>
   apiCallAction({
     successType: RECIEPT_ID_SUCCESS,
     failType: RECIEPT_ID_FAIL,
     withToken: true,
-    apiCall: saveRecieptById,
+    apiCall: saveReceiptById,
     apiCallArgs: [id, payload]
   });
 
-// export const getReciept = (payload: RecieptPayload) => (dispatch: Dispatch) => {
-//   console.log("getReciept");
+// export const getReceipt = (payload: ReceiptPayload) => (dispatch: Dispatch) => {
+//   console.log("getReceipt");
 //   console.log(payload);
-//   const action: RecieptRequestAction = {
+//   const action: ReceiptRequestAction = {
 //     type: "RECIEPT_ID_REQUEST",
 //     payload
 //   };
@@ -73,58 +73,58 @@ export const saveReciept = (
 //   dispatch(action);
 // };
 
-export const setRecieptName = setValueAction<string>({
+export const setReceiptName = setValueAction<string>({
   successType: RECIEPT_SET_NAME
 });
-export const setRecieptAmount = setValueAction<number>({
+export const setReceiptAmount = setValueAction<number>({
   successType: RECIEPT_SET_AMOUNT
 });
-export const setRecieptDate = setValueAction<string>({
+export const setReceiptDate = setValueAction<string>({
   successType: RECIEPT_SET_DATE
 });
-export const addRecieptUser = (user: UserType) =>
+export const addReceiptUser = (user: UserType) =>
   setValueAction<UserType>({
     successType: RECIEPT_ADD_USER
   })(user, [EDIT_DATA_APPEND]);
 
-export const deleteRecieptUser = (id: number) =>
+export const deleteReceiptUser = (id: number) =>
   setValueAction<{}>({
     successType: RECIEPT_DELETE_USER
   })({}, [id]);
 
-export const addRecieptItem = () =>
-  setValueAction<RecieptItemType>({
+export const addReceiptItem = () =>
+  setValueAction<ReceiptItemType>({
     successType: RECIEPT_ADD_RECIEPT_ITEM
   })(
     {
-      name: "New Reciept Item",
+      name: "New Receipt Item",
       amount: 0,
       users: []
     },
     [EDIT_DATA_PREPEND]
   );
 
-export const deleteRecieptItem = (id: number) =>
+export const deleteReceiptItem = (id: number) =>
   setValueAction<{}>({
     successType: RECIEPT_DELETE_RECIEPT_ITEM
   })({}, [id]);
 
-export const setRecieptItemName = (name: string, id: number) =>
+export const setReceiptItemName = (name: string, id: number) =>
   setValueAction<string>({
     successType: RECIEPT_ITEM_SET_NAME
   })(name, [id]);
 
-export const setRecieptItemAmount = (amount: number, id: number) =>
+export const setReceiptItemAmount = (amount: number, id: number) =>
   setValueAction<number>({
     successType: RECIEPT_ITEM_SET_AMOUNT
   })(amount, [id]);
 
-export const addRecieptItemUser = (user: UserType, id: number) =>
+export const addReceiptItemUser = (user: UserType, id: number) =>
   setValueAction<UserType>({
     successType: RECIEPT_ITEM_ADD_USER
   })(user, [id, EDIT_DATA_APPEND]);
 
-export const deleteRecieptItemUser = (id: number, id2: number) =>
+export const deleteReceiptItemUser = (id: number, id2: number) =>
   setValueAction<{}>({
     successType: RECIEPT_ITEM_DELETE_USER
   })({}, [id, id2]);

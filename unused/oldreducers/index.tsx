@@ -1,6 +1,6 @@
 export * from "./loginReducer";
-// export * from "./recieptReducer";
-// export * from "./recieptListReducer";
+// export * from "./receiptReducer";
+// export * from "./receiptListReducer";
 // export * from "./userReducer";
 
 export * from "./rootReducer";

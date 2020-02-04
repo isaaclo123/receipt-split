@@ -1,20 +1,20 @@
 import {
-  RecieptData,
-  RecieptAction,
-  RecieptType,
-  RecieptListState,
-  RecieptListAction
+  ReceiptData,
+  ReceiptAction,
+  ReceiptType,
+  ReceiptListState,
+  ReceiptListAction
 } from "../types/index";
 
-const initialState: RecieptListState = {
+const initialState: ReceiptListState = {
   error: false,
   data: [],
   errors: []
 };
 
-export const recieptReducer = (
-  state: RecieptListState = initialState,
-  { payload, type }: RecieptListAction
+export const receiptReducer = (
+  state: ReceiptListState = initialState,
+  { payload, type }: ReceiptListAction
 ) => {
   if (payload == null) {
     return state;

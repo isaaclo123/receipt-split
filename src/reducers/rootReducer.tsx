@@ -1,9 +1,9 @@
 import { combineReducers } from "redux";
 
 import {
-  recieptReducer,
-  recieptListReducer,
-  recieptDictReducer,
+  receiptReducer,
+  receiptListReducer,
+  receiptDictReducer,
   loginReducer,
   userReducer,
   friendReducer
@@ -13,10 +13,10 @@ import {
 
 export const rootReducer = combineReducers({
   loginState: loginReducer,
-  recieptListState: recieptListReducer,
-  recieptDictState: recieptDictReducer,
-  recieptState: recieptReducer,
+  receiptListState: receiptListReducer,
+  receiptDictState: receiptDictReducer,
+  receiptState: receiptReducer,
   userState: userReducer,
   friendState: friendReducer
-  // recieptState: recieptReducer
+  // receiptState: receiptReducer
 });

@@ -1,5 +1,5 @@
 from marshmallow import EXCLUDE, fields, pre_load, post_load
-from .models import User, Reciept, RecieptItem, Balance, Payment
+from .models import User, Receipt, ReceiptItem, Balance, Payment
 
 from .meta import ma, db
 # db
@@ -113,9 +113,9 @@ class BalanceSchema(ma.ModelSchema):
         return fromuser
 
 
-class RecieptItemSchema(ma.ModelSchema):
+class ReceiptItemSchema(ma.ModelSchema):
     class Meta:
-        model = RecieptItem
+        model = ReceiptItem
         fields = ('name', 'amount', 'users')
 
     users = ma.Nested(UserSchema,
@@ -126,18 +126,18 @@ class RecieptItemSchema(ma.ModelSchema):
         return get_existing_users(self, data, original_data, **kwargs)
 
 
-class RecieptSchema(ma.ModelSchema):
+class ReceiptSchema(ma.ModelSchema):
     class Meta:
-        model = Reciept
+        model = Receipt
         fields = ('id', 'name', 'amount', 'date', 'resolved',
-                  'balances', 'reciept_items', 'users', 'user')
+                  'balances', 'receipt_items', 'users', 'user')
         unknown = EXCLUDE
         ordered = True
 
     id = fields.Int()
 
     balances = ma.Nested(BalanceSchema, many=True)
-    reciept_items = ma.Nested(RecieptItemSchema, many=True)
+    receipt_items = ma.Nested(ReceiptItemSchema, many=True)
     user = ma.Nested(UserSchema)
 
     users = ma.Nested(UserSchema, many=True)

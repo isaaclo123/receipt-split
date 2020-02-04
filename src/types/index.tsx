@@ -8,7 +8,7 @@ export * from "./balance";
 export * from "./friend";
 export * from "./login";
 export * from "./payment";
-export * from "./reciept";
+export * from "./receipt";
 export * from "./user";
 
 export type RootState = ReturnType<typeof rootReducer>;

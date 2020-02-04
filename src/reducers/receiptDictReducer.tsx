@@ -1,14 +1,14 @@
 import {
   Dict,
-  RecieptDictState,
-  RecieptCacheAction,
+  ReceiptDictState,
+  ReceiptCacheAction,
   RECIEPT_ID_SUCCESS,
   RECIEPT_ID_FAIL
 } from "../types/index";
 
 import { setDataReducer, applyDataReducers } from "./index";
 
-const initialState: RecieptDictState = {
+const initialState: ReceiptDictState = {
   error: false,
   data: {},
   errors: {}
@@ -20,9 +20,9 @@ const assignToData = (data: Dict, payload: any) => {
   });
 };
 
-export const recieptDictReducer = applyDataReducers<
-  RecieptDictState,
-  RecieptCacheAction
+export const receiptDictReducer = applyDataReducers<
+  ReceiptDictState,
+  ReceiptCacheAction
 >(initialState, [
   {
     reducerCreator: setDataReducer,

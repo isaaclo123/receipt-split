@@ -8,18 +8,18 @@ from decimal import Decimal
 from .meta import db
 
 
-recieptitem_association_table = db.Table(
-    'user_recieptitem_association',
+receiptitem_association_table = db.Table(
+    'user_receiptitem_association',
     db.metadata,
     db.Column('left_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('right_id', db.Integer, db.ForeignKey('recieptitem.id'))
+    db.Column('right_id', db.Integer, db.ForeignKey('receiptitem.id'))
 )
 
-reciept_association_table = db.Table(
-    'user_reciept_association',
+receipt_association_table = db.Table(
+    'user_receipt_association',
     db.metadata,
     db.Column('left_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('right_id', db.Integer, db.ForeignKey('reciept.id'))
+    db.Column('right_id', db.Integer, db.ForeignKey('receipt.id'))
 )
 
 
@@ -36,7 +36,7 @@ class Balance(db.Model):
     amount = db.Column(db.Float(asdecimal=True),
                        nullable=False)
 
-    reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
+    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
 
 
 class Payment(db.Model):
@@ -75,10 +75,10 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
 
-    reciepts_owned = relationship("Reciept", backref="user")
+    receipts_owned = relationship("Receipt", backref="user")
 
-    reciepts_in = relationship("Reciept",
-                               secondary=reciept_association_table,
+    receipts_in = relationship("Receipt",
+                               secondary=receipt_association_table,
                                backref="users")
 
     balances_to_user = relationship("Balance",
@@ -103,33 +103,33 @@ class User(db.Model):
                                       ],
                                       backref="from_user")
 
-    reciept_items = relationship("RecieptItem",
-                                 secondary=recieptitem_association_table,
+    receipt_items = relationship("ReceiptItem",
+                                 secondary=receiptitem_association_table,
                                  backref="users")
 
 
-class RecieptItem(db.Model):
-    __tablename__ = 'recieptitem'
+class ReceiptItem(db.Model):
+    __tablename__ = 'receiptitem'
     id = db.Column(db.Integer, primary_key=True)
 
-    reciept_id = db.Column(db.Integer, db.ForeignKey('reciept.id'))
+    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
 
     name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float(asdecimal=True),
                        nullable=False)
 
-    # users = relationship("RecieptItem",
-    #                      # backref="reciept_items",
-    #                      foreign_keys=[User.reciept_item_id])
-    # reciept
+    # users = relationship("ReceiptItem",
+    #                      # backref="receipt_items",
+    #                      foreign_keys=[User.receipt_item_id])
+    # receipt
 
 
-class Reciept(db.Model):
-    __tablename__ = 'reciept'
+class Receipt(db.Model):
+    __tablename__ = 'receipt'
     # user
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, default="New Reciept")
+    name = db.Column(db.String(100), nullable=False, default="New Receipt")
     amount = db.Column(db.Float(asdecimal=True),
                        nullable=False, default=0)
     date = db.Column(db.Date,
@@ -143,7 +143,7 @@ class Reciept(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    balances = relationship("Balance", backref="reciept")
+    balances = relationship("Balance", backref="receipt")
 
-    reciept_items = relationship("RecieptItem", backref="reciept",
-                                 foreign_keys=[RecieptItem.reciept_id])
+    receipt_items = relationship("ReceiptItem", backref="receipt",
+                                 foreign_keys=[ReceiptItem.receipt_id])
