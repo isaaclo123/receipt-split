@@ -1,0 +1,54 @@
+http://localhost:5000
+--
+
+--
+
+POST /signup
+{
+    "username": "t",
+    "fullname": "Test Me",
+    "password": "t"
+}
+
+POST /auth
+{
+    "username": "t",
+    "password": "t"
+}
+
+--
+
+http://localhost:5000
+
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjIxOTUzMzE3OTgsImlhdCI6MTU5MTEzNjU5OCwibmJmIjoxNTkxMTM2NTk4LCJpZGVudGl0eSI6MX0.SNvhjKxSxHtizAWvFJAEpHdUCRGdmjOAPRg7p9PqcOE
+Accept: application/json
+Content-Type: application/json
+
+// GET /receipt
+
+GET /receipt/-1
+
+POST /receipt/-1
+{
+  "id": -1,
+  "name": "New Recipet",
+  "amount": 0,
+  "date": "2017-05-27",
+  "user": {
+    "username": "abc",
+    "fullname": "abcd"
+  },
+  "users": [],
+  "receipt_items": [],
+  "balances": [],
+  "resolved": false
+}
+
+--
+http://localhost:5000
+
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjIxOTQ5OTgwMzQsImlhdCI6MTU5MDgwMjgzNCwibmJmIjoxNTkwODAyODM0LCJpZGVudGl0eSI6Nn0.yZZs8OHf6cApf2hzHrrqLVarF1cSOJEe2dN3dHHlOvc
+Accept: application/json
+Content-Type: application/json
+
+GET /receipt

@@ -63,7 +63,7 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
               <Form.Control
                 type="email"
                 placeholder="Username"
-                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   signupData = Object.assign({}, signupData, {
                     username: event.currentTarget.value
                   });
@@ -76,7 +76,7 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
               <Form.Control
                 type="text"
                 placeholder="Full Name"
-                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   signupData = Object.assign({}, signupData, {
                     fullname: event.currentTarget.value
                   });
@@ -89,7 +89,7 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
               <Form.Control
                 type="password"
                 placeholder="Password"
-                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   signupData = Object.assign({}, signupData, {
                     password: event.currentTarget.value
                   });

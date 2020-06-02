@@ -1,21 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import InputGroup from 'react-bootstrap/InputGroup'
+import Col from 'react-bootstrap/Col'
 
-import { BadgeListProps, BadgeListComponent } from './BadgeListComponent'
+import { BadgeListComponent } from './BadgeListComponent'
 import { UserType } from '../types/index'
-
-import { TextInputComponent } from './TextInputComponent'
 
 export interface ExpenseCardParams {
   variant?: string;
   prefix?: string;
 
   name: string;
+  nameError?: string;
   handleNameChange: (arg0:string) => void;
 
   amount: number;
+  amountError?: string;
   handleAmountChange: (arg0:number) => void;
 
   handleDeleteClick: () => void;
@@ -31,8 +34,10 @@ export interface ExpenseCardParams {
 
 export const ExpenseCardComponent = ({
   name,
+  nameError,
   handleNameChange,
   amount = 0,
+  amountError,
   handleAmountChange,
   users = [],
 
@@ -48,45 +53,77 @@ export const ExpenseCardComponent = ({
   handleDeleteClick
 }: ExpenseCardParams) => {
 
+  const [editing, setEditing] = useState(false);
+
+  const inputStyle: React.CSSProperties = {
+    height: "1.5em",
+    border: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  };
+
   return (
     <Card className="mb-3">
       <Card.Body>
-        <Card.Title>
-          <span className="float-left">
-            <TextInputComponent
-              size={40}
-              type="text"
-              value={name}
-              handleTextChange={handleNameChange}
+        <Form>
+          <Form.Row className="mb-0">
+            <Form.Group as={Col} sm="8" className="mb-0">
+              <Form.Control
+                style={inputStyle}
+                plaintext
+                className="form-control-lg"
+                value={name}
+                isInvalid={nameError != null}
+                type="text"
+                onChange={event => {
+                  handleNameChange(event.currentTarget.value);
+                }}
               />
-          </span>
-          <span
-            className={`text-${variant} float-right`}>
-            {prefix}$
-            <TextInputComponent
-              size={10}
-              type="number"
-              value={(amount != null) ? amount.toFixed(2): "0.00"}
-              pattern="^(\d*\.)?\d+$"
-              handleValidate={(str: string) => {
-                // check greater than 0 and not invalid
-                const value = Number(str)
-                if (Number.isNaN(value)) return false
-                return value > 0
-              }}
-              handleTextChange={(str: string) => {
-                // to decimal number
-                const value = Number(Number(str).toFixed(2))
-                console.log(value)
-                handleAmountChange(value)
-              }}
-              />
-          </span>
-          <br />
-        </Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">
-        </Card.Subtitle>
-        <Card.Text>
+              <Form.Control.Feedback type="invalid">
+                {nameError}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group as={Col} sm="4" className="mb-0">
+              {(!editing) ?
+                (<Form.Control
+                    style={Object.assign({}, inputStyle, { textAlign: "right" })}
+                    plaintext
+                    className={`text-${variant} form-control-lg`}
+                    readOnly
+                    value={`${prefix}$` + ((amount != null) ? amount.toFixed(2): "0.00")}
+                    isInvalid={amountError != null}
+                    onFocus = {() => {
+                      setEditing(true);
+                    }} />) :
+                  (<Form.Control
+                      style={Object.assign({}, inputStyle, { textAlign: "right" })}
+                      plaintext
+                      className={`text-${variant} form-control-lg`}
+                      type="number"
+                      readOnly={!editing}
+                      isInvalid={amountError != null}
+                      value={(amount != null) ? amount.toFixed(2): "0.00"}
+                      onChange={event => {
+                        // to decimal number
+                        const value = Number(Number(event.currentTarget.value).toFixed(2))
+                        handleAmountChange(value)
+                      }}
+                      onBlur = {() => {
+                        setEditing(false);
+                      }} />)
+              }
+
+              <Form.Control.Feedback
+                className="text-right"
+                type="invalid">
+                {amountError}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+        </Form>
+
+        <div>
           {extraComponent}
           <span className="float-left">
             <span className="align-middle">
@@ -110,7 +147,7 @@ export const ExpenseCardComponent = ({
               &times;
             </Button>
           </span>
-        </Card.Text>
+        </div>
       </Card.Body>
     </Card>
   )

@@ -25,9 +25,17 @@ export const fetchData = async (
       ? defaultOpts
       : Object.assign({}, defaultOpts, { body: JSON.stringify(payload) });
 
+    console.log("--OPTIONS START--")
+    console.log(options)
+    console.log("--OPTIONS END--")
+
     const response = await fetch(`${SERVER_URL}/${url}`, options);
 
-    console.log(response);
+    console.log("RESPONSE START");
+    console.log(response)
+    console.log(response.body)
+    console.log("RESPONSE END");
+
     const json = await response.json();
 
     if (!response.ok) {
@@ -44,10 +52,13 @@ export const fetchData = async (
       errors: {}
     };
   } catch (e) {
+    console.log("----ERROR START----")
+    console.log(e)
+    console.log("----ERROR END----")
     return {
       error: true,
       data: {},
-      errors: { errors: e.message }
+      errors: { error: e.message }
     };
   }
 };

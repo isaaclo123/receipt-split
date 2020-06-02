@@ -45,6 +45,7 @@ def balance_list():
 @views.route('/receipt', methods=['GET'])
 @jwt_required()
 def receipt_list():
+    print("ALLREC")
     receipts_owned = receipts_schema.dump(current_identity.receipts_owned)
     receipts_owned_map = {r["id"]: True for r in receipts_owned}
 
@@ -55,11 +56,13 @@ def receipt_list():
 
     all_receipts = receipts_owned + receipt_notin_owned
 
-    return all_receipts, status.HTTP_200_OK
+    # return all_receipts, status.HTTP_200_OK
+    # return [], status.HTTP_200_OK
+    return all_receipts
 
 
-@views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
 # @cross_origin(headers=['Content-Type', 'Authorization'])
+@views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def receipt_create():
     if request.method == 'GET':
@@ -77,29 +80,29 @@ def receipt_create():
     if not request.is_json:
         return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
 
+    print("---JSON DATA---")
     json_data = request.get_json()
+    print(json_data)
+    print("---JSON DATA---")
+    # json_data = request.data
     # json_data = request.data
     if id in json_data:
         del json_data["id"]
-    print(json_data)
 
     form = ReceiptForm.from_json(json_data)
     if not form.validate():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     json_data["balances"] = calculate_balances(json_data)
+    print("BEFORE RECIPT SCHEMA")
     receipt_data = receipt_schema.load(json_data)
-    print("RECPTDATAJk-===================")
-    print(receipt_data)
-    print("RECPTDATAJk-===================")
+    print("AFTER RECIPT SCHEMA")
 
     receipt_data.user = current_identity
 
-    print("BEFORE ADD **********")
     db.session.add(receipt_data)
     db.session.commit()
 
-    print("BEFORE DUMP **********")
     receipt_dump = receipt_schema.dump(receipt_data)
 
     return receipt_dump, status.HTTP_201_CREATED
@@ -145,7 +148,9 @@ def receipt_by_id(id):
     json_data = request.get_json()
     # json_data = request.data
 
+    print("JSON DATA START")
     print(json_data)
+    print("JSON DATA END")
 
     form = ReceiptForm.from_json(json_data)
     print("AFTERFORM")
@@ -157,14 +162,13 @@ def receipt_by_id(id):
         # json_data["id"] = id
         # receipt.query.update(json_data)
         print("receipt_data")
-        print(receipt)
         # delete old balances
         for oldbalance in receipt.balances:
             db.session.delete(oldbalance)
 
         json_data["balances"] = calculate_balances(json_data)
         print(json_data["balances"])
-        receipt_data = receipt_schema.load(json_data)
+        receipt_data = receipt_schema.load(json_data, session=db.session)
 
         print("RECPTDATAJk-===================")
         print(receipt_data.balances)
@@ -197,9 +201,6 @@ def user():
 @jwt_required()
 def friend_add(username):
     friend = User.query.filter_by(username=username).first()
-    print("FRIEND///////////")
-    print(friend)
-    print("FRIEND///////////")
 
     if friend is None:
         return {"error": "friend does not exist"}, status.HTTP_400_BAD_REQUEST
@@ -207,18 +208,11 @@ def friend_add(username):
     if friend == current_identity:
         return {"error": "cannot friend yourself"}, status.HTTP_400_BAD_REQUEST
 
-    if friend in current_identity.friends or friend in friend.friends:
+    if friend in current_identity.friends:
         return {"error": "friend already added"}, status.HTTP_400_BAD_REQUEST
 
-    if friend not in current_identity.friends:
-        current_identity.friends.append(friend)
-        db.session.add(current_identity)
-        db.session.commit()
-
-    if current_identity not in friend.friends:
-        friend.friends.append(current_identity)
-        db.session.add(friend)
-        db.session.commit()
+    current_identity.add_friend(friend)
+    db.session.commit()
 
     friend_dump = user_schema.dump(friend)
     return friend_dump, status.HTTP_200_OK
@@ -228,13 +222,4 @@ def friend_add(username):
 @jwt_required()
 def friend_list():
     friends = users_schema.dump(current_identity.friends)
-    print(friends)
     return friends, status.HTTP_200_OK
-
-
-@views.route('/proxy')
-def proxy():
-    result = requests.get(request.args['url'])
-    resp = Response(result.text)
-    resp.headers['Content-Type'] = 'application/json'
-    return resp

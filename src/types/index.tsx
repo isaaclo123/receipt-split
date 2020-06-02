@@ -19,6 +19,10 @@ export interface ButtonProps {
   handleClick: () => void;
 }
 
+export interface ErrorData {
+  error?: string;
+};
+
 export type Failable<T, E> = {
   error: boolean;
   data: T;

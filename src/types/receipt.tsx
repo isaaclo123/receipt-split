@@ -1,5 +1,6 @@
 import {
   Action,
+  ErrorData,
   Failable,
   Dict,
   UserType,
@@ -53,7 +54,7 @@ export type ReceiptListState = Failable<ReceiptType[], string[]>;
 
 // server types
 
-export type ReceiptError = {
+export interface ReceiptError extends ErrorData {
   id?: string;
   name?: string;
   amount?: string;

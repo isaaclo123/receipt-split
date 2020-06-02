@@ -1,4 +1,4 @@
-from marshmallow import EXCLUDE, fields, pre_load, post_load
+from marshmallow import EXCLUDE, fields, pre_load, post_load, validate
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 
 from .meta import ma, db
@@ -67,7 +67,6 @@ class FriendSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
         fields = ('id', 'fullname', 'username')
-        load_instance = True
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -87,7 +86,6 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         fields = ('id', 'fullname', 'username')
         unknown = EXCLUDE
-        load_instance = True
 
     id = fields.Int(dump_only=True)
 
@@ -97,7 +95,6 @@ class BalanceSchema(ma.SQLAlchemyAutoSchema):
         model = Balance
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = EXCLUDE
-        load_instance = True
 
     to_user = ma.Nested(UserSchema)
     from_user = ma.Nested(UserSchema)
@@ -120,10 +117,10 @@ class ReceiptItemSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = ReceiptItem
         fields = ('name', 'amount', 'users')
-        load_instance = True
 
     users = ma.Nested(UserSchema,
                       many=True)
+    name = fields.Str(validate=validate.Length)
 
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
@@ -137,9 +134,9 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
                   'balances', 'receipt_items', 'users', 'user')
         unknown = EXCLUDE
         ordered = True
-        load_instance = True
 
     id = fields.Int()
+    name = fields.Str(validate=validate.Length(min=1))
 
     balances = ma.Nested(BalanceSchema, many=True)
     receipt_items = ma.Nested(ReceiptItemSchema, many=True)
@@ -149,9 +146,11 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
 
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
+        print("BEFORE GET EXIST USERS")
         datawithusers = get_existing_users(self, data, original_data, **kwargs)
         datawithuser = get_existing_user(self, datawithusers,
                                          original_data, **kwargs)
+        print("AFTER GET EXIST USERS")
         return datawithuser
 
     to_user = ma.Nested(UserSchema, include=user_info_fields)
@@ -163,7 +162,6 @@ class PaymentSchema(ma.SQLAlchemyAutoSchema):
         model = Payment
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = "EXCLUDE"
-        load_instance = True
 
     to_user = ma.Nested(UserSchema, include=user_info_fields)
     from_user = ma.Nested(UserSchema, include=user_info_fields)

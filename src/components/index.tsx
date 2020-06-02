@@ -1,5 +1,6 @@
 export * from "./App";
 export * from "./BadgeListComponent";
+export * from "./BalancePage";
 export * from "./BalanceListItemComponent";
 export * from "./ExpenseCardComponent";
 export * from "./LoginPage";
@@ -16,4 +17,7 @@ export * from "./UserListItemComponent";
 export * from "./ListOrNoneComponent";
 // export * from "./TakeListItemComponent";
 export * from "./FriendModal";
-export * from "./helpers"
+export * from "./helpers";
+
+export * from "./LeaveListItemComponent";
+export * from "./TakeListItemComponent";

@@ -13,6 +13,7 @@ import { setLogin } from "../actions/index";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/Form";
 
 import { RootState } from "../types/index";
 
@@ -51,7 +52,7 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
     setLogin(loginData);
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (event: React.KeyboardEvent<FormControl & HTMLInputElement>) => {
     if (event.key === "Enter") {
       setLogin(loginData);
     }
@@ -69,7 +70,7 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
               <Form.Control
                 type="email"
                 placeholder="Username"
-                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                onChange={(event: React.ChangeEvent<FormControl & HTMLInputElement>) => {
                   loginData = Object.assign({}, loginData, {
                     username: event.currentTarget.value
                   });
@@ -83,7 +84,7 @@ const LoginPage = ({ loginState, setLogin }: Props) => {
                 type="password"
                 placeholder="Password"
                 onKeyPress={handleKeyPress}
-                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                onChange={(event: React.ChangeEvent<FormControl & HTMLInputElement>) => {
                   loginData = Object.assign({}, loginData, {
                     password: event.currentTarget.value
                   });

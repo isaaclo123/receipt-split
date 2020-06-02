@@ -56,7 +56,20 @@ export const apiCallMiddleware: Middleware = ({
           ...(withToken ? [...apiCallArgs, getToken(getState)] : apiCallArgs)
         );
 
+  console.log("--CALLDATA START--");
+  console.log(callData);
+  console.log("--CALLDATA END--");
+
   const { error, errors, data } = callData;
+
+  console.log("----API MIDDLEWARE START---");
+  console.log("error");
+  console.log(error);
+  console.log("errors");
+  console.log(errors);
+  console.log("data");
+  console.log(data);
+  console.log("----API MIDDLEWARE END---");
 
   if (!error) {
     if (successType != null) {

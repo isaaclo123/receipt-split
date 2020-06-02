@@ -1,4 +1,4 @@
-import { Action, Failable } from "./index";
+import { Action, ErrorData, Failable } from "./index";
 
 import {
   USER_INFO_SUCCESS,
@@ -11,7 +11,7 @@ export type UserType = {
   fullname: string;
 };
 
-export type UserErrors = {
+export interface UserErrors extends ErrorData {
   id?: string;
   username?: string;
   fullname?: string;

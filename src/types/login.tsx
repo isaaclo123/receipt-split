@@ -1,4 +1,4 @@
-import { Action, Failable, LOGIN_SUCCESS, LOGIN_FAIL } from "./index";
+import { Action, Failable, ErrorData, LOGIN_SUCCESS, LOGIN_FAIL } from "./index";
 
 export interface TokenPayload {
   token: string;
@@ -23,7 +23,7 @@ export interface LoginData {
   password: string;
 }
 
-export interface LoginErrors {
+export interface LoginErrors extends ErrorData {
   username?: string;
   password?: string;
 }

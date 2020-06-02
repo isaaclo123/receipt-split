@@ -7,6 +7,8 @@ import { connect, ConnectedProps } from "react-redux";
 import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 
 import { Redirect, RouteComponentProps } from "react-router-dom";
 
@@ -138,6 +140,15 @@ Props) => {
     date
   }: ReceiptType = receiptState.data;
 
+  const error = receiptState.error;
+  const errors = (receiptState.errors != null) ? receiptState.errors : {};
+  console.log(receiptState);
+
+  console.log("---ERRORS---");
+  console.log(receiptState.errors);
+  console.log(errors);
+  console.log("---ERRORS---");
+
   const allUsers = users;
 
   const onHide = () => {
@@ -190,31 +201,62 @@ Props) => {
         </Button>
       </div>
       <br />
+
+      { ("error" in errors) ?
+      <>
+          <Card
+            bg="danger"
+            text="light">
+            <Card.Body>
+              <Card.Text>
+                <b>Error:</b> {errors.error}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        <br />
+      </>
+      :
+      <></>}
+
       <ExpenseCardComponent
         extraComponent={
           <>
-            Paid by{" "}
-            <span className="text-primary">
-              {user == null ? "Unknown" : user.fullname}
-            </span>{" "}
-            on &nbsp;
-            <TextInputComponent
-              size={40}
-              type="text"
-              value={date}
-              handleTextChange={setReceiptDate}
-            />
-            <br />
+            <InputGroup>
+              <Form.Label
+                className="col-form-label">
+                Paid by{" "}
+                <span className="text-primary">
+                  {user == null ? "Unknown" : user.fullname}
+                </span>{" "}
+                on&nbsp; </Form.Label>
+              <Form.Group>
+                <Form.Control
+                  className="pb-0"
+                  isInvalid={errors.date != null}
+                  plaintext
+                  value={date}
+                  type="text"
+                  onChange={event => {
+                    setReceiptDate(event.currentTarget.value);
+                  }} />
+                  <Form.Control.Feedback type="invalid">{errors.date}</Form.Control.Feedback>
+                </Form.Group>
+              </InputGroup>
           </>
         }
         prefix="*"
         variant="info"
+
         name={name}
+        nameError={errors.name}
         handleNameChange={(name: string) => {
           setReceiptName(name);
         }}
+
         amount={amount}
+        amountError={errors.name}
         handleAmountChange={setReceiptAmount}
+
         handleDeleteClick={() => {}}
         users={users}
         handleUserClick={() => {}}
@@ -227,14 +269,13 @@ Props) => {
           });
         }}
       />
-      <div className="align-middle">
+      <div>
         <h5 className="float-left">Sub-expenses</h5>
         <span
           className="float-right text-primary"
           onClick={() => {
             addReceiptItem();
-          }}
-        >
+          }}>
           + Add Item
         </span>
       </div>

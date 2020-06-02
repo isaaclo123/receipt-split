@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
+import InputGroup from "react-bootstrap/InputGroup";
+import Form from "react-bootstrap/Form";
 
 export interface TextInputProps {
   value: string;
   type?: string;
   handleTextChange: (arg0: string) => void;
   pattern?: string;
-  size?: number;
   handleValidate?: (arg0: string) => boolean;
 }
 
 export const TextInputComponent = ({
   handleTextChange,
-  size = 30,
   type = "text",
   value,
   pattern = "",
   handleValidate = (str: string) => true
 }: TextInputProps) => {
-  const [hideInput, setHideInput] = useState(true);
+  // const [hideInput, setHideInput] = useState(true);
   // const [ newValue, setNewValue ] = useState(value)
 
   // if (value !== newValue) {
@@ -38,43 +38,45 @@ export const TextInputComponent = ({
   //   )
   // }
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log("keyparess");
-    if (event.key === "Enter") {
-      setHideInput(true);
-    }
-  };
+  // const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (event.key === "Enter") {
+  //     setHideInput(true);
+  //   }
+  // };
+
+//      <input
+//        size={size}
+//        style={{
+//          display: hideInput ? "none" : "inline"
+//        }}
+//        pattern={pattern}
+//        value={value}
+//        onChange={event => {
+//          if (handleValidate(event.currentTarget.value)) {
+//            handleTextChange(event.currentTarget.value);
+//          }
+//        }}
+//        onKeyPress={handleKeyPress}
+//        onBlur={() => {
+//          setHideInput(true);
+//        }}
+//      />
 
   return (
     <>
-      <span
-        onClick={() => {
-          setHideInput(false);
-        }}
-        style={{
-          display: hideInput ? "inline" : "none"
-        }}
-      >
-        {value}
-      </span>
-
-      <input
-        size={size}
-        style={{
-          display: hideInput ? "none" : "inline"
-        }}
-        pattern={pattern}
-        value={value}
-        onChange={event => {
-          if (handleValidate(event.currentTarget.value)) {
-            handleTextChange(event.currentTarget.value);
-          }
-        }}
-        onKeyPress={handleKeyPress}
-        onBlur={() => {
-          setHideInput(true);
-        }}
-      />
+      <InputGroup>
+        <Form.Control
+          plaintext
+          pattern={pattern}
+          value={value}
+          type={type}
+          onChange={event => {
+            if (handleValidate(event.currentTarget.value)) {
+              handleTextChange(event.currentTarget.value);
+            }
+          }}
+        />
+      </InputGroup>
     </>
   );
 };

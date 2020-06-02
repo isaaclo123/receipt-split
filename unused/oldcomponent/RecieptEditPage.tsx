@@ -155,6 +155,7 @@ const ReceiptEditPage = ({
           }}>SAVE</Button>
       </div>
       <br />
+      <h5 />
 
       <ExpenseCardComponent
         extraComponent={
