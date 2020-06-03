@@ -88,7 +88,7 @@ def receipt_create():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     json_data["balances"] = calculate_balances(json_data)
-    receipt_data = receipt_schema.load(json_data)
+    receipt_data = receipt_schema.load(json_data, session=db.session)
     print("RECPTDATAJk-===================")
     print(receipt_data)
     print("RECPTDATAJk-===================")
@@ -164,7 +164,7 @@ def receipt_by_id(id):
 
         json_data["balances"] = calculate_balances(json_data)
         print(json_data["balances"])
-        receipt_data = receipt_schema.load(json_data)
+        receipt_data = receipt_schema.load(json_data, session=db.session)
 
         print("RECPTDATAJk-===================")
         print(receipt_data.balances)

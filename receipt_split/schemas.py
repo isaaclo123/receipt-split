@@ -20,6 +20,7 @@ def get_existing_user(self, data, original_data, user_field="user", **kwargs):
 
     exist_user = None
 
+    print("EXISTING USER")
     if q_id is not None:
         exist_user = User.query.get(q_id)
     elif q_username is not None:
@@ -149,6 +150,7 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
 
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
+        print("*********POST LOAD********")
         datawithusers = get_existing_users(self, data, original_data, **kwargs)
         datawithuser = get_existing_user(self, datawithusers,
                                          original_data, **kwargs)
