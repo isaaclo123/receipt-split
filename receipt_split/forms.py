@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
+from wtforms import fields, validators
 
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 from .meta import db
@@ -18,14 +19,25 @@ class UserForm(ModelForm):
         model = User
 
 
+class ReceiptItemForm(ModelForm):
+    class Meta:
+        model = ReceiptItem
+
+    name = fields.StringField("Name",
+                              [validators.length(min=1)])
+    amount = fields.DecimalField("Decimal",
+                                 [validators.NumberRange(min=0)])
+
+
 class ReceiptForm(ModelForm):
     class Meta:
         model = Receipt
 
-
-class ReceiptItemForm(ModelForm):
-    class Meta:
-        model = ReceiptItem
+    name = fields.StringField("Name",
+                              [validators.length(min=1)])
+    amount = fields.DecimalField("Decimal",
+                                 [validators.NumberRange(min=0)])
+    receipt_items = fields.FieldList(fields.FormField(ReceiptItemForm))
 
 
 class BalanceForm(ModelForm):

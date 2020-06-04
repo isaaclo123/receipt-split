@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { get } from "./index";
 import { connect, ConnectedProps } from "react-redux";
 
 // import { getUser } from "../actions/getUser";
@@ -38,7 +39,8 @@ import {
   ReceiptState,
   UserType,
   BalanceType,
-  RootState
+  RootState,
+  Dict
 } from "../types/index";
 
 import {
@@ -254,7 +256,7 @@ Props) => {
         }}
 
         amount={amount}
-        amountError={errors.name}
+        amountError={errors.amount}
         handleAmountChange={setReceiptAmount}
 
         handleDeleteClick={() => {}}
@@ -297,11 +299,16 @@ Props) => {
             <ExpenseCardComponent
               prefix="-"
               variant="danger"
+
               name={name}
               handleNameChange={(name: string) => {
                 setReceiptItemName(name, i);
               }}
+              nameError={get<Dict, string, number, string>(errors, "receipt_items", i, "name")}
+
               amount={amount}
+              amountError={get<Dict, string, number, string>(errors, "receipt_items", i, "amount")}
+
               handleAmountChange={(amount: number) => {
                 setReceiptItemAmount(amount, i);
               }}
