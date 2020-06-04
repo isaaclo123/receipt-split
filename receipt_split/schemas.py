@@ -13,14 +13,8 @@ def get_existing_user(self, data, original_data, user_field="user", **kwargs):
     q_id = user.get("id")
     q_username = user.get("username")
 
-    print("field " + user_field + "=--------")
-    print(q_id)
-    print(q_username)
-    print("field " + user_field + "=--------")
-
     exist_user = None
 
-    print("EXISTING USER")
     if q_id is not None:
         exist_user = User.query.get(q_id)
     elif q_username is not None:
@@ -30,9 +24,7 @@ def get_existing_user(self, data, original_data, user_field="user", **kwargs):
         return data
 
     data[user_field] = exist_user
-    print("field " + user_field + "=--------")
-    print(exist_user)
-    print("field " + user_field + "=--------")
+
     return data
 
 
@@ -72,14 +64,6 @@ class FriendSchema(ma.SQLAlchemyAutoSchema):
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
-    # class Meta:
-    #     model = User
-    #     # fields = ('id', 'fullname', 'username', 'friends',
-    #     #           'balances_to_user', 'balances_from_user', 'payments_to_user',
-    #     #           'payments_from_user')
-
-    #     fields = ('id', 'fullname', 'username')
-
     # friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
 
     # balances_to_user = ma.Nested(BalanceSchema, many=True)
@@ -107,13 +91,8 @@ class BalanceSchema(ma.SQLAlchemyAutoSchema):
     def get_existing_user(self, data, original_data, **kwargs):
         touser = get_existing_user(self, data, original_data,
                                    user_field="to_user", **kwargs)
-        print("TOO USER---------")
-        print(touser)
-        print(touser.get("to_user").id)
-        print(touser.get("to_user").username)
         fromuser = get_existing_user(self, touser, original_data,
                                      user_field="from_user", **kwargs)
-        print(fromuser)
         return fromuser
 
 
@@ -150,7 +129,6 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
 
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
-        print("*********POST LOAD********")
         datawithusers = get_existing_users(self, data, original_data, **kwargs)
         datawithuser = get_existing_user(self, datawithusers,
                                          original_data, **kwargs)

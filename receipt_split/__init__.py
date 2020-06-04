@@ -16,7 +16,7 @@ from flask_jwt import JWT
 from flask_cors import CORS
 # db.init_app(app)
 # migrate = Migrate(app, db)
-from .models import *
+# from .models import *
 
 from .meta import db, ma
 
@@ -65,5 +65,3 @@ def create_app():
         # db.session.commit()
 
     return app
-
-# return app

@@ -1,20 +1,19 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
-from werkzeug.security import generate_password_hash, check_password_hash
+from pprint import pformat
 
 # from flask_cors import cross_origin
 from datetime import date
-import simplejson
 
 from .meta import db
-from .auth import identity
+# from .auth import identity
 from .models import User, Receipt
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema
 from .forms import ReceiptForm
 from .helpers import calculate_balances, ok, err
 
-import requests
+# import requests
 
 
 views = Blueprint('views', __name__)
@@ -59,7 +58,6 @@ def receipt_list():
 
 
 @views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
-# @cross_origin(headers=['Content-Type', 'Authorization'])
 @jwt_required()
 def receipt_create():
     if request.method == 'GET':
@@ -78,110 +76,93 @@ def receipt_create():
         return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
     json_data = request.get_json()
-    # json_data = request.data
+
     if id in json_data:
         del json_data["id"]
-    print(json_data)
 
     form = ReceiptForm.from_json(json_data)
     if not form.validate():
+        app.logger.info("receipt/-1 form errors - %s", form.errors)
         return form.errors, status.HTTP_400_BAD_REQUEST
+
+    app.logger.info("receipt/-1 input json data - %s", json_data)
 
     json_data["balances"] = calculate_balances(json_data)
     receipt_data = receipt_schema.load(json_data, session=db.session)
-    print("RECPTDATAJk-===================")
-    print(receipt_data)
-    print("RECPTDATAJk-===================")
 
     receipt_data.user = current_identity
 
-    print("BEFORE ADD **********")
     db.session.add(receipt_data)
     db.session.commit()
 
-    print("BEFORE DUMP **********")
     receipt_dump = receipt_schema.dump(receipt_data)
 
-    return receipt_dump, status.HTTP_201_CREATED
+    app.logger.info("receipt/-1 return data with balances - %s",
+                    receipt_dump)
+
+        return receipt_dump, status.HTTP_201_CREATED
 
 
 @views.route('/receipt/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
 def receipt_by_id(id):
-    print("ID---------")
-    print(id)
-    print("ID---------")
     receipt = Receipt.query.get(id)
-    print(receipt)
+
+    app.logger.info("receipt/%s %s", id, receipt)
 
     if not receipt:
+        app.logger.info("receipt/%s does not exist", id)
+
         return err("Receipt with id does not exist"),\
-                status.HTTP_404_NOT_FOUND
-    print(receipt)
+            status.HTTP_404_NOT_FOUND
 
     if request.method == 'GET':
         receipt_dump = receipt_schema.dump(receipt)
+
+        app.logger.info("receipt/%s GET %s", id, receipt_dump)
+
         return receipt_dump, status.HTTP_200_OK
 
+    # TODO
     if receipt.user != current_identity:
+        app.logger.info("receipt/%s unauthorized for %s", id,
+                        current_identity)
         return err("Your do not own this receipt"),\
-                status.HTTP_401_UNAUTHORIZED
+            status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
+        app.logger.info("Deleting receipt/%s", id)
+
         db.session.delete(receipt)
         db.session.commit()
+
         return ok("Success"), status.HTTP_200_OK
 
-    print(request)
     if not request.is_json:
+        app.logger.info("receipt/%s is not JSON", id)
         return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
-    print("--------reciptuser")
-    print(receipt.user)
-    print("--------reciptuser")
-
-    print("--------reciptuser")
-
     json_data = request.get_json()
-    # json_data = request.data
-
-    print(json_data)
 
     form = ReceiptForm.from_json(json_data)
-    print("AFTERFORM")
-    print(form)
     if not form.validate():
+        app.logger.info("receipt/%s form errors - %s", id, form.errors)
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     if request.method == 'PUT' or request.method == 'PATCH':
-        # json_data["id"] = id
-        # receipt.query.update(json_data)
-        print("receipt_data")
-        print(receipt)
-        # delete old balances
-        # for oldbalance in receipt.balances:
-        #     db.session.delete(oldbalance)
-
         json_data["balances"] = calculate_balances(json_data)
-        print(json_data["balances"])
         receipt_data = receipt_schema.load(json_data, session=db.session)
 
-        print("RECPTDATAJk-===================")
-        print(receipt_data.balances)
-        print("RECPTDATAJk-===================")
-        print(receipt_data)
-        print("afterreceipt_data")
-        # print(receipt_data)
-
-        # db.session.merge(receipt_data)
         db.session.commit()
 
-        print("AFTERALL+__________")
-        print(receipt.user)
-        print("AFTERALL+__________")
-
         receipt_dump = receipt_schema.dump(receipt_data)
+
+        app.logger.info("receipt/%s return data with balances - %s", id,
+                        receipt_dump)
+
         return receipt_dump, status.HTTP_200_OK
+
+    app.logger.err("receipt/%s Unknown error", id)
 
     return err("should not get here"), status.HTTP_400_BAD_REQUEST
 
@@ -190,6 +171,7 @@ def receipt_by_id(id):
 @jwt_required()
 def user():
     user_dump = user_schema.dump(current_identity)
+    app.logger.info("/user data - %s", user_dump)
     return user_dump, status.HTTP_200_OK
 
 
@@ -197,17 +179,21 @@ def user():
 @jwt_required()
 def friend_add(username):
     friend = User.query.filter_by(username=username).first()
-    print("FRIEND///////////")
-    print(friend)
-    print("FRIEND///////////")
+    app.logger.indo
 
     if friend is None:
+        app.logger.info("/friend/%s does not exist - %s", username,
+                        current_identity.username)
         return err("friend does not exist"), status.HTTP_400_BAD_REQUEST
 
     if friend == current_identity:
+        app.logger.info("/friend/%s is self - %s", username,
+                        current_identity.username)
         return err("cannot friend yourself"), status.HTTP_400_BAD_REQUEST
 
     if friend in current_identity.friends or friend in friend.friends:
+        app.logger.info("/friend/%s already added - %s", username,
+                        current_identity.username)
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
     if friend not in current_identity.friends:
@@ -221,6 +207,10 @@ def friend_add(username):
         db.session.commit()
 
     friend_dump = user_schema.dump(friend)
+
+    app.logger.info("/friend/%s added for %s - ", username,
+                    current_identity.username, friend_dump)
+
     return friend_dump, status.HTTP_200_OK
 
 
@@ -228,13 +218,7 @@ def friend_add(username):
 @jwt_required()
 def friend_list():
     friends = users_schema.dump(current_identity.friends)
-    print(friends)
+    app.logger.info("/friend list get - %s - %s", current_identity.username,
+                    friends)
+
     return friends, status.HTTP_200_OK
-
-
-# @views.route('/proxy')
-# def proxy():
-#     result = requests.get(request.args['url'])
-#     resp = Response(result.text)
-#     resp.headers['Content-Type'] = 'application/json'
-#     return resp
