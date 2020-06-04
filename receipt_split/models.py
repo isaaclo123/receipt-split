@@ -143,7 +143,8 @@ class Receipt(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    balances = relationship("Balance", backref="receipt")
+    balances = relationship("Balance", backref="receipt", cascade="all,delete")
 
     receipt_items = relationship("ReceiptItem", backref="receipt",
-                                 foreign_keys=[ReceiptItem.receipt_id])
+                                 foreign_keys=[ReceiptItem.receipt_id],
+                                 cascade="all,delete")

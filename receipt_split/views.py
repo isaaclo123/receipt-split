@@ -12,7 +12,7 @@ from .auth import identity
 from .models import User, Receipt
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema
 from .forms import ReceiptForm
-from .helpers import calculate_balances
+from .helpers import calculate_balances, ok, err
 
 import requests
 
@@ -75,7 +75,7 @@ def receipt_create():
         }, status.HTTP_200_OK
 
     if not request.is_json:
-        return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
+        return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
     json_data = request.get_json()
     # json_data = request.data
@@ -115,7 +115,7 @@ def receipt_by_id(id):
     print(receipt)
 
     if not receipt:
-        return {"error": "Receipt with id does not exist"},\
+        return err("Receipt with id does not exist"),\
                 status.HTTP_404_NOT_FOUND
     print(receipt)
 
@@ -124,17 +124,17 @@ def receipt_by_id(id):
         return receipt_dump, status.HTTP_200_OK
 
     if receipt.user != current_identity:
-        return {"error": "Your do not own this receipt"},\
+        return err("Your do not own this receipt"),\
                 status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
         db.session.delete(receipt)
         db.session.commit()
-        return {"message": "Success"}, status.HTTP_200_OK
+        return ok("Success"), status.HTTP_200_OK
 
     print(request)
     if not request.is_json:
-        return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
+        return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
     print("--------reciptuser")
     print(receipt.user)
@@ -183,7 +183,7 @@ def receipt_by_id(id):
         receipt_dump = receipt_schema.dump(receipt_data)
         return receipt_dump, status.HTTP_200_OK
 
-    return {"error": "should not get here"}, status.HTTP_400_BAD_REQUEST
+    return err("should not get here"), status.HTTP_400_BAD_REQUEST
 
 
 @views.route('/user', methods=['GET'])
@@ -202,13 +202,13 @@ def friend_add(username):
     print("FRIEND///////////")
 
     if friend is None:
-        return {"error": "friend does not exist"}, status.HTTP_400_BAD_REQUEST
+        return err("friend does not exist"), status.HTTP_400_BAD_REQUEST
 
     if friend == current_identity:
-        return {"error": "cannot friend yourself"}, status.HTTP_400_BAD_REQUEST
+        return err("cannot friend yourself"), status.HTTP_400_BAD_REQUEST
 
     if friend in current_identity.friends or friend in friend.friends:
-        return {"error": "friend already added"}, status.HTTP_400_BAD_REQUEST
+        return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
     if friend not in current_identity.friends:
         current_identity.friends.append(friend)
@@ -232,9 +232,9 @@ def friend_list():
     return friends, status.HTTP_200_OK
 
 
-@views.route('/proxy')
-def proxy():
-    result = requests.get(request.args['url'])
-    resp = Response(result.text)
-    resp.headers['Content-Type'] = 'application/json'
-    return resp
+# @views.route('/proxy')
+# def proxy():
+#     result = requests.get(request.args['url'])
+#     resp = Response(result.text)
+#     resp.headers['Content-Type'] = 'application/json'
+#     return resp

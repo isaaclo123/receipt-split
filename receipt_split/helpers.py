@@ -1,6 +1,26 @@
 from decimal import Decimal
 
 
+def ok(msg):
+    """OK message
+
+    :msg: TODO
+    :returns: TODO
+
+    """
+    return {"message": str(msg)}
+
+
+def err(msg):
+    """Error message
+
+    :msg: TODO
+    :returns: TODO
+
+    """
+    return {"error": str(msg)}
+
+
 def get_userkey(user):
     return str(user.get("id", "-1")) + " - " + user.get("username", " ")
 

@@ -20,6 +20,8 @@ export const userListDiff = (l1: UserType[], l2: UserType[]) =>
 
 // https://codewithstyle.info/Deep-property-access-in-TypeScript/
 
+// START GET Function
+
 export function get<
   T,
   P1 extends keyof NonNullable<T>
@@ -46,11 +48,11 @@ export function get<
   P4 extends keyof NonNullable<NonNullable<NonNullable<NonNullable<T>[P1]>[P2]>[P3]>
   >(obj: T, prop1: P1, prop2: P2, prop3: P3, prop4: P4):NonNullable<NonNullable<NonNullable<NonNullable<T>[P1]>[P2]>[P3]>[P4] | undefined;
 
-// ...and so on...
-
 export function get(obj: any, ...props: string[]): any {
   return obj && props.reduce(
     (result, prop) => result == null ? undefined : result[prop],
     obj
   );
 }
+
+// END GET Function

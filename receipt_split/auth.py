@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from flask_api import status
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from .helpers import ok, err
 from .meta import db
 from .models import User
 
@@ -49,4 +50,4 @@ def signup_post():
         db.session.add(new_user)
         db.session.commit()
 
-    return {"message": "POST username, fullname, and password to this API"}
+    return ok("POST username, fullname, and password to this API")

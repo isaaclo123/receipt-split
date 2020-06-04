@@ -8,7 +8,7 @@ import "./Login.css";
 
 import { Redirect } from "react-router-dom";
 
-import { setLogin } from "../actions/index";
+import { setLogin, setToken } from "../actions/index";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -26,7 +26,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { setLogin }
+  { setLogin, setToken }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -35,7 +35,10 @@ type Props = PropsFromRedux & {
   loginState: LoginState;
 };
 
-const LoginPage = ({ loginState, setLogin }: Props) => {
+const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
+  // Set token if already in localstorage
+  setToken();
+
   const { login }: LoginData = loginState.data;
 
   console.log("LOGIN");
