@@ -143,7 +143,7 @@ Props) => {
     date
   }: ReceiptType = receiptState.data;
 
-  const error = receiptState.error;
+  // const error = receiptState.error;
   const errors = (receiptState.errors != null) ? receiptState.errors : {};
   console.log(receiptState);
 
@@ -174,6 +174,16 @@ Props) => {
   const onSave = () => {
     saveReceipt(id, receiptState.data);
   };
+
+  const noneComponent = (
+    <Card className="mb-3">
+      <Card.Body>
+        <Card.Title>
+          <span className="float-left text-secondary">None</span>
+        </Card.Title>
+      </Card.Body>
+    </Card>
+  );
 
   return (
     <>
@@ -222,7 +232,7 @@ Props) => {
                   {user == null ? "Unknown" : user.fullname}
                 </span>{" "}
                 on&nbsp; </Form.Label>
-              <Form.Group>
+              <Form.Group className="mb-0">
                 <Form.Control
                   className="pb-0"
                   isInvalid={errors.date != null}
@@ -276,15 +286,7 @@ Props) => {
       <h5 />
       <ListOrNoneComponent<ReceiptItemType>
         list={receipt_items}
-        noneComponent={
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>
-                <span className="float-left text-secondary">None</span>
-              </Card.Title>
-            </Card.Body>
-          </Card>
-        }
+        noneComponent={noneComponent}
         listComponent={({ name, amount, users }: ReceiptItemType, i = -1) => {
           return (
             <ExpenseCardComponent
@@ -323,7 +325,7 @@ Props) => {
       <h5>Balance</h5>
       <ListOrNoneComponent
         list={balances}
-        noneComponent={<div>None</div>}
+        noneComponent={noneComponent}
         listComponent={({ to_user, from_user, amount }: BalanceType) => {
           return (
             <Card className="mb-3">
