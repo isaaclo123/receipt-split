@@ -6,6 +6,7 @@ import { connect, ConnectedProps } from "react-redux";
 // import { getUser } from "../actions/getUser";
 
 import Card from "react-bootstrap/Card";
+import Alert from "react-bootstrap/Alert";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -205,20 +206,10 @@ Props) => {
       <br />
 
       { ("error" in errors) ?
-      <>
-          <Card
-            bg="danger"
-            text="light">
-            <Card.Body>
-              <Card.Text>
-                <b>Error:</b> {errors.error}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        <br />
-      </>
-      :
-      <></>}
+        <Alert variant="danger">
+          {errors.error}
+        </Alert>
+      : <></>}
 
       <ExpenseCardComponent
         extraComponent={

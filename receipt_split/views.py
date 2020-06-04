@@ -159,8 +159,8 @@ def receipt_by_id(id):
         print("receipt_data")
         print(receipt)
         # delete old balances
-        for oldbalance in receipt.balances:
-            db.session.delete(oldbalance)
+        # for oldbalance in receipt.balances:
+        #     db.session.delete(oldbalance)
 
         json_data["balances"] = calculate_balances(json_data)
         print(json_data["balances"])
