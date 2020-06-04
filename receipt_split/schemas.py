@@ -1,4 +1,4 @@
-from marshmallow import EXCLUDE, fields, pre_load, post_load
+from marshmallow import EXCLUDE, fields, pre_load, post_load, validate
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 
 from .meta import ma, db
@@ -13,14 +13,8 @@ def get_existing_user(self, data, original_data, user_field="user", **kwargs):
     q_id = user.get("id")
     q_username = user.get("username")
 
-    print("field " + user_field + "=--------")
-    print(q_id)
-    print(q_username)
-    print("field " + user_field + "=--------")
-
     exist_user = None
 
-    print("EXISTING USER")
     if q_id is not None:
         exist_user = User.query.get(q_id)
     elif q_username is not None:
@@ -30,9 +24,6 @@ def get_existing_user(self, data, original_data, user_field="user", **kwargs):
         return data
 
     data[user_field] = exist_user
-    print("field " + user_field + "=--------")
-    print(exist_user)
-    print("field " + user_field + "=--------")
     return data
 
 
@@ -69,6 +60,7 @@ class FriendSchema(ma.SQLAlchemyAutoSchema):
         model = User
         fields = ('id', 'fullname', 'username')
         load_instance = True
+        sqla_session = db.session
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -89,6 +81,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         fields = ('id', 'fullname', 'username')
         unknown = EXCLUDE
         load_instance = True
+        sqla_session = db.session
 
     id = fields.Int(dump_only=True)
 
@@ -99,6 +92,7 @@ class BalanceSchema(ma.SQLAlchemyAutoSchema):
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = EXCLUDE
         load_instance = True
+        sqla_session = db.session
 
     to_user = ma.Nested(UserSchema)
     from_user = ma.Nested(UserSchema)
@@ -107,13 +101,8 @@ class BalanceSchema(ma.SQLAlchemyAutoSchema):
     def get_existing_user(self, data, original_data, **kwargs):
         touser = get_existing_user(self, data, original_data,
                                    user_field="to_user", **kwargs)
-        print("TOO USER---------")
-        print(touser)
-        print(touser.get("to_user").id)
-        print(touser.get("to_user").username)
         fromuser = get_existing_user(self, touser, original_data,
                                      user_field="from_user", **kwargs)
-        print(fromuser)
         return fromuser
 
 
@@ -122,9 +111,11 @@ class ReceiptItemSchema(ma.SQLAlchemyAutoSchema):
         model = ReceiptItem
         fields = ('name', 'amount', 'users')
         load_instance = True
+        sqla_session = db.session
 
     users = ma.Nested(UserSchema,
                       many=True)
+    name = ma.String(validate=validate.Length(min=1))
 
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
@@ -139,6 +130,7 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
         unknown = EXCLUDE
         ordered = True
         load_instance = True
+        sqla_session = db.session
 
     id = fields.Int()
 
@@ -148,9 +140,10 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
 
     users = ma.Nested(UserSchema, many=True)
 
+    name = ma.String(validate=validate.Length(min=1))
+
     @post_load(pass_original=True)
     def get_existing_users(self, data, original_data, **kwargs):
-        print("*********POST LOAD********")
         datawithusers = get_existing_users(self, data, original_data, **kwargs)
         datawithuser = get_existing_user(self, datawithusers,
                                          original_data, **kwargs)
@@ -166,6 +159,7 @@ class PaymentSchema(ma.SQLAlchemyAutoSchema):
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = "EXCLUDE"
         load_instance = True
+        sqla_session = db.session
 
     to_user = ma.Nested(UserSchema, include=user_info_fields)
     from_user = ma.Nested(UserSchema, include=user_info_fields)

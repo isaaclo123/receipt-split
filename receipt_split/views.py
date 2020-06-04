@@ -2,6 +2,7 @@ from flask import Blueprint, request, Response
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from marshmallow import ValidationError
 
 # from flask_cors import cross_origin
 from datetime import date
@@ -11,8 +12,8 @@ from .meta import db
 from .auth import identity
 from .models import User, Receipt
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema
-from .forms import ReceiptForm
-from .helpers import calculate_balances
+# from .forms import ReceiptForm
+from .helpers import calculate_balances, ok, err
 
 import requests
 
@@ -75,115 +76,95 @@ def receipt_create():
         }, status.HTTP_200_OK
 
     if not request.is_json:
-        return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
+        return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
-    json_data = request.get_json()
-    # json_data = request.data
-    if id in json_data:
-        del json_data["id"]
-    print(json_data)
+    try:
+        json_data = request.get_json()
+        # json_data = request.data
+        if id in json_data:
+            del json_data["id"]
 
-    form = ReceiptForm.from_json(json_data)
-    if not form.validate():
-        return form.errors, status.HTTP_400_BAD_REQUEST
+        receipt = receipt_schema.load(json_data)
+        receipt.user = current_identity
 
-    json_data["balances"] = calculate_balances(json_data)
-    receipt_data = receipt_schema.load(json_data, session=db.session)
-    print("RECPTDATAJk-===================")
-    print(receipt_data)
-    print("RECPTDATAJk-===================")
+        balances = calculate_balances(receipt)
+        print(balances)
+        receipt.balances = balances_schema.load(balances)
+        print(receipt)
 
-    receipt_data.user = current_identity
+        db.session.add(receipt)
+        db.session.commit()
 
-    print("BEFORE ADD **********")
-    db.session.add(receipt_data)
-    db.session.commit()
+        # send receipt data
+        receipt_dump = receipt_schema.dump(receipt)
+        return receipt_dump, status.HTTP_201_CREATED
+    except ValidationError as e:
+        return e.messages, status.HTTP_400_BAD_REQUEST
+    except Exception as e:
+        return err(str(e)), status.HTTP_400_BAD_REQUEST
 
-    print("BEFORE DUMP **********")
-    receipt_dump = receipt_schema.dump(receipt_data)
+    return err("should not get here"), status.HTTP_400_BAD_REQUEST
 
-    return receipt_dump, status.HTTP_201_CREATED
 
 
 @views.route('/receipt/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
 def receipt_by_id(id):
-    print("ID---------")
-    print(id)
-    print("ID---------")
     receipt = Receipt.query.get(id)
-    print(receipt)
 
     if not receipt:
-        return {"error": "Receipt with id does not exist"},\
-                status.HTTP_404_NOT_FOUND
-    print(receipt)
+        return err("Receipt with id does not exist"),\
+                   status.HTTP_404_NOT_FOUND
 
     if request.method == 'GET':
         receipt_dump = receipt_schema.dump(receipt)
         return receipt_dump, status.HTTP_200_OK
 
     if receipt.user != current_identity:
-        return {"error": "Your do not own this receipt"},\
-                status.HTTP_401_UNAUTHORIZED
+        return err("Your do not own this receipt"),\
+                   status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
         db.session.delete(receipt)
         db.session.commit()
-        return {"message": "Success"}, status.HTTP_200_OK
+        return ok("Success"), status.HTTP_200_OK
 
-    print(request)
     if not request.is_json:
-        return {"error": "Not JSON"}, status.HTTP_400_BAD_REQUEST
-
-    print("--------reciptuser")
-    print(receipt.user)
-    print("--------reciptuser")
-
-    print("--------reciptuser")
-
-    json_data = request.get_json()
-    # json_data = request.data
-
-    print(json_data)
-
-    form = ReceiptForm.from_json(json_data)
-    print("AFTERFORM")
-    print(form)
-    if not form.validate():
-        return form.errors, status.HTTP_400_BAD_REQUEST
+        return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
     if request.method == 'PUT' or request.method == 'PATCH':
-        # json_data["id"] = id
-        # receipt.query.update(json_data)
-        print("receipt_data")
-        print(receipt)
-        # delete old balances
-        for oldbalance in receipt.balances:
-            db.session.delete(oldbalance)
+        print("BEFORE RECIEPTJk ")
+        try:
+            json_data = request.get_json()
+            receipt = receipt_schema.load(json_data)
 
-        json_data["balances"] = calculate_balances(json_data)
-        print(json_data["balances"])
-        receipt_data = receipt_schema.load(json_data, session=db.session)
+            # print("BEFORE DELETE")
+            # for oldbalance in receipt.balances:
+            #     db.session.delete(oldbalance)
+            # print("AFTER DELETE")
 
-        print("RECPTDATAJk-===================")
-        print(receipt_data.balances)
-        print("RECPTDATAJk-===================")
-        print(receipt_data)
-        print("afterreceipt_data")
-        # print(receipt_data)
+            # receipt["balances"] = calculate_balances(receipt)
+            print("BEFORE BALANCES")
+            balances = calculate_balances(receipt)
+            print(balances)
+            print("BEFORE BALANCES SET")
+            receipt.balances = balances_schema.load(balances)
 
-        # db.session.merge(receipt_data)
-        db.session.commit()
+            print("BEFORE COMMIT")
+            db.session.commit()
 
-        print("AFTERALL+__________")
-        print(receipt.user)
-        print("AFTERALL+__________")
+            # send receipt data
+            receipt_dump = receipt_schema.dump(receipt)
+            print(receipt_dump)
+            return receipt_dump, status.HTTP_200_OK
+        except ValidationError as e:
+            print("ERR")
+            print(e.messages)
+            return e.messages, status.HTTP_400_BAD_REQUEST
+        except Exception as e:
+            return err(str(e)), status.HTTP_400_BAD_REQUEST
 
-        receipt_dump = receipt_schema.dump(receipt_data)
-        return receipt_dump, status.HTTP_200_OK
-
-    return {"error": "should not get here"}, status.HTTP_400_BAD_REQUEST
+    return err("should not get here"), status.HTTP_400_BAD_REQUEST
 
 
 @views.route('/user', methods=['GET'])
@@ -197,18 +178,15 @@ def user():
 @jwt_required()
 def friend_add(username):
     friend = User.query.filter_by(username=username).first()
-    print("FRIEND///////////")
-    print(friend)
-    print("FRIEND///////////")
 
     if friend is None:
-        return {"error": "friend does not exist"}, status.HTTP_400_BAD_REQUEST
+        return err("friend does not exist"), status.HTTP_400_BAD_REQUEST
 
     if friend == current_identity:
-        return {"error": "cannot friend yourself"}, status.HTTP_400_BAD_REQUEST
+        return err("cannot friend yourself"), status.HTTP_400_BAD_REQUEST
 
     if friend in current_identity.friends or friend in friend.friends:
-        return {"error": "friend already added"}, status.HTTP_400_BAD_REQUEST
+        return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
     if friend not in current_identity.friends:
         current_identity.friends.append(friend)
@@ -228,7 +206,6 @@ def friend_add(username):
 @jwt_required()
 def friend_list():
     friends = users_schema.dump(current_identity.friends)
-    print(friends)
     return friends, status.HTTP_200_OK
 
 

@@ -30,10 +30,6 @@ def signup_post():
         fullname = request.data.get('fullname')
         password = request.data.get('password')
 
-        print("USERNAME")
-        print(username)
-        print(request.data)
-
         user = User.query.filter_by(username=username).first()
 
         if user:
