@@ -33,6 +33,12 @@ export const fetchReceiptById = (
   token: string
 ) => fetchData(`receipt/${id}`, "GET", null, token);
 
+export const deleteReceiptById = (
+  id: number,
+  // payload: ReceiptType,
+  token: string
+) => fetchData(`receipt/${id}`, "DELETE", null, token);
+
 // user
 
 export const fetchUser = (token: string) =>

@@ -1,7 +1,8 @@
 import {
   fetchReceiptById,
   fetchReceiptList,
-  saveReceiptById
+  saveReceiptById,
+  deleteReceiptById
 } from "../api/index";
 
 import {
@@ -21,11 +22,14 @@ import {
   RECIEPT_ITEM_SET_AMOUNT,
   RECIEPT_ITEM_ADD_USER,
   RECIEPT_ITEM_DELETE_USER,
+  RECIEPT_DELETE_SUCCESS,
+  RECIEPT_DELETE_FAIL,
   ReceiptType,
   ReceiptItemType,
   UserType,
   EDIT_DATA_APPEND,
-  EDIT_DATA_PREPEND
+  EDIT_DATA_PREPEND,
+  RootState
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -60,6 +64,32 @@ export const saveReceipt = (
     withToken: true,
     apiCall: saveReceiptById,
     apiCallArgs: [id, payload]
+  });
+
+export const deleteReceiptInList = (index: number) =>
+  setValueAction<{}>({
+    successType: RECIEPT_DELETE_RECIEPT_ITEM
+  })({}, [index]);
+
+export const deleteReceipt = (
+  id: number,
+): ApiMiddlewareAction =>
+  apiCallAction({
+    successType: RECIEPT_DELETE_SUCCESS,
+    failType: RECIEPT_DELETE_FAIL,
+    withToken: true,
+    apiCall: deleteReceiptById,
+    apiCallArgs: [id],
+    afterSuccess: (state: any) => {
+      const reciepts = state.receiptListState.data;
+      for (const r of reciepts) {
+        if (r.id === id) {
+          return deleteReceiptInList(r.id);
+        }
+      }
+
+      return null;
+    }
   });
 
 // export const getReceipt = (payload: ReceiptPayload) => (dispatch: Dispatch) => {

@@ -2,7 +2,9 @@ import {
   ReceiptListState,
   ReceiptListAction,
   RECIEPT_LIST_SUCCESS,
-  RECIEPT_LIST_FAIL
+  RECIEPT_LIST_FAIL,
+//  RECIEPT_DELETE_SUCCESS,
+//  RECIEPT_DELETE_FAIL
 } from "../types/index";
 
 import { setDataReducer, applyDataReducers } from "./index";

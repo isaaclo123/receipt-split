@@ -20,13 +20,16 @@ export type ApiMiddlewarePayload = {
   onSuccess?: (arg0: any) => any;
   onFail?: (arg0: any) => any;
 
-  afterSuccess?: Action<string, any> | null;
-  afterFail?: Action<string, any> | null;
+  afterSuccess?: (arg0: any) => ((dispatch: any, getState: any) => void) | null;
+  afterFail?: (arg0: any) => ((dispatch: any, getState: any) => void) | null;
 };
 
-export type ApiMiddlewareAction = Action<
-  typeof API_MIDDLEWARE_TYPE,
-  ApiMiddlewarePayload
->;
+// export type ApiMiddlewareAction = Action<
+//   typeof API_MIDDLEWARE_TYPE,
+//   ApiMiddlewarePayload
+// >;
+
+// TODO Stub
+export type ApiMiddlewareAction = any;
 
 export type ApiFetchType = Failable<Dict, Dict>;

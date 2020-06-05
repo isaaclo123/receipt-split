@@ -57,7 +57,7 @@ export const setSignup = (payload: SignupPayload): ApiMiddlewareAction =>
     apiCall: fetchSignup,
     apiCallArgs: [payload],
 
-    afterSuccess: setLogin({
+    afterSuccess: () => setLogin({
       username: payload.username,
       password: payload.password
     })

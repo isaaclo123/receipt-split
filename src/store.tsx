@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
-import { apiCallMiddleware } from "./actions/index";
+// import { apiCallMiddleware } from "./actions/index";
 import { rootReducer } from "./reducers/index";
 
 // import { receiptListSaga } from "./sagas/receiptListSaga";
@@ -13,7 +13,8 @@ export default function configureStore() {
 
   const store = createStore(
     rootReducer,
-    applyMiddleware(thunk, apiCallMiddleware)
+    // applyMiddleware(thunk, apiCallMiddleware)
+    applyMiddleware(thunk)
   );
 
   // sagaMiddleware.run(loginSaga)

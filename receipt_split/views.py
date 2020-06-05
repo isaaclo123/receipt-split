@@ -1,7 +1,7 @@
 from flask import Blueprint, request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
-from pprint import pformat
+# from pprint import pformat
 
 # from flask_cors import cross_origin
 from datetime import date
@@ -100,7 +100,7 @@ def receipt_create():
     app.logger.info("receipt/-1 return data with balances - %s",
                     receipt_dump)
 
-        return receipt_dump, status.HTTP_201_CREATED
+    return receipt_dump, status.HTTP_201_CREATED
 
 
 @views.route('/receipt/<int:id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])

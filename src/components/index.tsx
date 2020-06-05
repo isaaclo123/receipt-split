@@ -2,6 +2,7 @@ export * from "./App";
 export * from "./BadgeListComponent";
 export * from "./BalancePage";
 export * from "./BalanceListItemComponent";
+export * from "./DeleteModal";
 export * from "./ExpenseCardComponent";
 export * from "./LoginPage";
 export * from "./NavComponent";

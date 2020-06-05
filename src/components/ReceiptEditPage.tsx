@@ -7,12 +7,11 @@ import { connect, ConnectedProps } from "react-redux";
 
 import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
-import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 
-import { Redirect, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 
 import { ListOrNoneComponent } from "./index";
 
@@ -45,13 +44,11 @@ import {
 } from "../types/index";
 
 import {
-  BadgeListProps,
-  BadgeListComponent,
   UserSelectModal,
-  UserSelectProps,
+  DeleteModal,
   ExpenseCardComponent,
-  TextInputComponent
 } from "./index";
+import { receiveMessageOnPort } from "worker_threads";
 
 type MatchParams = {
   id: string;
@@ -125,6 +122,8 @@ Props) => {
     onSelect: (user: UserType) => {}
   });
 
+  const [deleteShow, setDeleteShow] = useState(false);
+
   const receipt_id = Number(match.params.id) || -1;
 
   if (run) {
@@ -145,12 +144,6 @@ Props) => {
 
   // const error = receiptState.error;
   const errors = (receiptState.errors != null) ? receiptState.errors : {};
-  console.log(receiptState);
-
-  console.log("---ERRORS---");
-  console.log(receiptState.errors);
-  console.log(errors);
-  console.log("---ERRORS---");
 
   const allUsers = users;
 
@@ -175,6 +168,15 @@ Props) => {
     saveReceipt(id, receiptState.data);
   };
 
+  const onDeleteHide = () => {
+    setDeleteShow(false);
+  }
+
+  const onDelete = () => {
+    alert("deleted!");
+    setDeleteShow(false);
+  }
+
   const noneComponent = (
     <Card className="mb-3">
       <Card.Body>
@@ -187,6 +189,13 @@ Props) => {
 
   return (
     <>
+      <DeleteModal
+        hide={!deleteShow}
+        name={name}
+        onClose={onDeleteHide}
+        onDelete={onDelete}
+      />
+
       <UserSelectModal
         show={modalShow}
         title={"Users"}
@@ -260,7 +269,7 @@ Props) => {
         amountError={errors.amount}
         handleAmountChange={setReceiptAmount}
 
-        handleDeleteClick={() => {}}
+        handleDeleteClick={() => {setDeleteShow(true)}}
         users={users}
         handleUserClick={() => {}}
         handleDeleteUserClick={(i: number) => {

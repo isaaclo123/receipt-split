@@ -12,17 +12,10 @@ export const getToken = (getState: () => RootState) => {
   return getState().loginState.data.token;
 };
 
-export const apiCallMiddleware: Middleware = ({
-  dispatch,
-  getState
-}) => next => async (action: Action<string, any>) => {
-  // console.log("START ACTION " + action.type);
-  // console.log(action);
-  // console.log("END ACTION");
-  if (action.type !== API_MIDDLEWARE_TYPE) {
-    return next(action);
-  }
-
+export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
+  dispatch: Dispatch,
+  getState: any
+) => {
   const {
     successType = null,
     failType = null,
@@ -37,9 +30,9 @@ export const apiCallMiddleware: Middleware = ({
     onSuccess = (a: any) => a,
     onFail = (a: any) => a,
 
-    afterSuccess = null,
-    afterFail = null
-  }: ApiMiddlewarePayload = action.payload;
+    afterSuccess = (a: any) => null,
+    afterFail = (a: any) => null
+  }: ApiMiddlewarePayload = payload;
 
   const shouldCall = shouldCallApi(getState());
 
@@ -56,20 +49,7 @@ export const apiCallMiddleware: Middleware = ({
           ...(withToken ? [...apiCallArgs, getToken(getState)] : apiCallArgs)
         );
 
-  console.log("--CALLDATA START--");
-  console.log(callData);
-  console.log("--CALLDATA END--");
-
   const { error, errors, data } = callData;
-
-  console.log("----API MIDDLEWARE START---");
-  console.log("error");
-  console.log(error);
-  console.log("errors");
-  console.log(errors);
-  console.log("data");
-  console.log(data);
-  console.log("----API MIDDLEWARE END---");
 
   if (!error) {
     if (successType != null) {
@@ -79,8 +59,10 @@ export const apiCallMiddleware: Middleware = ({
       });
     }
 
-    if (afterSuccess != null) {
-      dispatch(afterSuccess);
+    const nextResult = afterSuccess(getState());
+
+    if (nextResult != null) {
+      nextResult(dispatch, getState);
     }
   } else {
     if (failType != null) {
@@ -90,19 +72,12 @@ export const apiCallMiddleware: Middleware = ({
       });
     }
 
-    if (afterFail != null) {
-      dispatch(afterFail);
+    const nextResult = afterFail(getState());
+
+    if (nextResult != null) {
+      nextResult(dispatch, getState);
     }
   }
-};
-
-export const apiCallAction = (
-  payload: ApiMiddlewarePayload
-): ApiMiddlewareAction => {
-  return {
-    type: API_MIDDLEWARE_TYPE,
-    payload
-  };
 };
 
 export const setValueAction = <T extends {}>({

@@ -1,6 +1,5 @@
 import {
   Dict,
-  ReducerCreatorType,
   Action,
   Failable,
   SetDataReducerType,
