@@ -1,11 +1,17 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.associationproxy import association_proxy
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from datetime import date, datetime
 
-from decimal import Decimal
+# from decimal import Decimal
 
 from .meta import db
+
+friendship = db.Table(
+    'friendships', db.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), index=True),
+    db.Column('friend_id', db.Integer, db.ForeignKey('user.id')),
+    db.UniqueConstraint('user_id', 'friend_id', name='unique_friendships'))
 
 
 receiptitem_association_table = db.Table(
@@ -63,13 +69,13 @@ class Payment(db.Model):
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    friend_of_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # friend_of
 
-    friends = relationship("User",
-                           backref=backref('friend_of', remote_side=[id])
-                           )
+    friends = relationship('User',
+                           secondary=friendship,
+                           primaryjoin=id == friendship.c.user_id,
+                           secondaryjoin=id == friendship.c.friend_id)
 
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
@@ -118,6 +124,16 @@ class User(db.Model):
         ]
 
         return receipt_notin_owned
+
+    def add_friend(self, friend):
+        if friend not in self.friends:
+            self.friends.append(friend)
+            friend.friends.append(self)
+
+    def delete_friend(self, friend):
+        if friend in self.friends:
+            self.friends.remove(friend)
+            friend.friends.remove(self)
 
 
 class ReceiptItem(db.Model):

@@ -60,7 +60,11 @@ const ReceiptPageComponent = ({
     history.push(`${match.url}/edit/${id}`);
   };
 
-  const receipts = receiptListState.data.receipts_owned;
+  const noneComponent = (
+    <ListGroup.Item>
+      <span className="text-secondary">None</span>
+    </ListGroup.Item>
+  );
 
   return (
     <>
@@ -77,7 +81,7 @@ const ReceiptPageComponent = ({
       <h5 />
       <ListGroup className="mb-3">
         <ListOrNoneComponent<ReceiptSummaryType>
-          list={receipts}
+          list={receiptListState.data.receipts_owned}
           listComponent={({
             name = "",
             amount = -1,
@@ -97,11 +101,38 @@ const ReceiptPageComponent = ({
             };
             return <ReceiptListItemComponent key={id} {...props} />;
           }}
-          noneComponent={
-            <ListGroup.Item>
-              <a onClick={() => {}}>None</a>
-            </ListGroup.Item>
-          }
+          noneComponent={noneComponent}
+        />
+      </ListGroup>
+
+      <div className="align-middle">
+        <h5 className="float-left">Receipts In</h5>
+      </div>
+      <br />
+      <h5 />
+      <ListGroup className="mb-3">
+        <ListOrNoneComponent<ReceiptSummaryType>
+          list={receiptListState.data.receipts_of}
+          listComponent={({
+            name = "",
+            amount = -1,
+            date = "",
+            id = -1
+          }: ReceiptSummaryType) => {
+            const props: ReceiptProps = {
+              pending: true,
+              handleNameClick: () => {
+                receiptEdit(id);
+              },
+              handleViewClick: () => {
+                receiptEdit(id);
+              },
+              amount,
+              name
+            };
+            return <ReceiptListItemComponent key={id} {...props} />;
+          }}
+          noneComponent={noneComponent}
         />
       </ListGroup>
     </>

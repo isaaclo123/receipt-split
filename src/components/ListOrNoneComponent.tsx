@@ -11,7 +11,7 @@ export const ListOrNoneComponent = <T extends {}>({
   listComponent,
   noneComponent = <></>
 }: ListOrNoneComponentProps<T>) => {
-  if (!list.length) {
+  if (list == null || list.length <= 0) {
     return <> {noneComponent} </>;
   }
 

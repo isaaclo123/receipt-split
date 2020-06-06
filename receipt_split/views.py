@@ -195,20 +195,9 @@ def friend_add(username):
                         current_identity.username)
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
-    modified = False
+    current_identity.add_friend(friend)
 
-    if friend not in current_identity.friends:
-        current_identity.friends.append(friend)
-        modified = True
-        # db.session.add(current_identity)
-
-    if current_identity not in friend.friends:
-        friend.friends.append(current_identity)
-        modified = True
-        # db.session.add(friend)
-
-    if modified:
-        db.session.commit()
+    db.session.commit()
 
     friend_dump = user_schema.dump(friend)
 

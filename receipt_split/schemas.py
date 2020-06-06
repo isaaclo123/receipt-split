@@ -1,10 +1,17 @@
-from marshmallow import EXCLUDE, fields, pre_load, post_load
+from marshmallow import EXCLUDE, fields, post_load
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 
 from .meta import ma, db
 # db
 
 user_info_fields = ('id', 'fullname', 'username')
+
+
+class BaseSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        unknown = EXCLUDE
+        load_instance = True
+        sqla_session = db.session
 
 
 def get_existing_user(self, data, original_data, user_field="user", **kwargs):
@@ -56,19 +63,18 @@ def get_existing_users(self, data, original_data, **kwargs):
     return data
 
 
-class FriendSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
+class FriendSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
         model = User
         fields = ('id', 'fullname', 'username')
-        load_instance = True
 
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
+class UserSchema(BaseSchema):
     # friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
 
     # balances_to_user = ma.Nested(BalanceSchema, many=True)
     # balances_from_user = ma.Nested(BalanceSchema, many=True)
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = User
         fields = ('id', 'fullname', 'username')
         unknown = EXCLUDE
@@ -77,8 +83,8 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     id = fields.Int(dump_only=True)
 
 
-class BalanceSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
+class BalanceSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
         model = Balance
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = EXCLUDE
@@ -96,8 +102,8 @@ class BalanceSchema(ma.SQLAlchemyAutoSchema):
         return fromuser
 
 
-class ReceiptItemSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
+class ReceiptItemSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
         model = ReceiptItem
         fields = ('name', 'amount', 'users')
         load_instance = True
@@ -110,8 +116,8 @@ class ReceiptItemSchema(ma.SQLAlchemyAutoSchema):
         return get_existing_users(self, data, original_data, **kwargs)
 
 
-class ReceiptSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
+class ReceiptSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
         model = Receipt
         fields = ('id', 'name', 'amount', 'date', 'resolved',
                   'balances', 'receipt_items', 'users', 'user')
@@ -138,8 +144,8 @@ class ReceiptSchema(ma.SQLAlchemyAutoSchema):
     from_user = ma.Nested(UserSchema, include=user_info_fields)
 
 
-class PaymentSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
+class PaymentSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
         model = Payment
         fields = ('id', 'to_user', 'from_user', 'amount')
         unknown = "EXCLUDE"

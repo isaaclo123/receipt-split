@@ -35,7 +35,11 @@ export const friendReducer = applyDataReducers<FriendState, FriendAction>(
         {
           successType: FRIEND_ADD_SUCCESS,
           failType: FRIEND_ADD_FAIL,
-          onSuccess: (acc: any, cur: any[]) => [cur].concat(acc)
+          onSuccess: (data: any, payload: any[]) => {
+            return {
+              "friends": [payload].concat(data.friends)
+            }
+          }
         }
       ]
     }
