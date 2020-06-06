@@ -47,14 +47,14 @@ def receipt_list():
     receipts_owned = receipts_schema.dump(current_identity.receipts_owned)
     receipts_of = receipts_schema.dump(current_identity.receipts_of)
 
-    receipt_list = {
+    receipt_result = {
         "receipts_owned": receipts_owned,
         "receipts_of": receipts_of
     }
 
-    app.logger.info("/receipt GET - %s", receipt_list)
+    app.logger.info("/receipt GET - %s", receipt_result)
 
-    return receipt_list, status.HTTP_200_OK
+    return receipt_result, status.HTTP_200_OK
 
 
 @views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
@@ -214,8 +214,8 @@ def friend_list():
     app.logger.info("/friend list get - %s - %s", current_identity.username,
                     friends)
 
-    friend_list = {
+    friend_result = {
         "friends": friends
     }
 
-    return friend_list, status.HTTP_200_OK
+    return friend_result, status.HTTP_200_OK

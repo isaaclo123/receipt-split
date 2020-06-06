@@ -69,7 +69,8 @@ def calculate_balances(receipt):
 
         amount = (Decimal(subtotal) / len_users)
 
-        amount_dict[owner_userkey] = amount_dict[owner_userkey] - subtotal
+        amount_dict[owner_userkey] = (Decimal(amount_dict[owner_userkey]) -
+                                      Decimal(subtotal))
         for u in i_users:
             userkey = get_userkey(u)
             amount_dict[userkey] = amount_dict[userkey] + amount
