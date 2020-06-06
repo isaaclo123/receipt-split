@@ -2,8 +2,8 @@ import {
   Dict,
   ReceiptDictState,
   ReceiptCacheAction,
-  RECIEPT_ID_SUCCESS,
-  RECIEPT_ID_FAIL
+  RECEIPT_ID_SUCCESS,
+  RECEIPT_ID_FAIL
 } from "../types/index";
 
 import { setDataReducer, applyDataReducers } from "./index";
@@ -28,8 +28,8 @@ export const receiptDictReducer = applyDataReducers<
     reducerCreator: setDataReducer,
     args: [
       {
-        successType: RECIEPT_ID_SUCCESS,
-        failType: RECIEPT_ID_FAIL,
+        successType: RECEIPT_ID_SUCCESS,
+        failType: RECEIPT_ID_FAIL,
         onSuccess: assignToData,
         onFail: assignToData
       }

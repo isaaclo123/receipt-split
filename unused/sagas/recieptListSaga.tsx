@@ -7,7 +7,7 @@ import { ReceiptListState, ReceiptType } from '../types/index'
 const getToken = (state:any) => state.loginState.token
 
 function* fetchReceiptListWorker(action: any) {
-  console.log("FETCHRECIEPTLISTWORKER")
+  console.log("FETCHRECEIPTLISTWORKER")
   try {
       const token = yield select(getToken);
 
@@ -19,16 +19,16 @@ function* fetchReceiptListWorker(action: any) {
         receipts: receiptListData
       }
 
-      yield put({type: "RECIEPT_LIST_SUCCESS", payload: receiptListPayload});
+      yield put({type: "RECEIPT_LIST_SUCCESS", payload: receiptListPayload});
   } catch (e) {
       const receiptListPayload: ReceiptListState = {
         receipts: []
       }
 
-      yield put({type: "RECIEPT_LIST_FAIL", payload: receiptListPayload});
+      yield put({type: "RECEIPT_LIST_FAIL", payload: receiptListPayload});
   }
 }
 
 export function* receiptListSaga() {
-  yield takeLatest("RECIEPT_LIST_REQUEST", fetchReceiptListWorker);
+  yield takeLatest("RECEIPT_LIST_REQUEST", fetchReceiptListWorker);
 }

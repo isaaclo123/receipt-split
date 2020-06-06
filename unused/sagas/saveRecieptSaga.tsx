@@ -18,16 +18,16 @@ function* saveReceiptWorker(action: any) {
         receipt: receiptData
       }
 
-      yield put({type: "RECIEPT_SAVE_SUCCESS", payload: receiptPayload});
+      yield put({type: "RECEIPT_SAVE_SUCCESS", payload: receiptPayload});
   } catch (e) {
       const receiptPayload: ReceiptState = {
         receipt: null
       }
 
-      yield put({type: "RECIEPT_SAVE_FAIL", payload: receiptPayload});
+      yield put({type: "RECEIPT_SAVE_FAIL", payload: receiptPayload});
   }
 }
 
 export function* saveReceiptSaga() {
-  yield takeLatest("RECIEPT_SAVE_REQUEST", saveReceiptWorker);
+  yield takeLatest("RECEIPT_SAVE_REQUEST", saveReceiptWorker);
 }

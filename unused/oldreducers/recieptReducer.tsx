@@ -35,18 +35,18 @@ export default (state:ReceiptState = initialState, {
   // console.log(password)
 
   switch (type) {
-    case 'RECIEPT_SAVE_SUCCESS':
+    case 'RECEIPT_SAVE_SUCCESS':
       return payload
-    case 'RECIEPT_SAVE_FAIL':
+    case 'RECEIPT_SAVE_FAIL':
       return state
 
-    case 'RECIEPT_SET':
-      console.log("RECIEPTSET")
+    case 'RECEIPT_SET':
+      console.log("RECEIPTSET")
       console.log(payload)
       return payload
-    case 'RECIEPT_ID_SUCCESS':
+    case 'RECEIPT_ID_SUCCESS':
       return payload
-    case 'RECIEPT_ID_FAIL':
+    case 'RECEIPT_ID_FAIL':
       return payload
     default:
       return state;

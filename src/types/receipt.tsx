@@ -5,16 +5,16 @@ import {
   Dict,
   UserType,
   BalanceType,
-  // RECIEPT_SAVE_REQUEST,
-  RECIEPT_ID_SUCCESS,
-  RECIEPT_ID_FAIL,
-  RECIEPT_CACHE_SUCCESS,
-  RECIEPT_CACHE_FAIL,
-  RECIEPT_LIST_SUCCESS,
-  RECIEPT_LIST_FAIL,
-  RECIEPT_SET_NAME,
-  RECIEPT_SET_AMOUNT,
-  // RECIEPT_SET_DATE
+  // RECEIPT_SAVE_REQUEST,
+  RECEIPT_ID_SUCCESS,
+  RECEIPT_ID_FAIL,
+  RECEIPT_CACHE_SUCCESS,
+  RECEIPT_CACHE_FAIL,
+  RECEIPT_LIST_SUCCESS,
+  RECEIPT_LIST_FAIL,
+  RECEIPT_SET_NAME,
+  RECEIPT_SET_AMOUNT,
+  // RECEIPT_SET_DATE
 } from "./index";
 
 export interface ReceiptPayload {
@@ -38,11 +38,11 @@ export interface ReceiptListType extends ErrorData {
 };
 
 export type ReceiptListSuccessAction = Action<
-  typeof RECIEPT_LIST_SUCCESS,
+  typeof RECEIPT_LIST_SUCCESS,
   ReceiptListType
 >;
 
-export type ReceiptListFailAction = Action<typeof RECIEPT_LIST_FAIL, []>;
+export type ReceiptListFailAction = Action<typeof RECEIPT_LIST_FAIL, []>;
 
 export type ReceiptListAction =
   | ReceiptListSuccessAction
@@ -93,11 +93,11 @@ export type ReceiptItemType = {
 export type ReceiptDictState = Failable<Dict<ReceiptType>, Dict<any>>;
 
 export type ReceiptCacheSuccessAction = Action<
-  typeof RECIEPT_CACHE_SUCCESS,
+  typeof RECEIPT_CACHE_SUCCESS,
   ReceiptType
 >;
 export type ReceiptCacheFailAction = Action<
-  typeof RECIEPT_CACHE_FAIL,
+  typeof RECEIPT_CACHE_FAIL,
   Dict<any>
 >;
 
@@ -106,16 +106,16 @@ export type ReceiptCacheAction =
   | ReceiptCacheFailAction;
 
 export type ReceiptIdSuccessAction = Action<
-  typeof RECIEPT_ID_SUCCESS,
+  typeof RECEIPT_ID_SUCCESS,
   ReceiptType
 >;
 
-export type ReceiptIdFailAction = Action<typeof RECIEPT_ID_FAIL, Dict<any>>;
+export type ReceiptIdFailAction = Action<typeof RECEIPT_ID_FAIL, Dict<any>>;
 
 export type ReceiptIdAction = ReceiptIdSuccessAction | ReceiptIdFailAction;
 //
-// export type ReceiptSetNameAction = Action<typeof RECIEPT_SET_NAME, string>;
-// export type ReceiptSetAmountAction = Action<typeof RECIEPT_SET_AMOUNT, string>;
+// export type ReceiptSetNameAction = Action<typeof RECEIPT_SET_NAME, string>;
+// export type ReceiptSetAmountAction = Action<typeof RECEIPT_SET_AMOUNT, string>;
 
 //
 // const userListExample: UserType[] = [];

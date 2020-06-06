@@ -7,29 +7,31 @@ import {
 
 import {
   // RootState,
-  RECIEPT_ID_SUCCESS,
-  RECIEPT_ID_FAIL,
-  RECIEPT_LIST_FAIL,
-  RECIEPT_LIST_SUCCESS,
-  RECIEPT_SET_NAME,
-  RECIEPT_SET_AMOUNT,
-  RECIEPT_SET_DATE,
-  RECIEPT_ADD_USER,
-  RECIEPT_DELETE_USER,
-  RECIEPT_ADD_RECIEPT_ITEM,
-  RECIEPT_DELETE_RECIEPT_ITEM,
-  RECIEPT_ITEM_SET_NAME,
-  RECIEPT_ITEM_SET_AMOUNT,
-  RECIEPT_ITEM_ADD_USER,
-  RECIEPT_ITEM_DELETE_USER,
-  RECIEPT_DELETE_SUCCESS,
-  RECIEPT_DELETE_FAIL,
+  RECEIPT_ID_SUCCESS,
+  RECEIPT_ID_FAIL,
+  RECEIPT_LIST_FAIL,
+  RECEIPT_LIST_SUCCESS,
+  RECEIPT_SET_NAME,
+  RECEIPT_SET_AMOUNT,
+  RECEIPT_SET_DATE,
+  RECEIPT_ADD_USER,
+  RECEIPT_DELETE_USER,
+  RECEIPT_ADD_RECEIPT_ITEM,
+  RECEIPT_DELETE_RECEIPT_ITEM,
+  RECEIPT_ITEM_SET_NAME,
+  RECEIPT_ITEM_SET_AMOUNT,
+  RECEIPT_ITEM_ADD_USER,
+  RECEIPT_ITEM_DELETE_USER,
+  RECEIPT_DELETE_SUCCESS,
+  RECEIPT_DELETE_FAIL,
+  RECEIPT_INDEX_DELETE_MAP,
   ReceiptType,
   ReceiptItemType,
   UserType,
   EDIT_DATA_APPEND,
   EDIT_DATA_PREPEND,
-  RootState
+  // RootState,
+  // ReceiptAction
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -37,16 +39,16 @@ import { setValueAction, apiCallAction } from "./index";
 
 export const getReceiptList = (): ApiMiddlewareAction =>
   apiCallAction({
-    successType: RECIEPT_LIST_SUCCESS,
-    failType: RECIEPT_LIST_FAIL,
+    successType: RECEIPT_LIST_SUCCESS,
+    failType: RECEIPT_LIST_FAIL,
     withToken: true,
     apiCall: fetchReceiptList
   });
 
 export const getReceipt = (id: number): ApiMiddlewareAction =>
   apiCallAction({
-    successType: RECIEPT_ID_SUCCESS,
-    failType: RECIEPT_ID_FAIL,
+    successType: RECEIPT_ID_SUCCESS,
+    failType: RECEIPT_ID_FAIL,
     withToken: true,
     // shouldCallApi: (state: RootState) => state.receiptDictState.data[id], TODO
     // onSuccess: (cur: any) => Object.assign({}, prev, cur),
@@ -59,32 +61,47 @@ export const saveReceipt = (
   payload: ReceiptType
 ): ApiMiddlewareAction =>
   apiCallAction({
-    successType: RECIEPT_ID_SUCCESS,
-    failType: RECIEPT_ID_FAIL,
+    successType: RECEIPT_ID_SUCCESS,
+    failType: RECEIPT_ID_FAIL,
     withToken: true,
     apiCall: saveReceiptById,
     apiCallArgs: [id, payload]
   });
 
-export const deleteReceiptInList = (index: number) =>
+export const deleteReceiptInList = (successType: string, index: number) =>
   setValueAction<{}>({
-    successType: RECIEPT_DELETE_RECIEPT_ITEM
+    successType
   })({}, [index]);
 
 export const deleteReceipt = (
   id: number,
 ): ApiMiddlewareAction =>
   apiCallAction({
-    successType: RECIEPT_DELETE_SUCCESS,
-    failType: RECIEPT_DELETE_FAIL,
+    successType: RECEIPT_DELETE_SUCCESS,
+    failType: RECEIPT_DELETE_FAIL,
     withToken: true,
     apiCall: deleteReceiptById,
     apiCallArgs: [id],
     afterSuccess: (state: any) => {
-      const reciepts = state.receiptListState.data;
-      for (const r of reciepts) {
-        if (r.id === id) {
-          return deleteReceiptInList(r.id);
+      const data = state.receiptListState.data;
+
+      for (const [listName, receipt] of Object.entries(data)) {
+        if (!Array.isArray(receipt)) {
+          return null;
+        }
+
+        for (let i = 0; i < receipt.length; i++) {
+          if (receipt[i].id === id) {
+            const result = RECEIPT_INDEX_DELETE_MAP[listName];
+
+            if (result == null) {
+              return null;
+            }
+            console.log("DELETE MAP REDULT")
+            console.log(result)
+            console.log("DELETE MAP REDULT")
+            return deleteReceiptInList(result, i);
+          }
         }
       }
 
@@ -96,7 +113,7 @@ export const deleteReceipt = (
 //   console.log("getReceipt");
 //   console.log(payload);
 //   const action: ReceiptRequestAction = {
-//     type: "RECIEPT_ID_REQUEST",
+//     type: "RECEIPT_ID_REQUEST",
 //     payload
 //   };
 //
@@ -104,27 +121,27 @@ export const deleteReceipt = (
 // };
 
 export const setReceiptName = setValueAction<string>({
-  successType: RECIEPT_SET_NAME
+  successType: RECEIPT_SET_NAME
 });
 export const setReceiptAmount = setValueAction<number>({
-  successType: RECIEPT_SET_AMOUNT
+  successType: RECEIPT_SET_AMOUNT
 });
 export const setReceiptDate = setValueAction<string>({
-  successType: RECIEPT_SET_DATE
+  successType: RECEIPT_SET_DATE
 });
 export const addReceiptUser = (user: UserType) =>
   setValueAction<UserType>({
-    successType: RECIEPT_ADD_USER
+    successType: RECEIPT_ADD_USER
   })(user, [EDIT_DATA_APPEND]);
 
 export const deleteReceiptUser = (id: number) =>
   setValueAction<{}>({
-    successType: RECIEPT_DELETE_USER
+    successType: RECEIPT_DELETE_USER
   })({}, [id]);
 
 export const addReceiptItem = () =>
   setValueAction<ReceiptItemType>({
-    successType: RECIEPT_ADD_RECIEPT_ITEM
+    successType: RECEIPT_ADD_RECEIPT_ITEM
   })(
     {
       name: "New Receipt Item",
@@ -136,25 +153,25 @@ export const addReceiptItem = () =>
 
 export const deleteReceiptItem = (id: number) =>
   setValueAction<{}>({
-    successType: RECIEPT_DELETE_RECIEPT_ITEM
+    successType: RECEIPT_DELETE_RECEIPT_ITEM
   })({}, [id]);
 
 export const setReceiptItemName = (name: string, id: number) =>
   setValueAction<string>({
-    successType: RECIEPT_ITEM_SET_NAME
+    successType: RECEIPT_ITEM_SET_NAME
   })(name, [id]);
 
 export const setReceiptItemAmount = (amount: number, id: number) =>
   setValueAction<number>({
-    successType: RECIEPT_ITEM_SET_AMOUNT
+    successType: RECEIPT_ITEM_SET_AMOUNT
   })(amount, [id]);
 
 export const addReceiptItemUser = (user: UserType, id: number) =>
   setValueAction<UserType>({
-    successType: RECIEPT_ITEM_ADD_USER
+    successType: RECEIPT_ITEM_ADD_USER
   })(user, [id, EDIT_DATA_APPEND]);
 
 export const deleteReceiptItemUser = (id: number, id2: number) =>
   setValueAction<{}>({
-    successType: RECIEPT_ITEM_DELETE_USER
+    successType: RECEIPT_ITEM_DELETE_USER
   })({}, [id, id2]);

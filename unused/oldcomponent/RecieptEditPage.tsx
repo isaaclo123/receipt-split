@@ -76,9 +76,9 @@ const ReceiptEditPage = ({
 
   const receipt_id = Number(match.params.id) || -1
 
-  console.log("RECIEPTID")
+  console.log("RECEIPTID")
   console.log(receipt_id)
-  console.log("RECIEPTID")
+  console.log("RECEIPTID")
 
   if (run) {
     getReceipt({id: receipt_id})

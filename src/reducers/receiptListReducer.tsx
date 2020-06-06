@@ -1,13 +1,16 @@
 import {
+  Dict,
+  DataReducerType,
   ReceiptListState,
   ReceiptListAction,
-  RECIEPT_LIST_SUCCESS,
-  RECIEPT_LIST_FAIL,
-//  RECIEPT_DELETE_SUCCESS,
-//  RECIEPT_DELETE_FAIL
+  RECEIPT_LIST_SUCCESS,
+  RECEIPT_LIST_FAIL,
+  RECEIPT_INDEX_DELETE_MAP,
+//  RECEIPT_DELETE_SUCCESS,
+//  RECEIPT_DELETE_FAIL
 } from "../types/index";
 
-import { setDataReducer, applyDataReducers } from "./index";
+import { editDataReducer, setDataReducer, applyDataReducers } from "./index";
 
 const initialState: ReceiptListState = {
   error: false,
@@ -18,17 +21,35 @@ const initialState: ReceiptListState = {
   errors: []
 };
 
+const createDeleteReducers = (map: Dict<string>): DataReducerType[] =>
+  Object.entries(map).map(([field, type]: [string, string]) => {
+    return {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: type,
+          field: [[field, true]],
+          isDelete: true
+        }
+      ]
+    }
+  })
+
+const deleteReducers = createDeleteReducers(RECEIPT_INDEX_DELETE_MAP)
+console.log(deleteReducers)
+
 export const receiptListReducer = applyDataReducers<
   ReceiptListState,
   ReceiptListAction
->(initialState, [
+>(initialState,
+  deleteReducers.concat([
   {
     reducerCreator: setDataReducer,
     args: [
       {
-        successType: RECIEPT_LIST_SUCCESS,
-        failType: RECIEPT_LIST_FAIL
+        successType: RECEIPT_LIST_SUCCESS,
+        failType: RECEIPT_LIST_FAIL
       }
     ]
-  }
-]);
+  },
+]));

@@ -17,7 +17,7 @@ export const setReceipt = (payload: ReceiptType) => async (
   console.log("setReceipt");
   console.log(payload);
   const action: ReceiptAction = {
-    type: "RECIEPT_SET",
+    type: "RECEIPT_SET",
     payload: {
       receipt: payload
     }

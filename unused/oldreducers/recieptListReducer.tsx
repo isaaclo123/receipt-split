@@ -25,13 +25,13 @@ export const receiptReducer = (
   console.log("RECIPET_LIST_PAYLOAD");
 
   switch (type) {
-    case "RECIEPT_LIST_SUCCESS":
+    case "RECEIPT_LIST_SUCCESS":
       return {
         error: false,
         data: payload,
         errors: []
       };
-    case "RECIEPT_LIST_FAIL":
+    case "RECEIPT_LIST_FAIL":
       return Object.assign({}, state, {
         error: true,
         errors: [] //TODO

@@ -7,20 +7,20 @@ import {
 
 // export const setReceiptList = () => (dispatch: Dispatch) => {
 //   const action = {
-//     type: 'RECIEPT_LIST_REQUEST',
+//     type: 'RECEIPT_LIST_REQUEST',
 //   }
 //
-//   console.log("GETRECIEPTLIST")
+//   console.log("GETRECEIPTLIST")
 //
 //   dispatch(action)
 // }
 
 export const getReceiptList = () => (dispatch: Dispatch) => {
   const action = {
-    type: 'RECIEPT_LIST_REQUEST',
+    type: 'RECEIPT_LIST_REQUEST',
   }
 
-  console.log("GETRECIEPTLIST")
+  console.log("GETRECEIPTLIST")
 
   dispatch(action)
 }
@@ -29,7 +29,7 @@ export const getReceipt = (payload: ReceiptData) => (dispatch: Dispatch) => {
   console.log("getReceipt")
   console.log(payload)
   const action: ReceiptRequestAction = {
-    type: 'RECIEPT_ID_REQUEST',
+    type: 'RECEIPT_ID_REQUEST',
     payload
   }
 

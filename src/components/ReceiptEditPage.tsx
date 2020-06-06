@@ -22,6 +22,7 @@ import {
   setReceiptDate,
   addReceiptUser,
   addReceiptItem,
+  deleteReceipt,
   deleteReceiptItem,
   deleteReceiptUser,
   setReceiptItemName,
@@ -67,6 +68,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(
   mapStateToProps,
   {
+    deleteReceipt,
     getReceipt,
     setReceiptName,
     setReceiptAmount,
@@ -92,6 +94,7 @@ type Props = PropsFromRedux &
 
 const ReceiptEditPageComponent = ({
   match,
+  history,
   userAndFriends,
   userState,
   receiptState,
@@ -100,6 +103,7 @@ const ReceiptEditPageComponent = ({
   setReceiptAmount,
   setReceiptDate,
   addReceiptUser,
+  deleteReceipt,
   deleteReceiptUser,
   addReceiptItem,
   deleteReceiptItem,
@@ -172,8 +176,9 @@ Props) => {
   }
 
   const onDelete = () => {
-    alert("deleted!");
+    deleteReceipt(id);
     setDeleteShow(false);
+    history.goBack();
   }
 
   const noneComponent = (

@@ -18,16 +18,16 @@ function* fetchReceiptWorker(action: any) {
         receipt: receiptData
       }
 
-      yield put({type: "RECIEPT_ID_SUCCESS", payload: receiptPayload});
+      yield put({type: "RECEIPT_ID_SUCCESS", payload: receiptPayload});
   } catch (e) {
       const receiptPayload: ReceiptState = {
         receipt: null
       }
 
-      yield put({type: "RECIEPT_ID_FAIL", payload: receiptPayload});
+      yield put({type: "RECEIPT_ID_FAIL", payload: receiptPayload});
   }
 }
 
 export function* receiptSaga() {
-  yield takeLatest("RECIEPT_ID_REQUEST", fetchReceiptWorker);
+  yield takeLatest("RECEIPT_ID_REQUEST", fetchReceiptWorker);
 }

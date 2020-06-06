@@ -1,19 +1,19 @@
 import {
   ReceiptState,
   ReceiptIdAction,
-  RECIEPT_ID_SUCCESS,
-  RECIEPT_ID_FAIL,
-  RECIEPT_SET_NAME,
-  RECIEPT_SET_AMOUNT,
-  RECIEPT_SET_DATE,
-  RECIEPT_ADD_USER,
-  RECIEPT_DELETE_USER,
-  RECIEPT_ADD_RECIEPT_ITEM,
-  RECIEPT_DELETE_RECIEPT_ITEM,
-  RECIEPT_ITEM_SET_NAME,
-  RECIEPT_ITEM_SET_AMOUNT,
-  RECIEPT_ITEM_ADD_USER,
-  RECIEPT_ITEM_DELETE_USER
+  RECEIPT_ID_SUCCESS,
+  RECEIPT_ID_FAIL,
+  RECEIPT_SET_NAME,
+  RECEIPT_SET_AMOUNT,
+  RECEIPT_SET_DATE,
+  RECEIPT_ADD_USER,
+  RECEIPT_DELETE_USER,
+  RECEIPT_ADD_RECEIPT_ITEM,
+  RECEIPT_DELETE_RECEIPT_ITEM,
+  RECEIPT_ITEM_SET_NAME,
+  RECEIPT_ITEM_SET_AMOUNT,
+  RECEIPT_ITEM_ADD_USER,
+  RECEIPT_ITEM_DELETE_USER
 } from "../types/index";
 
 import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
@@ -45,8 +45,8 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: setDataReducer,
       args: [
         {
-          successType: RECIEPT_ID_SUCCESS,
-          failType: RECIEPT_ID_FAIL
+          successType: RECEIPT_ID_SUCCESS,
+          failType: RECEIPT_ID_FAIL
         }
       ]
     },
@@ -54,7 +54,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_SET_NAME,
+          successType: RECEIPT_SET_NAME,
           field: [["name", false]]
         }
       ]
@@ -63,7 +63,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_SET_AMOUNT,
+          successType: RECEIPT_SET_AMOUNT,
           field: [["amount", false]]
         }
       ]
@@ -72,7 +72,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_SET_DATE,
+          successType: RECEIPT_SET_DATE,
           field: [["date", false]]
         }
       ]
@@ -81,7 +81,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_ADD_USER,
+          successType: RECEIPT_ADD_USER,
           field: [["users", true]]
         }
       ]
@@ -90,7 +90,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_DELETE_USER,
+          successType: RECEIPT_DELETE_USER,
           field: [["users", true]],
           isDelete: true
         }
@@ -100,7 +100,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_ADD_RECIEPT_ITEM,
+          successType: RECEIPT_ADD_RECEIPT_ITEM,
           field: [["receipt_items", true]]
         }
       ]
@@ -109,7 +109,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_DELETE_RECIEPT_ITEM,
+          successType: RECEIPT_DELETE_RECEIPT_ITEM,
           field: [["receipt_items", true]],
           isDelete: true
         }
@@ -119,7 +119,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_ITEM_SET_NAME,
+          successType: RECEIPT_ITEM_SET_NAME,
           field: [["receipt_items", true], ["name", false]]
         }
       ]
@@ -128,7 +128,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_ITEM_SET_AMOUNT,
+          successType: RECEIPT_ITEM_SET_AMOUNT,
           field: [["receipt_items", true], ["amount", false]]
         }
       ]
@@ -137,7 +137,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_ITEM_ADD_USER,
+          successType: RECEIPT_ITEM_ADD_USER,
           field: [["receipt_items", true], ["users", true]]
         }
       ]
@@ -146,7 +146,7 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       reducerCreator: editDataReducer,
       args: [
         {
-          successType: RECIEPT_ITEM_DELETE_USER,
+          successType: RECEIPT_ITEM_DELETE_USER,
           field: [["receipt_items", true], ["users", true]],
           isDelete: true
         }

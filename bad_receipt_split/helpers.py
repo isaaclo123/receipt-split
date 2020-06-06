@@ -48,7 +48,7 @@ def calculate_balances(receipt):
     print("           balancesuser")
 
     for i in receipt_items:
-        print("RECIEPT ITEM")
+        print("RECEIPT ITEM")
         print(i)
         subtotal = i.get("amount", 0)
         i_users = i.get("users", [])
