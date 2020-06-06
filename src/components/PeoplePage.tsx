@@ -79,7 +79,7 @@ const PeoplePageComponent = ({
 
       <ListGroup className="mb-3">
         <ListOrNoneComponent<UserType>
-          list={friendState.data}
+          list={friendState.data.friends}
           listComponent={(user: UserType) => (
             <UserListItemComponent user={user} />
           )}

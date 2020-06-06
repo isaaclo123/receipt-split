@@ -45,16 +45,16 @@ def balance_list():
 @jwt_required()
 def receipt_list():
     receipts_owned = receipts_schema.dump(current_identity.receipts_owned)
-    receipts_owned_map = {r["id"]: True for r in receipts_owned}
+    receipts_of = receipts_schema.dump(current_identity.receipts_of)
 
-    receipts_in = receipts_schema.dump(current_identity.receipts_in)
-    receipt_notin_owned = [
-        r for r in receipts_in if r["id"] not in receipts_owned_map
-    ]
+    receipt_list = {
+        "receipts_owned": receipts_owned,
+        "receipts_of": receipts_of
+    }
 
-    all_receipts = receipts_owned + receipt_notin_owned
+    app.logger.info("/receipt GET - %s", receipt_list)
 
-    return all_receipts, status.HTTP_200_OK
+    return receipt_list, status.HTTP_200_OK
 
 
 @views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
@@ -179,7 +179,6 @@ def user():
 @jwt_required()
 def friend_add(username):
     friend = User.query.filter_by(username=username).first()
-    app.logger.indo
 
     if friend is None:
         app.logger.info("/friend/%s does not exist - %s", username,
@@ -196,14 +195,19 @@ def friend_add(username):
                         current_identity.username)
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
+    modified = False
+
     if friend not in current_identity.friends:
         current_identity.friends.append(friend)
-        db.session.add(current_identity)
-        db.session.commit()
+        modified = True
+        # db.session.add(current_identity)
 
     if current_identity not in friend.friends:
         friend.friends.append(current_identity)
-        db.session.add(friend)
+        modified = True
+        # db.session.add(friend)
+
+    if modified:
         db.session.commit()
 
     friend_dump = user_schema.dump(friend)
@@ -221,4 +225,8 @@ def friend_list():
     app.logger.info("/friend list get - %s - %s", current_identity.username,
                     friends)
 
-    return friends, status.HTTP_200_OK
+    friend_list = {
+        "friends": friends
+    }
+
+    return friend_list, status.HTTP_200_OK

@@ -60,7 +60,7 @@ const ReceiptPageComponent = ({
     history.push(`${match.url}/edit/${id}`);
   };
 
-  const receipts = receiptListState.data;
+  const receipts = receiptListState.data.receipts_owned;
 
   return (
     <>

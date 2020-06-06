@@ -48,7 +48,6 @@ import {
   DeleteModal,
   ExpenseCardComponent,
 } from "./index";
-import { receiveMessageOnPort } from "worker_threads";
 
 type MatchParams = {
   id: string;
@@ -56,9 +55,9 @@ type MatchParams = {
 
 const mapStateToProps = (state: RootState) => {
   const { receiptState, userState, friendState } = state;
-  console.log([userState.data].concat(friendState.data));
+  console.log([userState.data].concat(friendState.data.friends));
   return {
-    userAndFriends: [userState.data].concat(friendState.data),
+    userAndFriends: [userState.data].concat(friendState.data.friends),
     // people: userState.user.friends.concat(userState.user),
     receiptState,
     userState

@@ -107,6 +107,18 @@ class User(db.Model):
                                  secondary=receiptitem_association_table,
                                  backref="users")
 
+    # TODO try to use SQL?
+    @property
+    def receipts_of(self):
+        receipts_owned_map = {r.id: True for r in self.receipts_owned}
+        receipts_in = self.receipts_in
+
+        receipt_notin_owned = [
+            r for r in receipts_in if r.id not in receipts_owned_map
+        ]
+
+        return receipt_notin_owned
+
 
 class ReceiptItem(db.Model):
     __tablename__ = 'receiptitem'

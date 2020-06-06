@@ -11,7 +11,10 @@ import { setDataReducer, applyDataReducers } from "./index";
 
 const initialState: ReceiptListState = {
   error: false,
-  data: [],
+  data: {
+    receipts_owned: [],
+    receipts_of: [],
+  },
   errors: []
 };
 

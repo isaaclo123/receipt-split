@@ -27,12 +27,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & UserSelectProps;
 
-// const mapStateToProps = ({ friendState, userState }: RootState) => {
-//   return {
-//     userAndFriends: [userState.data].concat(friendState.data)
-//   };
-// };
-//
 const connector = connect(
   null,
   { getUserAndFriends }

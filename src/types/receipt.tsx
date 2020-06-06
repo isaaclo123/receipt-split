@@ -14,19 +14,12 @@ import {
   RECIEPT_LIST_FAIL,
   RECIEPT_SET_NAME,
   RECIEPT_SET_AMOUNT,
-  RECIEPT_SET_DATE
+  // RECIEPT_SET_DATE
 } from "./index";
 
 export interface ReceiptPayload {
   id: number;
 }
-
-// export interface ReceiptRequestAction {
-//   type: string;
-//   payload: ReceiptPayload;
-// }
-
-// export type ReceiptSetAction = Action<typeof RECIEPT_SAVE_REQUEST, ReceiptType>;
 
 export interface ReceiptAction {
   type: string;
@@ -39,9 +32,14 @@ export type ReceiptState = Failable<ReceiptType, ReceiptError>;
 
 // receipt list
 
+export interface ReceiptListType extends ErrorData {
+  receipts_owned: ReceiptType[];
+  receipts_of: ReceiptType[];
+};
+
 export type ReceiptListSuccessAction = Action<
   typeof RECIEPT_LIST_SUCCESS,
-  ReceiptType[]
+  ReceiptListType
 >;
 
 export type ReceiptListFailAction = Action<typeof RECIEPT_LIST_FAIL, []>;
@@ -50,7 +48,7 @@ export type ReceiptListAction =
   | ReceiptListSuccessAction
   | ReceiptListFailAction;
 
-export type ReceiptListState = Failable<ReceiptType[], string[]>;
+export type ReceiptListState = Failable<ReceiptListType, string[]>; //TODO error type?
 
 // server types
 
@@ -111,12 +109,13 @@ export type ReceiptIdSuccessAction = Action<
   typeof RECIEPT_ID_SUCCESS,
   ReceiptType
 >;
+
 export type ReceiptIdFailAction = Action<typeof RECIEPT_ID_FAIL, Dict<any>>;
 
 export type ReceiptIdAction = ReceiptIdSuccessAction | ReceiptIdFailAction;
-
-export type ReceiptSetNameAction = Action<typeof RECIEPT_SET_NAME, string>;
-export type ReceiptSetAmountAction = Action<typeof RECIEPT_SET_AMOUNT, string>;
+//
+// export type ReceiptSetNameAction = Action<typeof RECIEPT_SET_NAME, string>;
+// export type ReceiptSetAmountAction = Action<typeof RECIEPT_SET_AMOUNT, string>;
 
 //
 // const userListExample: UserType[] = [];
