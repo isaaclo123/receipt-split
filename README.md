@@ -77,3 +77,11 @@
     * https://www.typescriptlang.org/
     * https://auth0.com/blog/beyond-create-react-app-react-router-redux-saga-and-more/
     * https://flask-sqlalchemy.palletsprojects.com/en/2.x/
+
+## Database
+
+```bash
+flask db init
+dlask db migrate
+flask db upgrade
+```

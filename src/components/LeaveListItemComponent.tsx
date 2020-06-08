@@ -13,8 +13,8 @@ export interface LeaveProps {
   amount: number,
   name: string,
   pending: boolean,
-  handleNameClick: () => void,
-  handlePayClick: () => void,
+  handleNameClick?: () => void,
+  handlePayClick?: () => void,
 }
 
 export const LeaveListItemComponent = ({
@@ -22,8 +22,8 @@ export const LeaveListItemComponent = ({
   name,
   pending,
 
-  handleNameClick,
-  handlePayClick,
+  handleNameClick = () => {},
+    handlePayClick = () => {},
 }: LeaveProps) => {
   // const buttons: ButtonProps[] = pending ? [{
   //     variant: "primary",

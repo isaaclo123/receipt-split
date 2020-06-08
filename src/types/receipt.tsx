@@ -48,7 +48,9 @@ export type ReceiptListAction =
   | ReceiptListSuccessAction
   | ReceiptListFailAction;
 
-export type ReceiptListState = Failable<ReceiptListType, string[]>; //TODO error type?
+export interface ReceiptListError extends ErrorData {}
+
+export type ReceiptListState = Failable<ReceiptListType, ReceiptListError>; //TODO error type?
 
 // server types
 

@@ -18,7 +18,7 @@ const initialState: ReceiptListState = {
     receipts_owned: [],
     receipts_of: [],
   },
-  errors: []
+  errors: {}
 };
 
 const createDeleteReducers = (map: Dict<string>): DataReducerType[] =>

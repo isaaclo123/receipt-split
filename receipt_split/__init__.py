@@ -18,14 +18,15 @@ from flask_cors import CORS
 # migrate = Migrate(app, db)
 # from .models import *
 
-from .meta import db, ma
+from .meta import db, ma, migrate
+from .helpers import err
 
 
 def create_app():
     app = FlaskAPI(__name__, static_folder="../build")
     app.config.from_object(Config)
 
-    logging.basicConfig(level=logging.INFO)
+    # app.logging.basicConfig(level=Config.logging)
 
     # # To enable logging for flask-cors,
     # logging.getLogger('flask_cors').level = logging.DEBUG
@@ -35,6 +36,11 @@ def create_app():
 
     db.init_app(app)
     ma.init_app(app)
+
+    is_sqlite = Config.SQLALCHEMY_DATABASE_URI.startswith('sqlite:')
+    app.logger.info("Database URL - %s", Config.SQLALCHEMY_DATABASE_URI)
+    migrate.init_app(app, db, render_as_batch=is_sqlite)
+
     wtforms_json.init()
 
     def dir_last_updated(folder):
@@ -42,7 +48,14 @@ def create_app():
                    for root_path, dirs, files in os.walk(folder)
                    for f in files))
 
-# Serve React App
+    # Handle errors and turn them into json
+    @app.errorhandler(Exception)
+    def handle_error(e):
+        db.logger.error("Global Exception Error (%s) - %s", str(e.code),
+                        str(e))
+        return err(str(e)), e.code
+
+    # Serve React App
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
@@ -54,14 +67,11 @@ def create_app():
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(views_blueprint)
 
-    @app.before_first_request
-    def before_first_request_func():
-        # db.metadata.clear()
-        # db.drop_all()
-        db.create_all()
-        db.session.commit()
-        # user = User(username="test", password="test", fullname="test test")
-        # db.session.add(user)
-        # db.session.commit()
+    # @app.before_first_request
+    # def before_first_request_func():
+    #     # db.metadata.clear()
+    #     # db.drop_all()
+    #     db.create_all()
+    #     db.session.commit()
 
     return app

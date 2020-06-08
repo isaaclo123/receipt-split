@@ -11,6 +11,8 @@ import { LinkContainer } from "react-router-bootstrap";
 
 import { getReceiptList } from "../actions/index";
 
+import Alert from "react-bootstrap/Alert";
+
 import {
   ListOrNoneComponent,
   ReceiptProps,
@@ -50,6 +52,8 @@ const ReceiptPageComponent = ({
 }: Props) => {
   const [run, setRun] = useState(true);
 
+  const errors = (receiptListState.errors != null) ? receiptListState.errors : {};
+
   // gets user info once
   if (run) {
     setRun(false);
@@ -68,6 +72,15 @@ const ReceiptPageComponent = ({
 
   return (
     <>
+      { ("error" in errors) ?
+        <>
+          <Alert variant="danger">
+            {errors.error}
+          </Alert>
+          <br />
+        </>
+      : <></>}
+
       <div className="align-middle">
         <h5 className="float-left">My Receipts</h5>
 
