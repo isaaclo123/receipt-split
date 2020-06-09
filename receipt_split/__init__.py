@@ -26,7 +26,7 @@ def create_app():
     app = FlaskAPI(__name__, static_folder="../build")
     app.config.from_object(Config)
 
-    # app.logging.basicConfig(level=Config.logging)
+    logging.basicConfig(level=logging.INFO)
 
     # # To enable logging for flask-cors,
     # logging.getLogger('flask_cors').level = logging.DEBUG
@@ -51,8 +51,8 @@ def create_app():
     # Handle errors and turn them into json
     @app.errorhandler(Exception)
     def handle_error(e):
-        db.logger.error("Global Exception Error (%s) - %s", str(e.code),
-                        str(e))
+        app.logger.error("Global Exception Error (%s) - %s", str(e.code),
+                         str(e))
         return err(str(e)), e.code
 
     # Serve React App

@@ -1,4 +1,5 @@
 from decimal import Decimal
+import math
 
 
 def ok(msg):
@@ -22,7 +23,44 @@ def err(msg):
 
 
 def get_userkey(user):
-    return str(user.get("id", "-1")) + " - " + user.get("username", " ")
+    # return str(user.get("id", "-1")) + " - " + user.get("username", " ")
+    return user.get("username", "")
+
+
+def round_decimals_down(number: Decimal, decimals: int = 2):
+    """
+    https://kodify.net/python/math/round-decimals/#round-decimal-places-down-in-python
+    Returns a value rounded down to a specific number of decimal places.
+    """
+    if not isinstance(decimals, int):
+        raise TypeError("decimal places must be an integer")
+    elif decimals < 0:
+        raise ValueError("decimal places has to be 0 or more")
+    elif decimals == 0:
+        return math.ceil(number)
+
+    factor = 10 ** decimals
+    return Decimal(math.floor(number * factor)) / Decimal(factor)
+
+
+def split_cost(subitem_amount, subitem_users, owner, balance_dict):
+    if len(subitem_users) <= 0 or subitem_amount <= 0:
+        return
+
+    split_amount = round_decimals_down(subitem_amount / len(subitem_users), 2)
+    split_remainder = subitem_amount - len(subitem_users) * split_amount
+
+    # split amongst users in balance_dict
+    for u in subitem_users:
+        userkey = get_userkey(u)
+        balance_dict[userkey] = (balance_dict.get(userkey, Decimal(0)) +
+                                 split_amount)
+
+    # give owner remainder of split
+    owner_userkey = get_userkey(u)
+    balance_dict[owner_userkey] = (balance_dict.get(owner_userkey,
+                                                    Decimal(0)) +
+                                   split_remainder)
 
 
 def calculate_balances(receipt):
@@ -30,56 +68,51 @@ def calculate_balances(receipt):
     takes python serializer dict and calculates balances
     """
     owner = receipt.get("user")
-    users = receipt.get("users")
-    total_amount = receipt.get("amount")
+    users = receipt.get("users", [])
+    receipt_amount = Decimal(receipt.get("amount"))
     receipt_items = receipt.get("receipt_items", [])
 
     # error check
-    if owner is None or users is None or total_amount is None:
+    if owner is None or users is None or receipt_amount is None:
         return None
 
-    owner_userkey = get_userkey(owner)
-
-    num_users = len(users)
-
-    if (num_users <= 0):
+    if (len(users) <= 0):
         return [{
             "to_user": owner,
             "from_user": owner,
-            "amount": total_amount
+            "amount": receipt_amount
         }]
 
     # subtotals = sum([i.get("amount", 0.0) for i in receipt_items])
-    total_without_subitems = total_amount
+    subitem_total = Decimal(0)
 
-    amount_dict = {
-        get_userkey(u): (Decimal(total_without_subitems) / num_users)
+    balance_dict = {
+        get_userkey(u): Decimal(0)
         for u in users
     }
 
-    for i in receipt_items:
-        subtotal = i.get("amount", 0)
-        i_users = i.get("users", [])
-        len_users = len(i_users)
+    # split for receipt_items
+    for r in receipt_items:
+        subitem_amount = Decimal(r.get("amount", 0))
+        subitem_users = r.get("users", [])
 
-        if len_users <= 0 or subtotal <= 0:
-            continue
-            # i_users = users
-            # len_users = num_users
+        subitem_total = subitem_total + subitem_amount
 
-        amount = (Decimal(subtotal) / len_users)
+        # split costs
+        split_cost(subitem_amount, subitem_users, owner, balance_dict)
 
-        amount_dict[owner_userkey] = (Decimal(amount_dict[owner_userkey]) -
-                                      Decimal(subtotal))
-        for u in i_users:
-            userkey = get_userkey(u)
-            amount_dict[userkey] = amount_dict[userkey] + amount
-            # amount_dict[] = amount_dict[userkey] + amount
+    # split cost evenly not in receipt_items
+    non_subitem_amount = receipt_amount - subitem_total
+
+    if (non_subitem_amount < 0):
+        return None
+
+    split_cost(non_subitem_amount, users, owner, balance_dict)
 
     balances = [{
         "to_user": owner,
         "from_user": u,
-        "amount": amount_dict.get(get_userkey(u), 0)
+        "amount": balance_dict.get(get_userkey(u), Decimal(0))
     } for u in users]
 
     return balances
