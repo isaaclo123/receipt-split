@@ -231,16 +231,18 @@ def friend_list():
 @jwt_required()
 def balances():
     q = db.session.query(
-        Balance.to_user,
-        Balance.receipt_id,
+        Balance.to_user_id,
+        Receipt.id,
         func.sum(Balance.amount).label('total')
+    ).outerjoin(
+        Receipt,
+        Receipt.user_id == Balance.to_user_id
     ).group_by(
-        Balance.to_user
-    ).filter(Balance.from_user == current_identity).all()
+        Receipt.id
+    ).filter(
+        Balance.from_user == current_identity
+    )
 
-    for r in q:
-        print('to_user{}: receipt{} total{}'.format(r.to_user, r.receipt_id,
-                                                    r.total))
-    app.logger.info("/balances - %s", pformat(str(q)))
+    app.logger.info("/balances - %s", pformat(str(q.all())))
 
-    return err(str(q))
+    return err(str(q.all()))
