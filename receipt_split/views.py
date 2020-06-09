@@ -54,6 +54,7 @@ def receipt_list():
         "receipts_of": receipts_of
     }
 
+    app.logger.info("/receipt GET receipts_of - %s", receipts_of)
     app.logger.info("/receipt GET - %s", receipt_result)
 
     return receipt_result, status.HTTP_200_OK
@@ -230,6 +231,7 @@ def friend_list():
 @views.route('/balances', methods=['GET'])
 @jwt_required()
 def balances():
+    # active_history?
     q = db.session.query(
         Balance.to_user_id,
         Receipt.id,
@@ -241,8 +243,8 @@ def balances():
         Receipt.id
     ).filter(
         Balance.from_user == current_identity
-    )
+    ).all()
 
-    app.logger.info("/balances - %s", pformat(str(q.all())))
+    app.logger.info("/balances - %s", pformat(str(q)))
 
-    return err(str(q.all()))
+    return err(str(q))

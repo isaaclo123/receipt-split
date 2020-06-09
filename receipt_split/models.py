@@ -1,6 +1,11 @@
 # from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
+from flask import current_app as app
+from sqlalchemy.orm import relationship
+from sqlalchemy import and_
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import column_property
+
 from datetime import date, datetime
 
 # from decimal import Decimal
@@ -66,6 +71,49 @@ class Payment(db.Model):
     # from_user
 
 
+class ReceiptItem(db.Model):
+    __tablename__ = 'receiptitem'
+    id = db.Column(db.Integer, primary_key=True)
+
+    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
+
+    name = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float(asdecimal=True),
+                       nullable=False)
+
+    # users = relationship("ReceiptItem",
+    #                      # backref="receipt_items",
+    #                      foreign_keys=[User.receipt_item_id])
+    # receipt
+
+
+class Receipt(db.Model):
+    __tablename__ = 'receipt'
+    # user
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, default="New Receipt")
+    amount = db.Column(db.Float(asdecimal=True),
+                       nullable=False, default=0)
+    date = db.Column(db.Date,
+                     default=date.today(),
+                     nullable=False)
+
+    resolved = db.Column(db.Boolean)
+
+    # user
+    # users
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    balances = relationship("Balance", backref="receipt",
+                            cascade="all,delete-orphan")
+
+    receipt_items = relationship("ReceiptItem", backref="receipt",
+                                 foreign_keys=[ReceiptItem.receipt_id],
+                                 cascade="all,delete-orphan")
+
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -114,17 +162,24 @@ class User(db.Model):
                                  secondary=receiptitem_association_table,
                                  backref="users")
 
-    # TODO try to use SQL?
+    # receipts_of = column_property(
+    #     select(
+    #         Receipt,
+    #         id == Receipt.user_id
+    #     ).label('receipts_of')
+    # )
+
     @property
     def receipts_of(self):
-        receipts_owned_map = {r.id: True for r in self.receipts_owned}
-        receipts_in = self.receipts_in
+        result = Receipt.query.join(
+            receipt_association_table,
+        ).filter(
+            receipt_association_table.c.left_id == self.id
+        )
 
-        receipt_notin_owned = [
-            r for r in receipts_in if r.id not in receipts_owned_map
-        ]
+        app.logger.info("receipts_of expression running - %s", result)
 
-        return receipt_notin_owned
+        return result
 
     def add_friend(self, friend):
         if friend not in self.friends:
@@ -135,46 +190,3 @@ class User(db.Model):
         if friend in self.friends:
             self.friends.remove(friend)
             friend.friends.remove(self)
-
-
-class ReceiptItem(db.Model):
-    __tablename__ = 'receiptitem'
-    id = db.Column(db.Integer, primary_key=True)
-
-    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
-
-    name = db.Column(db.String(100), nullable=False)
-    amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False)
-
-    # users = relationship("ReceiptItem",
-    #                      # backref="receipt_items",
-    #                      foreign_keys=[User.receipt_item_id])
-    # receipt
-
-
-class Receipt(db.Model):
-    __tablename__ = 'receipt'
-    # user
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, default="New Receipt")
-    amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False, default=0)
-    date = db.Column(db.Date,
-                     default=date.today(),
-                     nullable=False)
-
-    resolved = db.Column(db.Boolean)
-
-    # user
-    # users
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    balances = relationship("Balance", backref="receipt",
-                            cascade="all,delete-orphan")
-
-    receipt_items = relationship("ReceiptItem", backref="receipt",
-                                 foreign_keys=[ReceiptItem.receipt_id],
-                                 cascade="all,delete-orphan")
