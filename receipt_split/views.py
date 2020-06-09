@@ -1,14 +1,16 @@
 from flask import Blueprint, request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
-# from pprint import pformat
+from pprint import pformat
 
 # from flask_cors import cross_origin
 from datetime import date
+from sqlalchemy.sql import func
+from sqlalchemy.orm import load_only
 
 from .meta import db
 # from .auth import identity
-from .models import User, Receipt
+from .models import User, Receipt, Balance
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema
 from .forms import ReceiptForm
 from .helpers import calculate_balances, ok, err
@@ -29,16 +31,16 @@ receipts_schema = ReceiptSchema(many=True, exclude=('receipt_items',
                                                     'balances', 'users'))
 
 
-@views.route('/balances', methods=['GET'])
-@jwt_required()
-def balance_list():
-    balances_to = balances_schema.dump(current_identity.balances_to_user)
-    balances_from = balances_schema.dump(current_identity.balances_from_user)
-    # receipts_owned_map = {r["id"]: True for r in receipts_owned}
-
-    all_balances = balances_to + balances_from
-
-    return all_balances, status.HTTP_200_OK
+# @views.route('/balances', methods=['GET'])
+# @jwt_required()
+# def balance_list():
+#     balances_to = balances_schema.dump(current_identity.balances_to_user)
+#     balances_from = balances_schema.dump(current_identity.balances_from_user)
+#     # receipts_owned_map = {r["id"]: True for r in receipts_owned}
+#
+#     all_balances = balances_to + balances_from
+#
+#     return all_balances, status.HTTP_200_OK
 
 
 @views.route('/receipt', methods=['GET'])
@@ -152,6 +154,9 @@ def receipt_by_id(id):
     if request.method == 'PUT' or request.method == 'PATCH':
         # TODO try catch
         json_data["balances"] = calculate_balances(json_data)
+
+        app.logger.info("receipt/%s json data is %s", id, pformat(json_data))
+        app.logger.info("receipt/%s balances is %s", id, json_data["balances"])
         receipt_data = receipt_schema.load(json_data, session=db.session)
 
         db.session.commit()
@@ -220,3 +225,22 @@ def friend_list():
     }
 
     return friend_result, status.HTTP_200_OK
+
+
+@views.route('/balances', methods=['GET'])
+@jwt_required()
+def balances():
+    q = db.session.query(
+        Balance.to_user,
+        Balance.receipt_id,
+        func.sum(Balance.amount).label('total')
+    ).group_by(
+        Balance.to_user
+    ).filter(Balance.from_user == current_identity).all()
+
+    for r in q:
+        print('to_user{}: receipt{} total{}'.format(r.to_user, r.receipt_id,
+                                                    r.total))
+    app.logger.info("/balances - %s", pformat(str(q)))
+
+    return err(str(q))

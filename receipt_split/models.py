@@ -81,7 +81,8 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
 
-    receipts_owned = relationship("Receipt", backref="user")
+    receipts_owned = relationship("Receipt", backref="user",
+                                  cascade="merge,delete")
 
     receipts_in = relationship("Receipt",
                                secondary=receipt_association_table,
@@ -171,8 +172,9 @@ class Receipt(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    balances = relationship("Balance", backref="receipt", cascade="all,delete")
+    balances = relationship("Balance", backref="receipt",
+                            cascade="all,delete-orphan")
 
     receipt_items = relationship("ReceiptItem", backref="receipt",
                                  foreign_keys=[ReceiptItem.receipt_id],
-                                 cascade="all,delete")
+                                 cascade="all,delete-orphan")

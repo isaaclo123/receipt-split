@@ -77,8 +77,6 @@ class UserSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = User
         fields = ('id', 'fullname', 'username')
-        unknown = EXCLUDE
-        load_instance = True
 
     id = fields.Int(dump_only=True)
 
@@ -87,8 +85,6 @@ class BalanceSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Balance
         fields = ('id', 'to_user', 'from_user', 'amount')
-        unknown = EXCLUDE
-        load_instance = True
 
     to_user = ma.Nested(UserSchema)
     from_user = ma.Nested(UserSchema)
@@ -106,7 +102,6 @@ class ReceiptItemSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = ReceiptItem
         fields = ('name', 'amount', 'users')
-        load_instance = True
 
     users = ma.Nested(UserSchema,
                       many=True)
@@ -121,9 +116,7 @@ class ReceiptSchema(BaseSchema):
         model = Receipt
         fields = ('id', 'name', 'amount', 'date', 'resolved',
                   'balances', 'receipt_items', 'users', 'user')
-        unknown = EXCLUDE
         ordered = True
-        load_instance = True
 
     id = fields.Int()
 
@@ -148,8 +141,6 @@ class PaymentSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Payment
         fields = ('id', 'to_user', 'from_user', 'amount')
-        unknown = "EXCLUDE"
-        load_instance = True
 
     to_user = ma.Nested(UserSchema, include=user_info_fields)
     from_user = ma.Nested(UserSchema, include=user_info_fields)

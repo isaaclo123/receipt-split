@@ -1,4 +1,5 @@
 from decimal import Decimal
+from flask import current_app as app
 import math
 
 
@@ -73,8 +74,12 @@ def calculate_balances(receipt):
     receipt_items = receipt.get("receipt_items", [])
 
     # error check
-    if owner is None or users is None or receipt_amount is None:
-        return None
+    if owner is None:
+        raise TypeError("owner user is null!")
+    if users is None:
+        raise TypeError("owner user is null!")
+    if receipt_amount is None:
+        raise TypeError("receipt amount is null!")
 
     if (len(users) <= 0):
         return [{
@@ -105,7 +110,11 @@ def calculate_balances(receipt):
     non_subitem_amount = receipt_amount - subitem_total
 
     if (non_subitem_amount < 0):
-        return None
+        st_dec = round_decimals_down(subitem_total)
+        ra_dec = round_decimals_down(receipt_amount)
+        s_error = (f"Total of subitems (${st_dec}) is greater than"
+                   f" Receipt total (${ra_dec})")
+        raise ValueError(s_error)
 
     split_cost(non_subitem_amount, users, owner, balance_dict)
 
