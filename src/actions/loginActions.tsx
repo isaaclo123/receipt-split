@@ -1,17 +1,19 @@
-import { fetchLogin, fetchSignup } from "../api/index";
+import { fetchUser, fetchLogin, fetchSignup } from "../api/index";
 import { TOKEN_LOCALSTORAGE } from "../types/index";
 import {
   ApiMiddlewareAction,
   LOGIN_FAIL,
   LOGIN_SUCCESS,
   LoginPayload,
-  SignupPayload
+  SignupPayload,
+  RootState
 } from "../types/index";
 import { apiCallAction } from "./index";
 // import { disconnect } from "cluster";
 
 export const deleteToken = () => (dispatch: any) => {
   localStorage.removeItem(TOKEN_LOCALSTORAGE);
+  console.log("Remove Token")
 
   return dispatch({
     type: LOGIN_FAIL,
@@ -21,18 +23,34 @@ export const deleteToken = () => (dispatch: any) => {
   })
 }
 
-export const setToken = () => (dispatch: any) => {
-  // TODO have verification of token
+export const setToken = () => async (dispatch: any, getState: () => RootState) => {
+  // TODO set User State from test
+
+  if (getState().loginState.error) {
+    localStorage.removeItem(TOKEN_LOCALSTORAGE);
+    return;
+  }
+
   const token = localStorage.getItem(TOKEN_LOCALSTORAGE);
 
-  if (token !== "" && token != null) {
-    return dispatch({
-      type: LOGIN_SUCCESS,
-      payload: {
-        token
-      }
-    })
+  if (token == null || token === ""){
+    return deleteToken()(dispatch);
   }
+
+  const userData = await fetchUser(token);
+
+  if (userData.error) {
+    console.log("Error with UserData setToken");
+    console.log(userData.error);
+    return deleteToken()(dispatch);
+  }
+
+  return dispatch({
+    type: LOGIN_SUCCESS,
+    payload: {
+      token
+    }
+  })
 }
 
 export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>

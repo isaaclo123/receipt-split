@@ -1,7 +1,6 @@
 import {
   LoginAction,
   LoginState,
-  LoginSuccessAction,
   LOGIN_SUCCESS,
   LOGIN_FAIL
 } from "../types/index";

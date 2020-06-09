@@ -41,9 +41,13 @@ const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
     username: "",
     password: ""
   });
+  // const [run, setRun] = useState(true);
 
   // Set token if already in localstorage
+  // if (run) {
   setToken();
+    //setRun(false);
+  // }
 
   const { login }: LoginData = loginState.data;
 
