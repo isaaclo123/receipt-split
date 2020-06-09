@@ -40,7 +40,7 @@ def round_decimals_down(number: Decimal, decimals: int = 2):
         return math.ceil(number)
 
     factor = 10 ** decimals
-    return Decimal(math.floor(number * factor)) / Decimal(factor)
+    return Decimal(math.floor(number * factor)) / factor
 
 
 def split_cost(subitem_amount, subitem_users, owner, balance_dict):
