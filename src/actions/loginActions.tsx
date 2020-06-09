@@ -1,9 +1,11 @@
 import { fetchUser, fetchLogin, fetchSignup } from "../api/index";
 import { TOKEN_LOCALSTORAGE } from "../types/index";
+import { batch } from "react-redux";
 import {
   ApiMiddlewareAction,
   LOGIN_FAIL,
   LOGIN_SUCCESS,
+  USER_INFO_SUCCESS,
   LoginPayload,
   SignupPayload,
   RootState
@@ -24,8 +26,6 @@ export const deleteToken = () => (dispatch: any) => {
 }
 
 export const setToken = () => async (dispatch: any, getState: () => RootState) => {
-  // TODO set User State from test
-
   if (getState().loginState.error) {
     localStorage.removeItem(TOKEN_LOCALSTORAGE);
     return;
@@ -45,12 +45,18 @@ export const setToken = () => async (dispatch: any, getState: () => RootState) =
     return deleteToken()(dispatch);
   }
 
-  return dispatch({
-    type: LOGIN_SUCCESS,
-    payload: {
-      token
-    }
-  })
+  batch(() => {
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: {
+        token
+      }
+    });
+    dispatch({
+      type: USER_INFO_SUCCESS,
+      payload: userData
+    });
+  });
 }
 
 export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
@@ -61,6 +67,7 @@ export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
     apiCall: fetchLogin,
     apiCallArgs: [payload],
     onSuccess: ({ access_token = "" }: any) => {
+      // set token in localStorage
       localStorage.setItem(TOKEN_LOCALSTORAGE, access_token)
       return {
         token: access_token
