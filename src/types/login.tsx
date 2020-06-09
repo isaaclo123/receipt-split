@@ -26,6 +26,8 @@ export interface LoginData {
 export interface LoginErrors extends ErrorData {
   username?: string;
   password?: string;
+  confirm?: string;
+  fullname?: string;
 }
 
 export type LoginState = Failable<LoginData, LoginErrors>;
@@ -34,6 +36,7 @@ export interface SignupPayload {
   username: string;
   fullname: string;
   password: string;
+  confirm: string;
 }
 
 export interface SignupAction {

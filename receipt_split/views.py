@@ -150,6 +150,7 @@ def receipt_by_id(id):
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     if request.method == 'PUT' or request.method == 'PATCH':
+        # TODO try catch
         json_data["balances"] = calculate_balances(json_data)
         receipt_data = receipt_schema.load(json_data, session=db.session)
 

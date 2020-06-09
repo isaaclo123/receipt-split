@@ -1,7 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app as app
 from flask_api import status
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from .forms import SignupForm
 from .helpers import ok, err
 from .meta import db
 from .models import User
@@ -23,25 +24,33 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup_post():
-    if request.method == 'POST':
-        username = request.data.get('username')
-        fullname = request.data.get('fullname')
-        password = request.data.get('password')
-        confirm = request.data.get('confirm')
+    if not request.is_json:
+        return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
+    json_data = request.get_json()
+
+    app.logger.info("/signup input data - %s", json_data)
+
+    username = json_data.get("username")
+    if username is not None:
         user = User.query.filter_by(username=username).first()
 
         if user:
-            return {"username": "username already exists"}, \
-                status.HTTP_403_FORBIDDEN
+            error = {"username": "username already exists"}
+            return error, status.HTTP_403_FORBIDDEN
 
-        new_user = User(username=username,
-                        fullname=fullname,
-                        password=generate_password_hash(password,
-                                                        method='sha256'))
+    form = SignupForm.from_json(json_data)
+    if not form.validate():
+        app.logger.info("/signup form errors - %s", form.errors)
+        return form.errors, status.HTTP_400_BAD_REQUEST
 
-        # add the new user to the database
-        db.session.add(new_user)
-        db.session.commit()
+    new_user = User(username=username,
+                    fullname=json_data["username"],
+                    password=generate_password_hash(json_data["password"],
+                                                    method='sha256'))
+
+    # add the new user to the database
+    db.session.add(new_user)
+    db.session.commit()
 
     return ok("POST username, fullname, and password to this API")

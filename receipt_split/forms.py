@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
-from wtforms import fields, validators, Form
+from wtforms import fields, validators as va, Form
 
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 from .meta import db
@@ -24,9 +24,8 @@ class ReceiptItemForm(ModelForm):
         model = ReceiptItem
 
     name = fields.StringField("Name",
-                              [validators.length(min=1)])
-    amount = fields.DecimalField("Decimal",
-                                 [validators.NumberRange(min=0)])
+                              [va.length(min=1)])
+    amount = fields.DecimalField("Decimal", [va.NumberRange(min=0)])
 
 
 class ReceiptForm(ModelForm):
@@ -34,24 +33,22 @@ class ReceiptForm(ModelForm):
         model = Receipt
 
     name = fields.StringField("Name",
-                              [validators.length(min=1)])
-    amount = fields.DecimalField("Decimal",
-                                 [validators.NumberRange(min=0)])
+                              [va.length(min=1)])
+    amount = fields.DecimalField("Decimal", [va.NumberRange(min=0)])
     receipt_items = fields.FieldList(fields.FormField(ReceiptItemForm))
 
 
 class SignupForm(Form):
-    name = fields.StringField("Username",
-                              [validators.length(min=1)])
+    username = fields.StringField("Username",
+                                  [va.DataRequired(), va.length(min=1)])
     fullname = fields.StringField("Full Name",
-                                  [validators.length(min=1)])
+                                  [va.DataRequired(), va.length(min=1)])
     password = fields.PasswordField("Username",
-                                    [validators.DataRequired(),
-                                     validators.length(min=8),
-                                     validators.EqualTo("confirm",
-                                                        message="Passwords " +
-                                                        "must match")])
-    confirm = fields.PasswordField("Repeat Password")
+                                    [va.DataRequired(), va.length(min=8),
+                                     va.EqualTo("confirm",
+                                                message="Passwords must match")
+                                     ])
+    confirm = fields.PasswordField("Repeat Password", [va.DataRequired()])
 
 
 class BalanceForm(ModelForm):

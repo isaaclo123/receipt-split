@@ -101,6 +101,8 @@ export const ExpenseCardComponent = ({
                       plaintext
                       className={`text-${variant} form-control-lg`}
                       type="number"
+                      step={0.01}
+                      min={0}
                       readOnly={!editing}
                       isInvalid={amountError != null}
                       value={(amount != null) ? amount.toFixed(2): "0.00"}

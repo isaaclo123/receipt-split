@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { LoginData, LoginState } from "../types/index";
 
@@ -10,6 +10,7 @@ import { Redirect } from "react-router-dom";
 
 import { setLogin, setToken } from "../actions/index";
 
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -36,6 +37,11 @@ type Props = PropsFromRedux & {
 };
 
 const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
+  const [loginData, setLoginData] = useState({
+    username: "",
+    password: ""
+  });
+
   // Set token if already in localstorage
   setToken();
 
@@ -46,10 +52,7 @@ const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
     return <Redirect to={"/app"} />;
   }
 
-  let loginData = {
-    username: "",
-    password: ""
-  };
+  const errors = (loginState.errors != null) ? loginState.errors : {};
 
   const handleLoginClick = () => {
     setLogin(loginData);
@@ -67,6 +70,12 @@ const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
         <Card.Body>
           <Card.Title>Login</Card.Title>
 
+          { ("error" in errors) ?
+            <Alert variant="danger">
+              Unable to Log In!
+            </Alert>
+          : <></>}
+
           <Form>
             <Form.Group controlId="formUsername">
               <Form.Label>Username</Form.Label>
@@ -74,11 +83,15 @@ const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
                 type="email"
                 placeholder="Username"
                 onChange={(event: React.ChangeEvent<FormControl & HTMLInputElement>) => {
-                  loginData = Object.assign({}, loginData, {
+                  setLoginData(Object.assign({}, loginData, {
                     username: event.currentTarget.value
-                  });
+                  }));
                 }}
+                isInvalid={"username" in errors}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.username}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formPassword">
@@ -88,11 +101,15 @@ const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
                 placeholder="Password"
                 onKeyPress={handleKeyPress}
                 onChange={(event: React.ChangeEvent<FormControl & HTMLInputElement>) => {
-                  loginData = Object.assign({}, loginData, {
+                  setLoginData(Object.assign({}, loginData, {
                     password: event.currentTarget.value
-                  });
+                  }));
                 }}
+                isInvalid={"password" in errors}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <span>

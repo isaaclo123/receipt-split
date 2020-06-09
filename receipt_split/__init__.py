@@ -1,4 +1,4 @@
-from flask_api import FlaskAPI
+from flask_api import FlaskAPI, status
 from flask import send_from_directory, request
 from config import Config
 # from flask_migrate import Migrate
@@ -51,9 +51,8 @@ def create_app():
     # Handle errors and turn them into json
     @app.errorhandler(Exception)
     def handle_error(e):
-        app.logger.error("Global Exception Error (%s) - %s", str(e.code),
-                         str(e))
-        return err(str(e)), e.code
+        app.logger.error("Global Exception Error - %s", str(e))
+        return err(str(e)), status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # Serve React App
     @app.route('/', defaults={'path': ''})
