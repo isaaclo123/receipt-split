@@ -7,23 +7,21 @@ import {
 
 import {
   ButtonProps,
+  ReceiptSummaryType
 } from '../types/index';
 
-export interface ReceiptProps {
-  amount: number,
-  name: string,
-  pending: boolean,
-  handleNameClick: () => void,
-  handleViewClick: () => void,
+export interface ReceiptProps extends ReceiptSummaryType {
+  handleNameClick?: () => void,
+  handleViewClick?: () => void,
 }
 
 export const ReceiptListItemComponent = ({
   amount,
   name,
-  pending,
+  resolved,
 
-  handleNameClick,
-  handleViewClick,
+  handleNameClick = () => {},
+  handleViewClick = () => {},
 }: ReceiptProps) => {
   // const buttons: ButtonProps[] = pending ? [{
   //     variant: "success",
@@ -45,7 +43,7 @@ export const ReceiptListItemComponent = ({
     name,
     handleClick: handleNameClick,
     buttons,
-    active: pending // TODO
+    active: resolved// TODO
   }
 
   return (

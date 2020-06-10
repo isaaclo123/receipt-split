@@ -230,9 +230,9 @@ def friend_list():
     return friend_result, status.HTTP_200_OK
 
 
-@views.route('/balances', methods=['GET'])
+@views.route('/balancesums', methods=['GET'])
 @jwt_required()
-def balances():
+def balance_sums():
     # active_history?
     q = db.session.query(
         User,
@@ -262,8 +262,8 @@ def balances():
     balances = list(reduce(find_balances, q, {}).values())
     balances_dump = balance_sum_schema.dump(balances)
 
-    app.logger.info("/balances result - %s", pformat(balances_dump))
+    app.logger.info("/balancesums result - %s", pformat(balances_dump))
 
     return {
-        "balances": balances_dump
+        "balance_sums": balances_dump
     }

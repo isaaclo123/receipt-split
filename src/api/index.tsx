@@ -49,3 +49,8 @@ export const fetchFriends = (token: string) =>
 
 export const fetchAddFriend = (username: string, token: string) =>
   fetchData(`friend/${username}`, "POST", null, token);
+
+// balance_sum
+
+export const fetchBalanceSumList = (token: string) =>
+  fetchData(`balancesums`, "GET", null, token);

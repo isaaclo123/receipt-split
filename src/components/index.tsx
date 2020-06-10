@@ -1,6 +1,7 @@
 export * from "./App";
 export * from "./BadgeListComponent";
 export * from "./BalancePage";
+export * from "./BalanceCardComponent";
 export * from "./BalanceListItemComponent";
 export * from "./DeleteModal";
 export * from "./ExpenseCardComponent";

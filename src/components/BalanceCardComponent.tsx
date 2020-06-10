@@ -5,21 +5,25 @@ import Button from "react-bootstrap/Button";
 
 import ListGroup from "react-bootstrap/ListGroup";
 
-import { LeaveProps, LeaveListItemComponent } from "./LeaveListItemComponent";
-import { BalanceType } from "../types/index";
+import { BalanceSumType } from "../types/index";
 
-export interface BalanceCardProps {
-  name: string;
-  amount: number;
-  onPay: () => void;
-  balances: BalanceType[];
+import {
+  ReceiptListItemComponent
+} from "./index";
+
+import {
+  ReceiptSummaryType
+} from "../types/index";
+
+export interface BalanceCardProps extends BalanceSumType {
+  onPay ?: () => void
 };
 
 export const BalanceCardComponent = ({
-  name,
-  amount,
-  onPay,
-  balances,
+  user,
+  total,
+  receipts,
+  onPay = () => {}
 }: BalanceCardProps) => {
   return (
     <Card>
@@ -29,7 +33,7 @@ export const BalanceCardComponent = ({
         }}
       >
         <span className="float-left">
-          <span className="text-primary">Featured</span>
+          <span className="text-primary">{user.fullname}</span>
         </span>
         <span className="float-right">
           <Button size="sm" onClick={onPay}>PAY</Button>
@@ -45,7 +49,7 @@ export const BalanceCardComponent = ({
             display: "inline-block"
           }}
         >
-          ${amount.toFixed(2)}
+          ${total.toFixed(2)}
         </h1>
       </Card.Body>
 
@@ -57,6 +61,11 @@ export const BalanceCardComponent = ({
       />
 
       <ListGroup className="list-group-flush">
+        {receipts.map((receipt: ReceiptSummaryType) => {
+          const { id = -1 } = receipt;
+
+          return (<ReceiptListItemComponent key={id} {...receipt} />);
+        })}
       </ListGroup>
     </Card>
   );

@@ -70,6 +70,28 @@ const ReceiptPageComponent = ({
     </ListGroup.Item>
   );
 
+  const receiptListOrNoneComponent = (receipt_list: ReceiptSummaryType[]) => (
+    <ListGroup className="mb-3">
+      <ListOrNoneComponent<ReceiptSummaryType>
+        list={receipt_list}
+        listComponent={(receiptSummary : ReceiptSummaryType) => {
+          const { id=-1 } = receiptSummary
+          const props: ReceiptProps = {
+            handleNameClick: () => {
+              receiptEdit(id);
+            },
+            handleViewClick: () => {
+              receiptEdit(id);
+            },
+            ...receiptSummary
+          };
+          return <ReceiptListItemComponent key={id} {...props} />;
+        }}
+        noneComponent={noneComponent}
+      />
+    </ListGroup>
+)
+
   return (
     <>
       { ("error" in errors) ?
@@ -92,62 +114,14 @@ const ReceiptPageComponent = ({
       </div>
       <br />
       <h5 />
-      <ListGroup className="mb-3">
-        <ListOrNoneComponent<ReceiptSummaryType>
-          list={receiptListState.data.receipts_owned}
-          listComponent={({
-            name = "",
-            amount = -1,
-            date = "",
-            id = -1
-          }: ReceiptSummaryType) => {
-            const props: ReceiptProps = {
-              pending: true,
-              handleNameClick: () => {
-                receiptEdit(id);
-              },
-              handleViewClick: () => {
-                receiptEdit(id);
-              },
-              amount,
-              name
-            };
-            return <ReceiptListItemComponent key={id} {...props} />;
-          }}
-          noneComponent={noneComponent}
-        />
-      </ListGroup>
+      { receiptListOrNoneComponent(receiptListState.data.receipts_owned) }
 
       <div className="align-middle">
         <h5 className="float-left">Receipts In</h5>
       </div>
       <br />
       <h5 />
-      <ListGroup className="mb-3">
-        <ListOrNoneComponent<ReceiptSummaryType>
-          list={receiptListState.data.receipts_of}
-          listComponent={({
-            name = "",
-            amount = -1,
-            date = "",
-            id = -1
-          }: ReceiptSummaryType) => {
-            const props: ReceiptProps = {
-              pending: true,
-              handleNameClick: () => {
-                receiptEdit(id);
-              },
-              handleViewClick: () => {
-                receiptEdit(id);
-              },
-              amount,
-              name
-            };
-            return <ReceiptListItemComponent key={id} {...props} />;
-          }}
-          noneComponent={noneComponent}
-        />
-      </ListGroup>
+      { receiptListOrNoneComponent(receiptListState.data.receipts_of) }
     </>
   );
 };

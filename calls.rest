@@ -20,11 +20,11 @@ POST /auth
 
 http://localhost:5000
 
-Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjIxOTU5NDA3MTMsImlhdCI6MTU5MTc0NTUxMywibmJmIjoxNTkxNzQ1NTEzLCJpZGVudGl0eSI6MX0.lKHxH5IJXmIS7kzWDzG5_LXsRd4yk3gWI5TLsGFlGMc
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjIxOTU5NjA4OTIsImlhdCI6MTU5MTc2NTY5MiwibmJmIjoxNTkxNzY1NjkyLCJpZGVudGl0eSI6MX0.Zel_DC6N3MUjoDrNKa_yYSuEd9v1FM4eceweX61by1k
 Accept: application/json
 Content-Type: application/json
 
-GET /balances
+GET /balancesums
 
 ---
 

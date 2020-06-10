@@ -2,6 +2,9 @@
 
 import { Dict } from "./index"
 
+export const BALANCE_SUM_LIST_SUCCESS = "BALANCE_SUM_LIST_SUCCESS";
+export const BALANCE_SUM_LIST_FAIL = "BALANCE_SUM_LIST_FAIL";
+
 export const TOKEN_LOCALSTORAGE = "TOKEN_LOCALSTORAGE";
 
 export const RECEIPT_INDEX_DELETE_MAP: Dict<string> = {

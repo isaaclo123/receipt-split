@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { connect, ConnectedProps } from "react-redux";
+import { RouteComponentProps } from "react-router-dom";
 
 import CardColumns from "react-bootstrap/CardColumns";
 import Card from "react-bootstrap/Card";
@@ -6,114 +8,65 @@ import Button from "react-bootstrap/Button";
 
 import ListGroup from "react-bootstrap/ListGroup";
 
-import { TakeProps, TakeListItemComponent } from "./TakeListItemComponent";
-import { LeaveProps, LeaveListItemComponent } from "./LeaveListItemComponent";
+import { BalanceCardComponent } from "./index";
+import { getBalanceSumList } from "../actions/index";
 
-const youowe = [
-  // TODO
-  {
-    name: "bill",
-    amount: 5.0,
-    pending: true
-  },
-  {
-    name: "bill2",
-    amount: 5.2,
-    pending: false
+import {
+  RootState,
+  BalanceSumListState,
+  BalanceSumType
+} from "../types/index";
+
+const mapStateToProps = (state: RootState) => {
+  const { balanceSumListState } = state;
+  return {
+    balanceSumListState
+  };
+};
+
+const connector = connect(
+  mapStateToProps,
+  { getBalanceSumList }
+);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux &
+  RouteComponentProps<{}> & {
+    balance_sums?: BalanceSumListState;
+  };
+
+const BalancePageComponent = ({
+  match,
+  balanceSumListState,
+  getBalanceSumList
+}: Props) => {
+  const [run, setRun] = useState(true);
+  const errors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
+
+  // gets user info once
+  if (run) {
+    setRun(false);
+    getBalanceSumList()
   }
-];
 
-const BalancePageComponent = () => {
+  const { balance_sums } = balanceSumListState.data;
+
+  console.log(balanceSumListState.data.balance_sums)
+
   return (
     <>
-      <h5>Payment</h5>
-
-      <ListGroup className="mb-3">
-        {youowe.map(item => {
-          const props: TakeProps = {
-            handleNameClick: () => {},
-            handleAcceptClick: () => {},
-            handleRejectClick: () => {},
-            ...item
-          };
-          return <TakeListItemComponent {...props} />;
-        })}
-      </ListGroup>
-
-      <h5>To Pay</h5>
+      <h5>Balances to Pay</h5>
 
       <CardColumns>
-        <Card>
-          <Card.Header
-            style={{
-              lineHeight: "2rem"
-            }}
-          >
-            <span className="float-left">
-              <a href="#">Featured</a>
-            </span>
-            <span className="float-right">
-              <Button size="sm">PAY</Button>
-            </span>
-            <br />
-          </Card.Header>
+        {balance_sums.map((balanceSum : BalanceSumType) => {
+          const { id = -1 } = balanceSum.user;
 
-          <Card.Body className="text-center">
-            <h1
-              style={{
-                padding: 0,
-                margin: 0,
-                display: "inline-block"
-              }}
-            >
-              $100.00
-            </h1>
-          </Card.Body>
-
-          <hr
-            style={{
-              padding: 0,
-              margin: 0
-            }}
-          />
-
-          <ListGroup className="list-group-flush">
-            {youowe.map(item => {
-              const props: LeaveProps = {
-                handleNameClick: () => {},
-                handlePayClick: () => {},
-                ...item
-              };
-              return <LeaveListItemComponent {...props} />;
-            })}
-          </ListGroup>
-        </Card>
+          return (<BalanceCardComponent key={id} {...balanceSum}/>)
+        })}
       </CardColumns>
-
-      <ListGroup className="mb-3">
-        {youowe.map(item => {
-          const props: LeaveProps = {
-            handleNameClick: () => {},
-            handlePayClick: () => {},
-            ...item
-          };
-          return <LeaveListItemComponent {...props} />;
-        })}
-      </ListGroup>
-
-      <h5>History</h5>
-
-      <ListGroup className="mb-3">
-        {youowe.map(({ name, amount }) => {
-          return (
-            <ListGroup.Item>
-              {name} ${amount}
-            </ListGroup.Item>
-          );
-        })}
-      </ListGroup>
     </>
   );
 };
 
-export const BalancePage = BalancePageComponent;
+export const BalancePage = connector(BalancePageComponent);
