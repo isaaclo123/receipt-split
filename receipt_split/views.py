@@ -2,6 +2,7 @@ from flask import Blueprint, request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
 from pprint import pformat
+from functools import reduce
 
 # from flask_cors import cross_origin
 from datetime import date
@@ -11,7 +12,8 @@ from sqlalchemy.orm import load_only
 from .meta import db
 # from .auth import identity
 from .models import User, Receipt, Balance
-from .schemas import UserSchema, ReceiptSchema, BalanceSchema
+from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
+    BalanceSumSchema, RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm
 from .helpers import calculate_balances, ok, err
 
@@ -25,10 +27,10 @@ user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 balances_schema = BalanceSchema(many=True)
+balance_sum_schema = BalanceSumSchema(many=True)
 
 receipt_schema = ReceiptSchema()
-receipts_schema = ReceiptSchema(many=True, exclude=('receipt_items',
-                                                    'balances', 'users'))
+receipts_schema = ReceiptSchema(many=True, exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
 
 
 # @views.route('/balances', methods=['GET'])
@@ -233,18 +235,35 @@ def friend_list():
 def balances():
     # active_history?
     q = db.session.query(
-        Balance.to_user_id,
-        Receipt.id,
+        User,
+        Receipt,
         func.sum(Balance.amount).label('total')
     ).outerjoin(
         Receipt,
         Receipt.user_id == Balance.to_user_id
+    ).join(
+        User,
+        Balance.to_user_id == User.id
     ).group_by(
         Receipt.id
     ).filter(
         Balance.from_user == current_identity
     ).all()
 
-    app.logger.info("/balances - %s", pformat(str(q)))
+    def find_balances(acc, cur):
+        user, receipt, total = cur
+        acc[user.id] = {
+            "user": user,
+            "total": total,
+            "receipts": acc.get(user.id, {}).get("receipts", []) + [receipt]
+        }
+        return acc
 
-    return err(str(q))
+    balances = list(reduce(find_balances, q, {}).values())
+    balances_dump = balance_sum_schema.dump(balances)
+
+    app.logger.info("/balances result - %s", pformat(balances_dump))
+
+    return {
+        "balances": balances_dump
+    }

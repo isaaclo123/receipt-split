@@ -20,7 +20,7 @@ POST /auth
 
 http://localhost:5000
 
-Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjIxOTU4Nzk4MzUsImlhdCI6MTU5MTY4NDYzNSwibmJmIjoxNTkxNjg0NjM1LCJpZGVudGl0eSI6MX0.mBd0K-UP-Hw8Hiv9D-_OfKZdIcl0JTiLK8ao9BTvIJI
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjIxOTU5NDA3MTMsImlhdCI6MTU5MTc0NTUxMywibmJmIjoxNTkxNzQ1NTEzLCJpZGVudGl0eSI6MX0.lKHxH5IJXmIS7kzWDzG5_LXsRd4yk3gWI5TLsGFlGMc
 Accept: application/json
 Content-Type: application/json
 

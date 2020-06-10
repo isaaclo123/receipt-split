@@ -1,10 +1,11 @@
-from marshmallow import EXCLUDE, fields, post_load
+from marshmallow import EXCLUDE, fields, post_load, Schema
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 
 from .meta import ma, db
 # db
 
-user_info_fields = ('id', 'fullname', 'username')
+USER_INFO_FIELDS = ('id', 'fullname', 'username')
+RECEIPT_INFO_EXCLUDE_FIELDS = ('receipt_items', 'balances', 'users')
 
 
 class BaseSchema(ma.SQLAlchemyAutoSchema):
@@ -70,7 +71,7 @@ class FriendSchema(BaseSchema):
 
 
 class UserSchema(BaseSchema):
-    # friends = ma.Nested(FriendSchema, many=True, include=user_info_fields)
+    # friends = ma.Nested(FriendSchema, many=True, include=USER_INFO_FIELDS)
 
     # balances_to_user = ma.Nested(BalanceSchema, many=True)
     # balances_from_user = ma.Nested(BalanceSchema, many=True)
@@ -133,8 +134,8 @@ class ReceiptSchema(BaseSchema):
                                          original_data, **kwargs)
         return datawithuser
 
-    to_user = ma.Nested(UserSchema, include=user_info_fields)
-    from_user = ma.Nested(UserSchema, include=user_info_fields)
+    to_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
+    from_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
 
 
 class PaymentSchema(BaseSchema):
@@ -142,5 +143,12 @@ class PaymentSchema(BaseSchema):
         model = Payment
         fields = ('id', 'to_user', 'from_user', 'amount')
 
-    to_user = ma.Nested(UserSchema, include=user_info_fields)
-    from_user = ma.Nested(UserSchema, include=user_info_fields)
+    to_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
+    from_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
+
+
+class BalanceSumSchema(Schema):
+    user = ma.Nested(UserSchema, include=USER_INFO_FIELDS, dump_only=True)
+    total = fields.Decimal(dump_only=True)
+    receipts = ma.Nested(ReceiptSchema, many=True, dump_only=True,
+                         exclude=RECEIPT_INFO_EXCLUDE_FIELDS)

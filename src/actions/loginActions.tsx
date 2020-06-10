@@ -26,6 +26,7 @@ export const deleteToken = () => (dispatch: any) => {
 }
 
 export const setToken = () => async (dispatch: any, getState: () => RootState) => {
+  // TODO deleteToken on api fail??
   if (getState().loginState.error) {
     localStorage.removeItem(TOKEN_LOCALSTORAGE);
     return;
