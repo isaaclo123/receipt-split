@@ -237,7 +237,7 @@ def balance_sums():
     q = db.session.query(
         User,
         Receipt,
-        func.sum(Balance.amount).label('total')
+        func.sum(Balance.amount).label('total'),
     ).outerjoin(
         Receipt,
         Receipt.user_id == Balance.to_user_id
@@ -247,6 +247,7 @@ def balance_sums():
     ).group_by(
         Receipt.id
     ).filter(
+        User.id != current_identity.id,
         Balance.from_user == current_identity
     ).all()
 
