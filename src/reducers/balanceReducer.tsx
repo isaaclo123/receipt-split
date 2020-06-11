@@ -10,7 +10,8 @@ import { setDataReducer, applyDataReducers } from "./index";
 const initialState: BalanceSumListState = {
   error: false,
   data: {
-    balances_of: []
+    balances_of: [],
+    balances_owed: []
   },
   errors: {}
 };

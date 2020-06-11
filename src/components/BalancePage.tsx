@@ -48,7 +48,10 @@ const BalancePageComponent = ({
     getBalanceSumList()
   }
 
-  const { balances_of } = balanceSumListState.data;
+  const {
+    balances_owed,
+    balances_of
+  } = balanceSumListState.data;
 
   return (
     <>
@@ -65,6 +68,20 @@ const BalancePageComponent = ({
 
       <CardColumns>
         {balances_of.map((balanceSum : BalanceSumType) => {
+          const { id = -1 } = balanceSum.user;
+
+          return (
+            <BalanceCardComponent
+              key={id}
+              {...balanceSum} />
+          );
+        })}
+      </CardColumns>
+
+      <h5>Balances Owed</h5>
+
+      <CardColumns>
+        {balances_owed.map((balanceSum : BalanceSumType) => {
           const { id = -1 } = balanceSum.user;
 
           return (

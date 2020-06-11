@@ -237,10 +237,22 @@ def friend_list():
     return friend_result, status.HTTP_200_OK
 
 
-@views.route('/balancesums', methods=['GET'])
-@jwt_required()
-def balance_sums():
-    # active_history?
+def get_balance_list(q):
+    def find_balances(acc, cur):
+        user, balance, total = cur
+        acc[user.id] = {
+            "user": user,
+            "total": total,
+            "balances": acc.get(user.id, {}).get("balances", []) + [balance]
+        }
+        return acc
+
+    balances = list(reduce(find_balances, q, OrderedDict()).values())
+    balances_dump = balance_sum_schema.dump(balances)
+    return balances_dump
+
+
+def get_balances_of(current_identity):
     b = db.session.query(
         Balance.id,
         Balance.to_user_id,
@@ -274,20 +286,55 @@ def balance_sums():
         Balance.id == b.c.id
     ).all()
 
-    def find_balances(acc, cur):
-        user, balance, total = cur
-        acc[user.id] = {
-            "user": user,
-            "total": total,
-            "balances": acc.get(user.id, {}).get("balances", []) + [balance]
-        }
-        return acc
+    return get_balance_list(q)
 
-    balances = list(reduce(find_balances, q, OrderedDict()).values())
-    balances_dump = balance_sum_schema.dump(balances)
 
-    app.logger.info("/balancesums result - %s", pformat(balances_dump))
+def get_balances_owed(current_identity):
+    b = db.session.query(
+        Balance.id,
+        Balance.from_user_id,
+        Balance.amount
+    ).filter(
+        Balance.from_user_id != current_identity.id,
+        Balance.to_user_id == current_identity.id
+    ).subquery()
+
+    s = db.session.query(
+        b.c.from_user_id,
+        func.sum(b.c.amount).label('total'),
+    ).select_from(b).group_by(
+        b.c.from_user_id
+    ).subquery()
+
+    q = db.session.query(
+        User,
+        Balance,
+        s.c.total,
+    ).select_from(
+        b
+    ).join(
+        s,
+        b.c.from_user_id == s.c.from_user_id
+    ).join(
+        User,
+        User.id == b.c.from_user_id
+    ).join(
+        Balance,
+        Balance.id == b.c.id
+    ).all()
+
+    return get_balance_list(q)
+
+
+@views.route('/balancesums', methods=['GET'])
+@jwt_required()
+def balance_sums():
+    balances_of = get_balances_of(current_identity)
+    balances_owed = get_balances_owed(current_identity)
+
+    app.logger.info("/balancesums result - %s", pformat(balances_of))
 
     return {
-        "balances_of": balances_dump
+        "balances_owed": balances_owed,
+        "balances_of": balances_of
     }

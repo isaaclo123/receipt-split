@@ -34,13 +34,15 @@ export const BalanceCardComponent = ({
         <br />
       </Card.Header>
 
-      <Card.Body className="text-center">
+      <Card.Body className="text-center px-0">
         <h1
           style={{
             padding: 0,
             margin: 0,
-            display: "inline-block"
+            display: "inline-block",
+            overflow: "auto"
           }}
+          className={"text-danger"}
         >
           ${total.toFixed(2)}
         </h1>

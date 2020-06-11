@@ -21,7 +21,6 @@ import {
   RootState,
   ReceiptSummaryType,
   ReceiptListState,
-  RECEIPT_ADD_USER
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -76,11 +75,13 @@ const ReceiptPageComponent = ({
           return (
             <>
               <ListGroup.Item>
-                <span className="text-info">{amount.toFixed(2)}</span>
+                <span className="text-info">${amount.toFixed(2)}</span>
                 &nbsp;for&nbsp;
                 <LinkContainer to={`${match.url}/edit/${id}`}>
                   <span className="text-primary">{name}</span>
                 </LinkContainer>
+                &nbsp;by&nbsp;
+                <span className="text-primary">{user.fullname}</span>
               </ListGroup.Item>
             </>
           );
@@ -109,9 +110,9 @@ const ReceiptPageComponent = ({
         <h5 className="float-left">My Receipts</h5>
 
         <LinkContainer to={`${match.url}/edit/-1`}>
-          <a onClick={() => {}} className="float-right">
+          <span className="float-right text-primary">
             + New
-          </a>
+          </span>
         </LinkContainer>
       </div>
       <br />
