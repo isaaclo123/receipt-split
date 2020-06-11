@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import and_
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import column_property
+from sqlalchemy.sql import func, select, join
 
 from datetime import date, datetime
 
@@ -32,22 +33,6 @@ receipt_association_table = db.Table(
     db.Column('left_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('right_id', db.Integer, db.ForeignKey('receipt.id'))
 )
-
-
-class Balance(db.Model):
-    __tablename__ = 'balance'
-    id = db.Column(db.Integer, primary_key=True)
-
-    to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    # to_user
-    # from_user
-
-    amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False)
-
-    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
 
 
 class Payment(db.Model):
@@ -112,6 +97,31 @@ class Receipt(db.Model):
     receipt_items = relationship("ReceiptItem", backref="receipt",
                                  foreign_keys=[ReceiptItem.receipt_id],
                                  cascade="all,delete-orphan")
+
+
+class Balance(db.Model):
+    __tablename__ = 'balance'
+    id = db.Column(db.Integer, primary_key=True)
+
+    to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # to_user
+    # from_user
+
+    amount = db.Column(db.Float(asdecimal=True),
+                       nullable=False)
+
+    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
+    receipt_name = column_property(
+        select(
+            [Receipt.name]
+        ).select_from(
+            Receipt
+        ).where(
+            Receipt.id == receipt_id
+        ).correlate_except(Receipt)
+    )
 
 
 class User(db.Model):

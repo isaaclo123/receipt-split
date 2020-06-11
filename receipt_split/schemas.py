@@ -85,10 +85,12 @@ class UserSchema(BaseSchema):
 class BalanceSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Balance
-        fields = ('id', 'to_user', 'from_user', 'amount')
+        fields = ('id', 'to_user', 'from_user', 'amount', 'receipt_name',
+                  'receipt_id')
 
     to_user = ma.Nested(UserSchema)
     from_user = ma.Nested(UserSchema)
+    receipt_name = fields.String(dump_only=True)
 
     @post_load(pass_original=True)
     def get_existing_user(self, data, original_data, **kwargs):
@@ -150,5 +152,7 @@ class PaymentSchema(BaseSchema):
 class BalanceSumSchema(Schema):
     user = ma.Nested(UserSchema, include=USER_INFO_FIELDS, dump_only=True)
     total = fields.Decimal(dump_only=True)
-    receipts = ma.Nested(ReceiptSchema, many=True, dump_only=True,
-                         exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
+    # receipts = ma.Nested(ReceiptSchema, many=True, dump_only=True,
+    #                      exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
+    balances = ma.Nested(BalanceSchema, many=True, dump_only=True,
+                         exclude=('from_user', 'to_user'))

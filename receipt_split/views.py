@@ -3,6 +3,7 @@ from flask_api import status
 from flask_jwt import current_identity, jwt_required
 from pprint import pformat
 from functools import reduce
+from collections import OrderedDict
 
 # from flask_cors import cross_origin
 from datetime import date
@@ -234,33 +235,49 @@ def friend_list():
 @jwt_required()
 def balance_sums():
     # active_history?
+    b = db.session.query(
+        Balance.id,
+        Balance.to_user_id,
+        Balance.amount
+    ).filter(
+        Balance.to_user_id != current_identity.id,
+        Balance.from_user_id == current_identity.id
+    ).subquery()
+
+    s = db.session.query(
+        b.c.to_user_id,
+        func.sum(b.c.amount).label('total'),
+    ).select_from(b).group_by(
+        b.c.to_user_id
+    ).subquery()
+
     q = db.session.query(
         User,
-        Receipt,
-        func.sum(Balance.amount).label('total'),
-    ).outerjoin(
-        Receipt,
-        Receipt.user_id == Balance.to_user_id
+        Balance,
+        s.c.total,
+    ).select_from(
+        b
+    ).join(
+        s,
+        b.c.to_user_id == s.c.to_user_id
     ).join(
         User,
-        Balance.to_user_id == User.id
-    ).group_by(
-        Receipt.id
-    ).filter(
-        User.id != current_identity.id,
-        Balance.from_user == current_identity
+        User.id == b.c.to_user_id
+    ).join(
+        Balance,
+        Balance.id == b.c.id
     ).all()
 
     def find_balances(acc, cur):
-        user, receipt, total = cur
+        user, balance, total = cur
         acc[user.id] = {
             "user": user,
             "total": total,
-            "receipts": acc.get(user.id, {}).get("receipts", []) + [receipt]
+            "balances": acc.get(user.id, {}).get("balances", []) + [balance]
         }
         return acc
 
-    balances = list(reduce(find_balances, q, {}).values())
+    balances = list(reduce(find_balances, q, OrderedDict()).values())
     balances_dump = balance_sum_schema.dump(balances)
 
     app.logger.info("/balancesums result - %s", pformat(balances_dump))
