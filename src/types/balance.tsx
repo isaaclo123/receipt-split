@@ -9,13 +9,18 @@ import {
   BALANCE_SUM_LIST_FAIL,
 } from "./index";
 
-export type BalanceType = {
+export type BalanceSummaryType = {
+  amount: number;
+  receipt_name: string;
+  receipt_id: number;
   id?: number;
+}
+
+export type BalanceType = BalanceSummaryType & {
   to_user: UserType;
   from_user: UserType;
   to_user_id?: number;
   from_user_id?: number;
-  amount: number;
   receipt?: ReceiptType;
 };
 
@@ -24,11 +29,11 @@ export type BalanceType = {
 export type BalanceSumType = {
   total: number,
   user: UserType,
-  receipts: ReceiptType[]
+  balances: BalanceSummaryType[]
 };
 
 export interface BalanceSumListType extends ErrorData {
-  balance_sums: BalanceSumType[];
+  balances_of: BalanceSumType[];
 };
 
 export type BalanceSumListSuccessAction = Action<

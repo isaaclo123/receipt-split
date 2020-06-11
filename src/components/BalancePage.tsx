@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 
+import Alert from "react-bootstrap/Alert";
 import CardColumns from "react-bootstrap/CardColumns";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -50,16 +51,23 @@ const BalancePageComponent = ({
     getBalanceSumList()
   }
 
-  const { balance_sums } = balanceSumListState.data;
-
-  console.log(balanceSumListState.data.balance_sums)
+  const { balances_of } = balanceSumListState.data;
 
   return (
     <>
+      { ("error" in errors) ?
+        <>
+          <Alert variant="danger">
+            {errors.error}
+          </Alert>
+          <br />
+        </>
+      : <></>}
+
       <h5>Balances to Pay</h5>
 
       <CardColumns>
-        {balance_sums.map((balanceSum : BalanceSumType) => {
+        {balances_of.map((balanceSum : BalanceSumType) => {
           const { id = -1 } = balanceSum.user;
 
           return (<BalanceCardComponent key={id} {...balanceSum}/>)

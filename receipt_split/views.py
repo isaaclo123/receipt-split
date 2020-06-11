@@ -283,5 +283,5 @@ def balance_sums():
     app.logger.info("/balancesums result - %s", pformat(balances_dump))
 
     return {
-        "balance_sums": balances_dump
+        "balances_of": balances_dump
     }

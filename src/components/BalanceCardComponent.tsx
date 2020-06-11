@@ -5,14 +5,14 @@ import Button from "react-bootstrap/Button";
 
 import ListGroup from "react-bootstrap/ListGroup";
 
-import { BalanceSumType } from "../types/index";
+import { BalanceSumType, BalanceSummaryType } from "../types/index";
 
 import {
   ReceiptListItemComponent
 } from "./index";
 
 import {
-  ReceiptSummaryType
+  BalanceType
 } from "../types/index";
 
 export interface BalanceCardProps extends BalanceSumType {
@@ -22,7 +22,7 @@ export interface BalanceCardProps extends BalanceSumType {
 export const BalanceCardComponent = ({
   user,
   total,
-  receipts,
+  balances,
   onPay = () => {}
 }: BalanceCardProps) => {
   return (
@@ -61,10 +61,19 @@ export const BalanceCardComponent = ({
       />
 
       <ListGroup className="list-group-flush">
-        {receipts.map((receipt: ReceiptSummaryType) => {
-          const { id = -1 } = receipt;
+        {balances.map((balance: BalanceSummaryType) => {
+          const {
+            id = -1,
+            amount,
+            receipt_name,
+            receipt_id,
+          } = balance;
 
-          return (<ReceiptListItemComponent key={id} {...receipt} />);
+          return (
+            <ListGroup.Item key={id}>
+              {amount} for {receipt_name}
+            </ListGroup.Item>
+          );
         })}
       </ListGroup>
     </Card>
