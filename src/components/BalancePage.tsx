@@ -4,10 +4,6 @@ import { RouteComponentProps } from "react-router-dom";
 
 import Alert from "react-bootstrap/Alert";
 import CardColumns from "react-bootstrap/CardColumns";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-
-import ListGroup from "react-bootstrap/ListGroup";
 
 import { BalanceCardComponent } from "./index";
 import { getBalanceSumList } from "../actions/index";
@@ -54,11 +50,6 @@ const BalancePageComponent = ({
 
   const { balances_of } = balanceSumListState.data;
 
-  const receiptEdit = (id: number) => {
-    console.log(`receipts/edit/${id}`)
-    history.push(`receipts/edit/${id}`);
-  };
-
   return (
     <>
       { ("error" in errors) ?
@@ -79,7 +70,6 @@ const BalancePageComponent = ({
           return (
             <BalanceCardComponent
               key={id}
-              onReceiptClick={receiptEdit}
               {...balanceSum} />
           );
         })}

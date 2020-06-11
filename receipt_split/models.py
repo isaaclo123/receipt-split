@@ -184,7 +184,8 @@ class User(db.Model):
         result = Receipt.query.join(
             receipt_association_table,
         ).filter(
-            receipt_association_table.c.left_id == self.id
+            receipt_association_table.c.left_id == self.id,
+            Receipt.user_id != self.id
         )
 
         app.logger.info("receipts_of expression running - %s", result)

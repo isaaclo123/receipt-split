@@ -15,14 +15,13 @@ import Alert from "react-bootstrap/Alert";
 
 import {
   ListOrNoneComponent,
-  ReceiptProps,
-  ReceiptListItemComponent
 } from "./index";
 
 import {
   RootState,
   ReceiptSummaryType,
-  ReceiptListState
+  ReceiptListState,
+  RECEIPT_ADD_USER
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -60,37 +59,40 @@ const ReceiptPageComponent = ({
     getReceiptList();
   }
 
-  const receiptEdit = (id: number) => {
-    history.push(`${match.url}/edit/${id}`);
-  };
-
-  const noneComponent = (
-    <ListGroup.Item>
-      <span className="text-secondary">None</span>
-    </ListGroup.Item>
-  );
+  console.log(receiptListState);
 
   const receiptListOrNoneComponent = (receipt_list: ReceiptSummaryType[]) => (
     <ListGroup className="mb-3">
       <ListOrNoneComponent<ReceiptSummaryType>
         list={receipt_list}
-        listComponent={(receiptSummary : ReceiptSummaryType) => {
-          const { id=-1 } = receiptSummary
-          const props: ReceiptProps = {
-            handleNameClick: () => {
-              receiptEdit(id);
-            },
-            handleViewClick: () => {
-              receiptEdit(id);
-            },
-            ...receiptSummary
-          };
-          return <ReceiptListItemComponent key={id} {...props} />;
+        listComponent={({
+          id = -1,
+          name,
+          amount,
+          date,
+          resolved,
+          user
+        }: ReceiptSummaryType) => {
+          return (
+            <>
+              <ListGroup.Item>
+                <span className="text-info">{amount.toFixed(2)}</span>
+                &nbsp;for&nbsp;
+                <LinkContainer to={`${match.url}/edit/${id}`}>
+                  <span className="text-primary">{name}</span>
+                </LinkContainer>
+              </ListGroup.Item>
+            </>
+          );
         }}
-        noneComponent={noneComponent}
+        noneComponent={(
+          <ListGroup.Item>
+            <span className="text-secondary">None</span>
+          </ListGroup.Item>
+        )}
       />
     </ListGroup>
-)
+  );
 
   return (
     <>

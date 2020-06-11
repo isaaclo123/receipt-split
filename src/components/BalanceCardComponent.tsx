@@ -6,14 +6,10 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 
 import { BalanceSumType, BalanceSummaryType } from "../types/index";
-
-import {
-  ReceiptListItemComponent
-} from "./index";
+import { LinkContainer } from "react-router-bootstrap";
 
 export interface BalanceCardProps extends BalanceSumType {
   onPay ?: () => void
-  onReceiptClick ?: (receipt_id: number) => void
 };
 
 export const BalanceCardComponent = ({
@@ -21,7 +17,6 @@ export const BalanceCardComponent = ({
   total,
   balances,
   onPay = () => {},
-  onReceiptClick = (a) => {}
 }: BalanceCardProps) => {
   return (
     <Card>
@@ -73,25 +68,13 @@ export const BalanceCardComponent = ({
               ${amount.toFixed(2)}
               </span>
               &nbsp;for&nbsp;
-              <span
-                className="text-primary"
-                onClick={() => {
-                  onReceiptClick(receipt_id);
-                }}>
-                {receipt_name}
-              </span>
+              <LinkContainer to={`receipts/edit/${receipt_id}`}>
+                <span className="text-primary">{receipt_name}</span>
+              </LinkContainer>
             </ListGroup.Item>
           );
         })}
       </ListGroup>
     </Card>
   );
-        //{balances.map(item => {
-        //  const props: LeaveProps = {
-        //    handleNameClick: () => {},
-        //    handlePayClick: () => {},
-        //    ...item
-        //  };
-        //  return <LeaveListItemComponent {...props} />;
-        //})}
 };

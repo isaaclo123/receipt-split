@@ -11,10 +11,10 @@ export interface BalanceProps {
   amount: number;
 
   variant?: string;
-  descriptor: string;
+  descriptor?: string;
 
   name: string;
-  handleClick: () => void;
+  handleClick?: () => void;
 
   buttons?: ButtonProps[];
 
@@ -26,8 +26,8 @@ export const BalanceListItemComponent = ({
   amount,
   variant = "primary",
   name,
-  descriptor,
-  handleClick,
+  descriptor = "to",
+  handleClick: () => {},
   buttons = [],
   active
 }: BalanceProps) => {
@@ -39,7 +39,7 @@ export const BalanceListItemComponent = ({
       <span>
         <span className={`text-${variant}`}>{prefix}${amount.toFixed(2)}</span>
         &nbsp;{descriptor}&nbsp;
-        <span className="text-primary" onClick={() => handleClick()}>
+        <span className="text-primary" onClick={() => {handleClick()}}>
           {name}
         </span>
       </span>
@@ -50,14 +50,14 @@ export const BalanceListItemComponent = ({
             return active ? (
               <Button
                 className={`btn btn-${variant}`}
-                onClick={() => handleClick()}
+                onClick={() => {handleClick()}}
                 active>
                 {text}
               </Button>
               ) : (
               <Button
                 className={`btn btn-${variant}`}
-                onClick={() => handleClick()}
+                onClick={() => {handleClick()}}
                 disabled>
                 {text}
               </Button>

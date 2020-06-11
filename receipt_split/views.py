@@ -135,6 +135,12 @@ def receipt_by_id(id):
                         current_identity)
         return err("Your do not own this receipt"),\
             status.HTTP_401_UNAUTHORIZED
+    # if receipt.user != current_identity and\
+    #         current_identity not in receipt.users:
+    #     app.logger.info("receipt/%s unauthorized for %s", id,
+    #                     current_identity)
+    #     return err("Your do not own this receipt"),\
+    #         status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
         app.logger.info("Deleting receipt/%s", id)
