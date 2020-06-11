@@ -11,19 +11,17 @@ import {
   ReceiptListItemComponent
 } from "./index";
 
-import {
-  BalanceType
-} from "../types/index";
-
 export interface BalanceCardProps extends BalanceSumType {
   onPay ?: () => void
+  onReceiptClick ?: (receipt_id: number) => void
 };
 
 export const BalanceCardComponent = ({
   user,
   total,
   balances,
-  onPay = () => {}
+  onPay = () => {},
+  onReceiptClick = (a) => {}
 }: BalanceCardProps) => {
   return (
     <Card>
@@ -36,7 +34,7 @@ export const BalanceCardComponent = ({
           <span className="text-primary">{user.fullname}</span>
         </span>
         <span className="float-right">
-          <Button size="sm" onClick={onPay}>PAY</Button>
+          <Button size="sm" onClick={() => {onPay()}}>PAY</Button>
         </span>
         <br />
       </Card.Header>
@@ -71,7 +69,17 @@ export const BalanceCardComponent = ({
 
           return (
             <ListGroup.Item key={id}>
-              {amount} for {receipt_name}
+              <span className="text-info">
+              ${amount.toFixed(2)}
+              </span>
+              &nbsp;for&nbsp;
+              <span
+                className="text-primary"
+                onClick={() => {
+                  onReceiptClick(receipt_id);
+                }}>
+                {receipt_name}
+              </span>
             </ListGroup.Item>
           );
         })}

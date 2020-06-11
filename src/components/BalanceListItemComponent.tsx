@@ -7,28 +7,28 @@ import Button from 'react-bootstrap/Button';
 import { ButtonProps } from '../types/index';
 
 export interface BalanceProps {
-  prefix: string;
+  prefix?: string;
   amount: number;
 
-  variant: string;
+  variant?: string;
   descriptor: string;
 
   name: string;
   handleClick: () => void;
 
-  buttons: ButtonProps[];
+  buttons?: ButtonProps[];
 
   active: boolean;
 }
 
 export const BalanceListItemComponent = ({
-  prefix,
+  prefix = "",
   amount,
-  variant,
+  variant = "primary",
   name,
   descriptor,
   handleClick,
-  buttons,
+  buttons = [],
   active
 }: BalanceProps) => {
   return (

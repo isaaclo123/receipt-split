@@ -39,6 +39,7 @@ type Props = PropsFromRedux &
 
 const BalancePageComponent = ({
   match,
+  history,
   balanceSumListState,
   getBalanceSumList
 }: Props) => {
@@ -52,6 +53,11 @@ const BalancePageComponent = ({
   }
 
   const { balances_of } = balanceSumListState.data;
+
+  const receiptEdit = (id: number) => {
+    console.log(`receipts/edit/${id}`)
+    history.push(`receipts/edit/${id}`);
+  };
 
   return (
     <>
@@ -70,7 +76,12 @@ const BalancePageComponent = ({
         {balances_of.map((balanceSum : BalanceSumType) => {
           const { id = -1 } = balanceSum.user;
 
-          return (<BalanceCardComponent key={id} {...balanceSum}/>)
+          return (
+            <BalanceCardComponent
+              key={id}
+              onReceiptClick={receiptEdit}
+              {...balanceSum} />
+          );
         })}
       </CardColumns>
     </>
