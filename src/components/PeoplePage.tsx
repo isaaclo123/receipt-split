@@ -10,7 +10,7 @@ import {
   ListOrNoneComponent,
   FriendModal
 } from "./index";
-import { RootState, FriendState, UserType, UserState } from "../types/index";
+import { RootState, UserType } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
   const { userState, friendState } = state;
@@ -24,11 +24,7 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux &
-  RouteComponentProps<{}> & {
-    userState: UserState;
-    friendState: FriendState;
-  };
+type Props = PropsFromRedux & RouteComponentProps<{}>;
 
 const PeoplePageComponent = ({
   match,

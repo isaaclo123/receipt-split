@@ -12,11 +12,11 @@ import {
   userListDiff
 } from "./index";
 import { getUserAndFriends } from "../actions/index";
-import { UserType, RootState } from "../types/index";
+import { UserType } from "../types/index";
 
 export interface UserSelectProps {
   show: boolean;
-  title: string;
+  title?: string;
   onHide: () => void;
   users: UserType[];
   onSelect: (arg0: UserType) => void;
@@ -36,7 +36,7 @@ export const UserSelectModalComponent = ({
   show,
   onHide,
   users,
-  title,
+  title = "User Select",
   onSelect,
   getUserAndFriends,
   allUsers

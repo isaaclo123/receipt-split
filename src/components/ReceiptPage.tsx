@@ -38,9 +38,7 @@ const connector = connect(
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux &
-  RouteComponentProps<{}> & {
-    receiptListState?: ReceiptListState;
-  };
+  RouteComponentProps<{}>;
 
 const ReceiptPageComponent = ({
   match,

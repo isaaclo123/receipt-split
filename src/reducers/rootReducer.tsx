@@ -22,5 +22,4 @@ export const rootReducer = combineReducers({
   friendState: friendReducer,
   balanceSumListState: balanceSumListReducer,
   paymentState: paymentReducer
-  // receiptState: receiptReducer
 });

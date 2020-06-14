@@ -87,10 +87,7 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux &
-  RouteComponentProps<MatchParams> & {
-    receiptState?: ReceiptState;
-  };
+type Props = PropsFromRedux & RouteComponentProps<MatchParams>;
 
 const ReceiptEditPageComponent = ({
   match,
@@ -202,7 +199,7 @@ Props) => {
 
       <UserSelectModal
         show={modalShow}
-        title={"Users"}
+        title="Users"
         onHide={onHide}
         users={modalUsers}
         allUsers={modalAllUsers}

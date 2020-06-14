@@ -14,9 +14,13 @@ import { editDataReducer, setDataReducer, applyDataReducers } from "./index";
 const initialState: PaymentState = {
   error: false,
   data: {
-    to_user: null,
+    to_user: {
+      id: -1,
+      username: "",
+      fullname: ""
+    },
     amount: 0.0,
-    message: "Payment Message"
+    message: ""
   },
   errors: {}
 };
@@ -56,7 +60,7 @@ export const paymentReducer = applyDataReducers<PaymentState, PaymentAction>(
       args: [
         {
           successType: PAYMENT_SET_USER,
-          field: [["user", false]]
+          field: [["to_user", false]]
         }
       ]
     },

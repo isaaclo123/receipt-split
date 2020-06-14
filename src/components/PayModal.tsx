@@ -8,89 +8,155 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-import { addFriend } from "../actions/index";
+import {
+  setPaymentName,
+  setPaymentAmount,
+  setPaymentMessage,
+  setPaymentUser,
+  addFriend
+} from "../actions/index";
 
-import { FriendState, RootState } from "../types/index";
+import {
+  RootState,
+  UserType
+} from "../types/index";
+
+import {
+  UserSelectModal
+} from "./index"
 
 const mapStateToProps = (state: RootState) => {
-  const { friendState } = state;
-  return { friendState };
+  const { paymentState } = state;
+  return { paymentState };
 };
 
 const connector = connect(
   mapStateToProps,
-  { addFriend }
+  {
+    addFriend,
+    setPaymentName,
+    setPaymentAmount,
+    setPaymentMessage,
+    setPaymentUser,
+  }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export type FriendModalProps = PropsFromRedux & {
-  friendState: FriendState;
-} & {
-  hide: boolean;
+export type PaymentModalProps = PropsFromRedux & {
+  show: boolean;
   onClose: () => void;
 };
 
-// TODO errors.error
 const PayModalComponent = ({
-  friendState,
-  addFriend,
+  paymentState,
+  show,
+  onClose,
 
-  hide,
-  onClose
-}: FriendModalProps) => {
-  console.log(friendState);
-  const { error, errors } = friendState;
+  setPaymentName,
+  setPaymentAmount,
+  setPaymentMessage,
+  setPaymentUser,
+}: PaymentModalProps) => {
+  const errors = (paymentState.errors != null) ? paymentState.errors : {};
 
-  const [friendText, setFriendText] = useState("");
+  const {
+    amount,
+    to_user,
+    message,
+  } = paymentState.data;
+
+
+      // <UserSelectModal
+      //   show={userShow}
+      //   title="Choose Payment Recipient"
+      //   onHide={() => {
+      //     setUserShow(false);
+      //   }}
+      //   users={[]}
+      //   allUsers={friends}
+      //   onSelect={(user: UserType) => {
+      //     setPaymentUser(user)
+      //   }}
+      // />
 
   return (
-    <Modal
-      show={!hide}
-      onHide={onClose}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">Add Friend</Modal.Title>
-      </Modal.Header>
+    <>
 
-      <Modal.Body>
-        <InputGroup className="mb-3">
-          <FormControl
-            aria-describedby="basic-input"
-            isInvalid={error}
-            value={friendText}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setFriendText(event.currentTarget.value);
+      <Modal
+        show={show}
+        onHide={onClose}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Pay <span className="text-primary">{to_user.fullname}</span>
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <Form className="mb-3">
+            <Form.Group>
+              <Form.Label>Amount</Form.Label>
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>$</InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control
+                  type="number"
+                  step={0.01}
+                  min={0}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = Number(Number(event.currentTarget.value).toFixed(2));
+                    setPaymentAmount(value);
+                  }}
+                  isInvalid={"amount" in errors}
+                  value={amount.toFixed(2)}
+                />
+
+              <Form.Control.Feedback type="invalid">
+                {errors.amount}
+              </Form.Control.Feedback>
+            </InputGroup>
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Message</Form.Label>
+              <Form.Control
+                as="textarea"
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setPaymentMessage(event.currentTarget.value);
+                }}
+                isInvalid={"message" in errors}
+                value={message}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.amount}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            onClick={() => {
+              onClose();
             }}
-          />
-          <InputGroup.Append>
-            <Button
-              variant="outline-primary"
-              onClick={() => {
-                addFriend(friendText);
-              }}
-            >
-              Add
-            </Button>
-          </InputGroup.Append>
-          <Form.Control.Feedback type="invalid">
-            {"error" in errors ? errors.error : "Unknown Error"}
-          </Form.Control.Feedback>
-        </InputGroup>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          onClick={() => {
-            onClose();
-          }}
-        >
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
+          >
+            Close
+          </Button>
+          <Button
+            onClick={() => {
+              // TODO
+            }}
+          >
+            Pay
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 

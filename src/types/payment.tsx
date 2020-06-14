@@ -20,7 +20,7 @@ export type PaymentType = {
 
   amount: number;
 
-  to_user?: UserType | null;
+  to_user: UserType;
   from_user?: UserType | null;
 };
 

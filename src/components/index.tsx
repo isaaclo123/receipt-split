@@ -18,6 +18,7 @@ export * from "./UserSelectModal";
 export * from "./UserListItemComponent";
 export * from "./ListOrNoneComponent";
 export * from "./FriendModal";
+export * from "./PayModal";
 export * from "./helpers";
 
 // export * from "./LeaveListItemComponent";

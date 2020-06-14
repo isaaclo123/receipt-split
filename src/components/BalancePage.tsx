@@ -5,42 +5,60 @@ import { RouteComponentProps } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import CardColumns from "react-bootstrap/CardColumns";
 
-import { BalanceCardComponent, BalanceCardProps } from "./index";
-import { getBalanceSumList } from "../actions/index";
+import {
+  BalanceCardComponent,
+  PayModal
+} from "./index";
+
+import {
+  getBalanceSumList,
+  setPaymentAmount,
+  setPaymentUser,
+  setPaymentMessage,
+} from "../actions/index";
 
 import {
   RootState,
-  BalanceSumListState,
   BalanceSumType,
-  Dict
+  Dict,
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
-  const { balanceSumListState } = state;
+  const {
+    balanceSumListState,
+  } = state;
   return {
-    balanceSumListState
+    balanceSumListState,
   };
 };
 
 const connector = connect(
   mapStateToProps,
-  { getBalanceSumList }
+  {
+    getBalanceSumList,
+    setPaymentAmount,
+    setPaymentUser,
+    setPaymentMessage,
+  }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux &
-  RouteComponentProps<{}> & {
-    balance_sums?: BalanceSumListState;
-  };
+  RouteComponentProps<{}>;
 
 const BalancePageComponent = ({
   match,
   history,
   balanceSumListState,
-  getBalanceSumList
+  getBalanceSumList,
+  setPaymentAmount,
+  setPaymentUser,
+  setPaymentMessage,
 }: Props) => {
   const [run, setRun] = useState(true);
+  const [payShow, setPayShow] = useState(false);
+
   const errors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
 
   // gets user info once
@@ -57,11 +75,26 @@ const BalancePageComponent = ({
   const getBalanceList = (balances_list: BalanceSumType[], props: Dict) => (
     <CardColumns>
       {balances_list.map((balanceSum : BalanceSumType) => {
-        const { id = -1 } = balanceSum.user;
+
+        const {
+          total,
+          user
+        } = balanceSum;
+
+        const {
+          id = -1
+        } = user;
 
         return (
           <BalanceCardComponent
             key={id}
+            onPay={() => {
+              setPaymentAmount(total);
+              setPaymentUser(user);
+              // TODO dont know if message should be reset
+              setPaymentMessage("");
+              setPayShow(true);
+            }}
             {...balanceSum} {...props}/>
         );
       })}
@@ -70,6 +103,12 @@ const BalancePageComponent = ({
 
   return (
     <>
+      <PayModal
+        show={payShow}
+        onClose={() => {
+          setPayShow(false);
+        }}
+      />
       { ("error" in errors) &&
         <>
           <Alert variant="danger">
@@ -81,7 +120,7 @@ const BalancePageComponent = ({
       <h5>Balances to Pay</h5>
 
       {getBalanceList(balances_of, {
-        amountColor: "danger"
+        amountColor: "danger",
       })}
 
       <h5>Balances Owed</h5>
