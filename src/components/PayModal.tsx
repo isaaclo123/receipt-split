@@ -141,6 +141,7 @@ const PayModalComponent = ({
 
         <Modal.Footer>
           <Button
+            variant="secondary"
             onClick={() => {
               onClose();
             }}

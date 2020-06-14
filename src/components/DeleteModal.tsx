@@ -33,7 +33,7 @@ const DeleteModalComponent = ({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button onClick={onClose}>Close</Button>
+        <Button variant="secondary" onClick={onClose}>Close</Button>
         <Button variant="danger" onClick={onDelete}>Delete</Button>
       </Modal.Footer>
     </Modal>
