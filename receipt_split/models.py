@@ -11,6 +11,8 @@ from datetime import date, datetime
 
 # from decimal import Decimal
 
+MAX_MESSAGE_LENGTH = 300
+
 from .meta import db
 
 friendship = db.Table(
@@ -39,12 +41,11 @@ class Payment(db.Model):
     __tablename__ = 'payment'
     id = db.Column(db.Integer, primary_key=True)
 
-    created = db.Column(db.DateTime(), default=datetime.utcnow(),
-                        nullable=False)
+    date = db.Column(db.DateTime(), default=datetime.utcnow(), nullable=False)
 
     # true is accepted, false is not accepted, null is not accepted or rejected
     accepted = db.Column(db.Boolean)
-    message = db.Column(db.String(300))
+    message = db.Column(db.String(MAX_MESSAGE_LENGTH))
 
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

@@ -143,10 +143,20 @@ class ReceiptSchema(BaseSchema):
 class PaymentSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Payment
-        fields = ('id', 'to_user', 'from_user', 'amount')
+        fields = ('id', 'to_user', 'from_user', 'amount', 'message', 'date',
+                  'accepted')
 
+    date = ma.Date(dump_only=True)
     to_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
     from_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
+
+    @post_load(pass_original=True)
+    def get_existing_user(self, data, original_data, **kwargs):
+        touser = get_existing_user(self, data, original_data,
+                                   user_field="to_user", **kwargs)
+        fromuser = get_existing_user(self, touser, original_data,
+                                     user_field="from_user", **kwargs)
+        return fromuser
 
 
 class BalanceSumSchema(Schema):

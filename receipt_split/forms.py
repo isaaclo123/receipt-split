@@ -2,7 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
 from wtforms import fields, validators as va, Form
 
-from .models import User, Receipt, ReceiptItem, Balance, Payment
+from .models import User, Receipt, ReceiptItem, Balance, Payment,\
+    MAX_MESSAGE_LENGTH
 from .meta import db
 
 BaseModelForm = model_form_factory(FlaskForm)
@@ -56,6 +57,12 @@ class BalanceForm(ModelForm):
         model = Balance
 
 
-class Payment(ModelForm):
+class PaymentForm(ModelForm):
     class Meta:
         model = Payment
+
+    message = fields.StringField("Message", [va.length(min=1,
+                                                       max=MAX_MESSAGE_LENGTH
+                                                       )])
+    amount = fields.DecimalField("Decimal", [va.NumberRange(min=0)])
+    to_user = fields.FormField(UserForm, [va.DataRequired()])

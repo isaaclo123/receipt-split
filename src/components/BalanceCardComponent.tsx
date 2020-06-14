@@ -9,7 +9,9 @@ import { BalanceSumType, BalanceSummaryType } from "../types/index";
 import { LinkContainer } from "react-router-bootstrap";
 
 export interface BalanceCardProps extends BalanceSumType {
-  onPay ?: () => void
+  onPay?: () => void,
+  showPay?: boolean,
+  amountColor?: string,
 };
 
 export const BalanceCardComponent = ({
@@ -17,6 +19,8 @@ export const BalanceCardComponent = ({
   total,
   balances,
   onPay = () => {},
+  amountColor = "info",
+  showPay = true,
 }: BalanceCardProps) => {
   return (
     <Card>
@@ -28,9 +32,10 @@ export const BalanceCardComponent = ({
         <span className="float-left">
           <span className="text-primary">{user.fullname}</span>
         </span>
-        <span className="float-right">
-          <Button size="sm" onClick={() => {onPay()}}>PAY</Button>
-        </span>
+        {showPay &&
+          <span className="float-right">
+            <Button size="sm" onClick={() => {onPay()}}>PAY</Button>
+          </span>}
         <br />
       </Card.Header>
 
@@ -42,7 +47,7 @@ export const BalanceCardComponent = ({
             display: "inline-block",
             overflow: "auto"
           }}
-          className={"text-danger"}
+          className={`text-${amountColor}`}
         >
           ${total.toFixed(2)}
         </h1>

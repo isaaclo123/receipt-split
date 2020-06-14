@@ -5,13 +5,14 @@ import { RouteComponentProps } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import CardColumns from "react-bootstrap/CardColumns";
 
-import { BalanceCardComponent } from "./index";
+import { BalanceCardComponent, BalanceCardProps } from "./index";
 import { getBalanceSumList } from "../actions/index";
 
 import {
   RootState,
   BalanceSumListState,
-  BalanceSumType
+  BalanceSumType,
+  Dict
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -53,44 +54,44 @@ const BalancePageComponent = ({
     balances_of
   } = balanceSumListState.data;
 
+  const getBalanceList = (balances_list: BalanceSumType[], props: Dict) => (
+    <CardColumns>
+      {balances_list.map((balanceSum : BalanceSumType) => {
+        const { id = -1 } = balanceSum.user;
+
+        return (
+          <BalanceCardComponent
+            key={id}
+            {...balanceSum} {...props}/>
+        );
+      })}
+    </CardColumns>
+    )
+
   return (
     <>
-      { ("error" in errors) ?
+      { ("error" in errors) &&
         <>
           <Alert variant="danger">
             {errors.error}
           </Alert>
           <br />
-        </>
-      : <></>}
+        </>}
 
       <h5>Balances to Pay</h5>
 
-      <CardColumns>
-        {balances_of.map((balanceSum : BalanceSumType) => {
-          const { id = -1 } = balanceSum.user;
-
-          return (
-            <BalanceCardComponent
-              key={id}
-              {...balanceSum} />
-          );
-        })}
-      </CardColumns>
+      {getBalanceList(balances_of, {
+        amountColor: "danger"
+      })}
 
       <h5>Balances Owed</h5>
 
-      <CardColumns>
-        {balances_owed.map((balanceSum : BalanceSumType) => {
-          const { id = -1 } = balanceSum.user;
+      {getBalanceList(balances_owed, {
+        amountColor: "success",
+        showPay: false
+      })}
 
-          return (
-            <BalanceCardComponent
-              key={id}
-              {...balanceSum} />
-          );
-        })}
-      </CardColumns>
+      <br />
     </>
   );
 };

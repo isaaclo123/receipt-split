@@ -100,7 +100,7 @@ export type ReceiptCacheSuccessAction = Action<
 >;
 export type ReceiptCacheFailAction = Action<
   typeof RECEIPT_CACHE_FAIL,
-  Dict<any>
+  Dict
 >;
 
 export type ReceiptCacheAction =

@@ -8,14 +8,13 @@ from collections import OrderedDict
 # from flask_cors import cross_origin
 from datetime import date
 from sqlalchemy.sql import func
-from sqlalchemy.orm import load_only
 
 from .meta import db
 # from .auth import identity
 from .models import User, Receipt, Balance
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
-    BalanceSumSchema, RECEIPT_INFO_EXCLUDE_FIELDS
-from .forms import ReceiptForm
+    BalanceSumSchema, PaymentSchema, RECEIPT_INFO_EXCLUDE_FIELDS
+from .forms import ReceiptForm, PaymentForm
 from .helpers import calculate_balances, ok, err
 
 # import requests
@@ -33,17 +32,7 @@ balance_sum_schema = BalanceSumSchema(many=True)
 receipt_schema = ReceiptSchema()
 receipts_schema = ReceiptSchema(many=True, exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
 
-
-# @views.route('/balances', methods=['GET'])
-# @jwt_required()
-# def balance_list():
-#     balances_to = balances_schema.dump(current_identity.balances_to_user)
-#     balances_from = balances_schema.dump(current_identity.balances_from_user)
-#     # receipts_owned_map = {r["id"]: True for r in receipts_owned}
-#
-#     all_balances = balances_to + balances_from
-#
-#     return all_balances, status.HTTP_200_OK
+payment_schema = PaymentSchema()
 
 
 @views.route('/receipt', methods=['GET'])
@@ -180,7 +169,7 @@ def receipt_by_id(id):
 
     app.logger.err("receipt/%s Unknown error", id)
 
-    return err("should not get here"), status.HTTP_400_BAD_REQUEST
+    return err("should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
 @views.route('/user', methods=['GET'])
@@ -338,3 +327,49 @@ def balance_sums():
         "balances_owed": balances_owed,
         "balances_of": balances_of
     }
+
+
+@views.route('/pay', methods=['POST'])
+@jwt_required()
+def pay_user():
+    # accept json with
+    # message
+    # amount
+    # to_user
+
+    if request.method == 'POST':
+        if not request.is_json:
+            return err("Not JSON"), status.HTTP_400_BAD_REQUEST
+
+        json_data = request.get_json()
+
+        form = PaymentForm.from_json(json_data)
+        if not form.validate():
+            app.logger.info("pay form errors - %s", form.errors)
+            return form.errors, status.HTTP_400_BAD_REQUEST
+
+        # TODO dont know if this is neccesary
+        to_user = json_data.get("to_user")
+        if to_user is None:
+            return err("to_user is not specified"), status.HTTP_400_BAD_REQUEST
+
+        pay_data = payment_schema.load(json_data, session=db.session)
+
+        if pay_data.to_user not in current_identity.friends:
+            return err("Cannot pay a non-friended user"),\
+                status.HTTP_400_BAD_REQUEST
+
+        if pay_data.to_user == current_identity:
+            return err("Cannot pay yourself"),\
+                status.HTTP_400_BAD_REQUEST
+
+        pay_data.from_user = current_identity
+
+        db.session.add(pay_data)
+        db.session.commit()
+
+        pay_dump = payment_schema.dump(pay_data)
+
+        return pay_dump, status.HTTP_201_CREATED
+
+    return err("should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR

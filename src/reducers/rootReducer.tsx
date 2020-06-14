@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 
 import {
   balanceSumListReducer,
+  paymentReducer,
   receiptReducer,
   receiptListReducer,
   receiptDictReducer,
@@ -19,6 +20,7 @@ export const rootReducer = combineReducers({
   receiptState: receiptReducer,
   userState: userReducer,
   friendState: friendReducer,
-  balanceSumListState: balanceSumListReducer
+  balanceSumListState: balanceSumListReducer,
+  paymentState: paymentReducer
   // receiptState: receiptReducer
 });

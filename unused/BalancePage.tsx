@@ -124,15 +124,3 @@ const BalancePage = ({ match, userState, getUser, loginState }: Props) => {
 };
 
 export default connector(BalancePage);
-
-// if (to_user.id != null && to_user.id == userState.user.id) {
-//   return (<></>)
-// }
-//
-//
-// if (from_user.id != null && from_user.id == userState.user.id) {
-//   return (<></>)
-// }
-//
-//
-//
