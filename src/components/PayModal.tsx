@@ -13,7 +13,8 @@ import {
   setPaymentAmount,
   setPaymentMessage,
   setPaymentUser,
-  addFriend
+  addFriend,
+  setNewPayment
 } from "../actions/index";
 
 import {
@@ -33,6 +34,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(
   mapStateToProps,
   {
+    setNewPayment,
     addFriend,
     setPaymentName,
     setPaymentAmount,
@@ -57,6 +59,7 @@ const PayModalComponent = ({
   setPaymentAmount,
   setPaymentMessage,
   setPaymentUser,
+  setNewPayment,
 }: PaymentModalProps) => {
   const errors = (paymentState.errors != null) ? paymentState.errors : {};
 
@@ -133,7 +136,7 @@ const PayModalComponent = ({
                 value={message}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.amount}
+                {errors.message}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>
@@ -150,7 +153,9 @@ const PayModalComponent = ({
           </Button>
           <Button
             onClick={() => {
-              // TODO
+              console.log("Set New Payment")
+              console.log(paymentState.data)
+              setNewPayment(paymentState.data);
             }}
           >
             Pay

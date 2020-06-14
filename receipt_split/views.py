@@ -343,6 +343,8 @@ def pay_user():
 
         json_data = request.get_json()
 
+        app.logger.info("/pay POST - %s", json_data)
+
         form = PaymentForm.from_json(json_data)
         if not form.validate():
             app.logger.info("pay form errors - %s", form.errors)

@@ -19,7 +19,8 @@ export const setNewPayment = (payload: PaymentType): ApiMiddlewareAction =>
     successType: PAYMENT_SAVE_SUCCESS,
     failType: PAYMENT_SAVE_FAIL,
     withToken: true,
-    apiCall: savePayment
+    apiCall: savePayment,
+    apiCallArgs: [payload]
   });
 
 export const setPaymentName = setValueAction<string>({

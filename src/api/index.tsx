@@ -57,4 +57,4 @@ export const fetchBalanceSumList = (token: string) =>
 
 // payment
 export const savePayment = (payload: PaymentType, token: string) =>
-  fetchData("pay", "POST", payload);
+  fetchData(`pay`, "POST", payload, token);
