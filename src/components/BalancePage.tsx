@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 
 import Alert from "react-bootstrap/Alert";
 import CardColumns from "react-bootstrap/CardColumns";
+import Col from "react-bootstrap/Col";
 
 import {
   BalanceCardComponent,
@@ -25,6 +26,10 @@ import {
   PaymentType,
 } from "../types/index";
 import { ListGroup } from "react-bootstrap";
+
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 const mapStateToProps = (state: RootState) => {
   const {
@@ -142,43 +147,113 @@ const BalancePageComponent = ({
           <br />
         </>}
 
-      <h5>Payments Received</h5>
+      {(payments_received.length > 0) &&
+      <>
+        <h5>Payments Received</h5>
 
-      <ListGroup>
-        {payments_received.map(({
-          id = -1,
-          date,
-          accepted,
-          message,
-          to_user,
-          amount
-        }: PaymentType) => {
-        return (
-          <ListGroup.Item>
-            {amount} {message} {to_user.fullname} {date}
-          </ListGroup.Item>
-        );
-      })}
-      </ListGroup>
+        <ListGroup className="mb-3">
+          {payments_received.map(({
+            id = -1,
+            date,
+            accepted,
+            message,
+            to_user,
+            amount
+          }: PaymentType) => {
+          return (
+            <ListGroup.Item>
+              <Row>
+                <Col className="mt-1 d-inline-block text-truncate">
+                  <span>
+                    <span className="text-success">${amount.toFixed(2)}</span>
+                    &nbsp;to&nbsp;
+                    <span className="text-primary">{to_user.fullname}</span>
+                    :&nbsp;
+                    {message}
+                  </span>
+                </Col>
+                <Col md="auto">
+                  <ButtonGroup>
+                    <Button
+                      size="sm"
+                      variant="success">
+                      ACCEPT
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger">
+                      REJECT
+                    </Button>
+                  </ButtonGroup>
+                </Col>
+              </Row>
+            </ListGroup.Item>
+          );
+        })}
+        </ListGroup>
+      </>
+      }
 
-      <h5>Payments Sent</h5>
+      {(payments_sent.length > 0) &&
+      <>
+        <h5>Payments Sent</h5>
 
-      <ListGroup>
-        {payments_sent.map(({
-          id = -1,
-          date,
-          accepted,
-          message,
-          from_user,
-          amount
-        }: PaymentType) => {
-        return (
-          <ListGroup.Item>
-            {amount} {message} {from_user.fullname} {date}
-          </ListGroup.Item>
-        );
-      })}
-      </ListGroup>
+        <ListGroup className="mb-3">
+          {payments_sent.map(({
+            id = -1,
+            date,
+            accepted,
+            message,
+            from_user,
+            amount
+          }: PaymentType) => {
+          return (
+            <ListGroup.Item>
+              <Row>
+                <Col className="mt-1 d-inline-block text-truncate">
+                  <span className="text-info">${amount.toFixed(2)}</span>
+                  &nbsp;to&nbsp;
+                  <span className="text-primary">{from_user.fullname}</span>
+                  :&nbsp;
+                  {message}
+                </Col>
+                <Col md="auto">
+                  {(() => {
+                    if (accepted === true) {
+                      return (
+                        <Button
+                          size="sm"
+                          variant="success"
+                        >
+                          ACCEPTED
+                        </Button>);
+                    }
+                    if (accepted === false) {
+                      return (
+                        <Button
+                          size="sm"
+                          variant="danger"
+                        >
+                          REJECTED
+                        </Button>);
+                    }
+                    // NULL CASE
+                    return (
+                      <Button
+                        size="sm"
+                        variant="warning"
+                      >
+                        PENDING
+                      </Button>);
+                  })()}
+                </Col>
+              </Row>
+            </ListGroup.Item>
+            );
+          })}
+        </ListGroup>
+      </>
+      }
 
       <h5>Balances to Pay</h5>
 
