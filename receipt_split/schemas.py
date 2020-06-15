@@ -1,3 +1,4 @@
+from flask import current_app as app
 from marshmallow import EXCLUDE, fields, post_load, Schema
 from .models import User, Receipt, ReceiptItem, Balance, Payment
 
@@ -16,10 +17,25 @@ class BaseSchema(ma.SQLAlchemyAutoSchema):
 
 
 def get_existing_user(self, data, original_data, user_field="user", **kwargs):
+    app.logger.debug("get existing user")
+    if original_data is None:
+        app.logger.debug("original data is NONE")
+        return None
+
+    app.logger.debug("original data exists")
+
     user = original_data.get(user_field)
+
+    if user is None:
+        app.logger.debug("user data is NONE")
+        return None
+    app.logger.debug("GOT ID AND USERNAME")
 
     q_id = user.get("id")
     q_username = user.get("username")
+
+    app.logger.debug("GOT ID AND USERNAME")
+    app.logger.debug("id %s; username %s", q_id, q_username)
 
     exist_user = None
 
@@ -32,12 +48,18 @@ def get_existing_user(self, data, original_data, user_field="user", **kwargs):
         return data
 
     data[user_field] = exist_user
+    app.logger.debug("user is %s", exist_user)
+    app.logger.debug("end get existing user")
 
     return data
 
 
 def get_existing_users(self, data, original_data, **kwargs):
+    if original_data is None:
+        return []
+
     users = original_data.get("users")
+
     if not users:
         data["users"] = []
         return data
@@ -156,6 +178,7 @@ class PaymentSchema(BaseSchema):
                                    user_field="to_user", **kwargs)
         fromuser = get_existing_user(self, touser, original_data,
                                      user_field="from_user", **kwargs)
+        app.logger.debug("GET EXISTING USER END PAYMENT_SCHEMA")
         return fromuser
 
 

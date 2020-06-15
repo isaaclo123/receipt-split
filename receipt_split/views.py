@@ -13,7 +13,8 @@ from .meta import db
 # from .auth import identity
 from .models import User, Receipt, Balance, Payment
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
-    BalanceSumSchema, PaymentSchema, RECEIPT_INFO_EXCLUDE_FIELDS
+    BalanceSumSchema, PaymentSchema, \
+    RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm, PaymentForm
 from .helpers import calculate_balances, ok, err
 
@@ -345,6 +346,13 @@ def get_payments_sent(current_identity):
         Payment.from_user_id == current_identity.id
     ).all()
 
+    all_payments = Payment.query.all()
+    app.logger.debug("current id %s", current_identity.id)
+    app.logger.debug("payment 1 %s", all_payments[0].from_user_id)
+    app.logger.debug("all payments %s",
+                     pformat(payments_schema.dump(all_payments)))
+    app.logger.debug("SENT PAYMENTS %s", payments)
+
     payments_dump = payments_schema.dump(payments)
     return payments_dump
 
@@ -384,10 +392,20 @@ def pay_user():
 
         # TODO dont know if this is neccesary
         to_user = json_data.get("to_user")
+
+        app.logger.info("/pay to_user %s", to_user)
+
         if to_user is None:
             return err("to_user is not specified"), status.HTTP_400_BAD_REQUEST
 
+        json_data["from_user"] = user_schema.dump(current_identity)
+        app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
+
+        app.logger.info("/pay POST JSON_DATA - %s", json_data)
+
         pay_data = payment_schema.load(json_data, session=db.session)
+
+        app.logger.debug("AFTER PAYMENT SCHEMA LOAD")
 
         if pay_data.to_user not in current_identity.friends:
             return err("Cannot pay a non-friended user"),\
@@ -397,7 +415,7 @@ def pay_user():
             return err("Cannot pay yourself"),\
                 status.HTTP_400_BAD_REQUEST
 
-        pay_data.from_user = current_identity
+        # pay_data.from_user = current_identity
 
         db.session.add(pay_data)
         db.session.commit()

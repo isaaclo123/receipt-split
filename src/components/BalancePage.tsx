@@ -163,6 +163,23 @@ const BalancePageComponent = ({
 
       <h5>Payments Sent</h5>
 
+      <ListGroup>
+        {payments_sent.map(({
+          id = -1,
+          date,
+          accepted,
+          message,
+          from_user,
+          amount
+        }: PaymentType) => {
+        return (
+          <ListGroup.Item>
+            {amount} {message} {from_user.fullname} {date}
+          </ListGroup.Item>
+        );
+      })}
+      </ListGroup>
+
       <h5>Balances to Pay</h5>
 
       {getBalanceList(balances_of, {

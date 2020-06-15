@@ -26,7 +26,7 @@ def create_app():
     app = FlaskAPI(__name__, static_folder="../build")
     app.config.from_object(Config)
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     # # To enable logging for flask-cors,
     # logging.getLogger('flask_cors').level = logging.DEBUG

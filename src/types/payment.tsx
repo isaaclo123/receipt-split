@@ -43,7 +43,7 @@ export type PaymentType = {
   amount: number;
 
   to_user: UserType;
-  from_user?: UserType;
+  from_user: UserType;
 };
 
 export interface PaymentListType extends ErrorData {
