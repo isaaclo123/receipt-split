@@ -1,6 +1,12 @@
-// export const RECEIPT_LIST_REQUEST = "RECEIPT_LIST_REQUEST";
-
 import { Dict } from "./index"
+
+export const PAYMENT_LIST_SUCCESS = "PAYMENT_LIST_SUCCESS";
+export const PAYMENT_LIST_FAIL = "PAYMENT_LIST_FAIL";
+
+export const PAYMENT_INDEX_DELETE_MAP: Dict<string> = {
+  "payments_received": "PAYMENT_RECEIVED_INDEX_DELETE",
+  "payments_sent": "PAYMENT_SENT_INDEX_DELETE",
+}
 
 export const PAYMENT_SAVE_SUCCESS = "PAYMENT_SAVE_SUCCESS";
 export const PAYMENT_SAVE_FAIL = "PAYMENT_SAVE_FAIL";

@@ -11,7 +11,7 @@ from sqlalchemy.sql import func
 
 from .meta import db
 # from .auth import identity
-from .models import User, Receipt, Balance
+from .models import User, Receipt, Balance, Payment
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
     BalanceSumSchema, PaymentSchema, RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm, PaymentForm
@@ -33,6 +33,7 @@ receipt_schema = ReceiptSchema()
 receipts_schema = ReceiptSchema(many=True, exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
 
 payment_schema = PaymentSchema()
+payments_schema = PaymentSchema(many=True)
 
 
 @views.route('/receipt', methods=['GET'])
@@ -326,6 +327,37 @@ def balance_sums():
     return {
         "balances_owed": balances_owed,
         "balances_of": balances_of
+    }
+
+
+def get_payments_received(current_identity):
+    payments = Payment.query.filter(
+        Payment.accepted.is_(None),
+        Payment.to_user_id == current_identity.id
+    ).all()
+
+    payments_dump = payments_schema.dump(payments)
+    return payments_dump
+
+
+def get_payments_sent(current_identity):
+    payments = Payment.query.filter(
+        Payment.from_user_id == current_identity.id
+    ).all()
+
+    payments_dump = payments_schema.dump(payments)
+    return payments_dump
+
+
+@views.route('/payments', methods=['GET'])
+@jwt_required()
+def get_payments():
+    payments_received = get_payments_received(current_identity)
+    payments_sent = get_payments_sent(current_identity)
+
+    return {
+        "payments_received": payments_received,
+        "payments_sent": payments_sent
     }
 
 

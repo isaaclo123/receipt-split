@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 
 import {
   balanceSumListReducer,
+  paymentListReducer,
   paymentReducer,
   receiptReducer,
   receiptListReducer,
@@ -11,8 +12,6 @@ import {
   friendReducer
 } from "./index";
 
-// export type RootState = ReturnType<typeof rootReducer>;
-
 export const rootReducer = combineReducers({
   loginState: loginReducer,
   receiptListState: receiptListReducer,
@@ -21,5 +20,6 @@ export const rootReducer = combineReducers({
   userState: userReducer,
   friendState: friendReducer,
   balanceSumListState: balanceSumListReducer,
-  paymentState: paymentReducer
+  paymentState: paymentReducer,
+  paymentListState: paymentListReducer
 });

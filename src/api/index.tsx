@@ -1,4 +1,4 @@
-import { LoginPayload, SignupPayload, ReceiptType, PaymentType } from "../types/index";
+import { LoginPayload, SignupPayload, ReceiptType, PaymentEditType } from "../types/index";
 import { fetchData } from "./helpers";
 
 export const SERVER_URL = `http://localhost:5000`;
@@ -56,5 +56,8 @@ export const fetchBalanceSumList = (token: string) =>
   fetchData(`balancesums`, "GET", null, token);
 
 // payment
-export const savePayment = (payload: PaymentType, token: string) =>
+export const savePayment = (payload: PaymentEditType, token: string) =>
   fetchData(`pay`, "POST", payload, token);
+
+export const fetchPaymentList = (token: string) =>
+  fetchData(`payments`, "GET", null, token);

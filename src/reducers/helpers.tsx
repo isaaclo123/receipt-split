@@ -145,3 +145,17 @@ export const insertIndex = <T extends {}>(
 export const removeIndex = <T extends {}>(state: T[], deleteAt: number) => {
   return [...state.slice(0, deleteAt), ...state.slice(deleteAt + 1)];
 };
+
+export const createDeleteReducers = (map: Dict<string>): DataReducerType[] =>
+  Object.entries(map).map(([field, type]: [string, string]) => {
+    return {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: type,
+          field: [[field, true]],
+          isDelete: true
+        }
+      ]
+    }
+  })

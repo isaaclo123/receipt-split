@@ -11,6 +11,7 @@ import {
 } from "./index";
 
 import {
+  getPaymentListAndBalances,
   getBalanceSumList,
   setPaymentAmount,
   setPaymentUser,
@@ -21,13 +22,17 @@ import {
   RootState,
   BalanceSumType,
   Dict,
+  PaymentType,
 } from "../types/index";
+import { ListGroup } from "react-bootstrap";
 
 const mapStateToProps = (state: RootState) => {
   const {
     balanceSumListState,
+    paymentListState,
   } = state;
   return {
+    paymentListState,
     balanceSumListState,
   };
 };
@@ -35,6 +40,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(
   mapStateToProps,
   {
+    getPaymentListAndBalances,
     getBalanceSumList,
     setPaymentAmount,
     setPaymentUser,
@@ -50,7 +56,11 @@ type Props = PropsFromRedux &
 const BalancePageComponent = ({
   match,
   history,
+
   balanceSumListState,
+  paymentListState,
+
+  getPaymentListAndBalances,
   getBalanceSumList,
   setPaymentAmount,
   setPaymentUser,
@@ -59,18 +69,24 @@ const BalancePageComponent = ({
   const [run, setRun] = useState(true);
   const [payShow, setPayShow] = useState(false);
 
-  const errors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
+  const balanceErrors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
+  const paymentErrors = (paymentListState.errors != null) ? paymentListState.errors : {};
 
   // gets user info once
   if (run) {
     setRun(false);
-    getBalanceSumList()
+    getPaymentListAndBalances()
   }
 
   const {
     balances_owed,
     balances_of
   } = balanceSumListState.data;
+
+  const {
+    payments_received,
+    payments_sent
+  } = paymentListState.data;
 
   const getBalanceList = (balances_list: BalanceSumType[], props: Dict) => (
     <CardColumns>
@@ -109,13 +125,43 @@ const BalancePageComponent = ({
           setPayShow(false);
         }}
       />
-      { ("error" in errors) &&
+
+      { ("error" in balanceErrors) &&
         <>
           <Alert variant="danger">
-            {errors.error}
+            {balanceErrors.error}
           </Alert>
           <br />
         </>}
+
+      { ("error" in paymentErrors) &&
+        <>
+          <Alert variant="danger">
+            {paymentErrors.error}
+          </Alert>
+          <br />
+        </>}
+
+      <h5>Payments Received</h5>
+
+      <ListGroup>
+        {payments_received.map(({
+          id = -1,
+          date,
+          accepted,
+          message,
+          to_user,
+          amount
+        }: PaymentType) => {
+        return (
+          <ListGroup.Item>
+            {amount} {message} {to_user.fullname} {date}
+          </ListGroup.Item>
+        );
+      })}
+      </ListGroup>
+
+      <h5>Payments Sent</h5>
 
       <h5>Balances to Pay</h5>
 

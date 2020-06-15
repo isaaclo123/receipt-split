@@ -7,4 +7,5 @@ export * from "./balanceReducer";
 export * from "./userReducer";
 export * from "./friendReducer";
 export * from "./paymentReducer";
+export * from "./paymentListReducer";
 export * from "./rootReducer";

@@ -5,23 +5,17 @@ import {
   ErrorData,
   Failable,
 
+  PAYMENT_SAVE_SUCCESS,
   PAYMENT_SAVE_FAIL,
-  PAYMENT_SAVE_SUCCESS
+
+  PAYMENT_LIST_SUCCESS,
+  PAYMENT_LIST_FAIL,
 } from "./index";
 
-export type PaymentType = {
-  id?: number;
-  created?: string;
-  accepted?: boolean;
-  message?: string;
-
-  to_user_id?: number;
-  from_user_id?: number;
-
+export type PaymentEditType = {
+  message: string;
   amount: number;
-
   to_user: UserType;
-  from_user?: UserType | null;
 };
 
 export interface PaymentErrors extends ErrorData {
@@ -30,7 +24,36 @@ export interface PaymentErrors extends ErrorData {
   amount?: string;
 };
 
-export type PaymentSuccessAction = Action<typeof PAYMENT_SAVE_SUCCESS, PaymentType>;
+export type PaymentSuccessAction = Action<typeof PAYMENT_SAVE_SUCCESS, PaymentEditType>;
 export type PaymentFailAction = Action<typeof PAYMENT_SAVE_FAIL, PaymentErrors>;
 export type PaymentAction = PaymentSuccessAction | PaymentFailAction;
-export type PaymentState = Failable<PaymentType, PaymentErrors>
+export type PaymentState = Failable<PaymentEditType, PaymentErrors>
+
+// Payment List type
+
+export type PaymentType = {
+  id?: number;
+  date: string;
+  accepted: boolean | null;
+  message?: string;
+
+  to_user_id?: number;
+  from_user_id?: number;
+
+  amount: number;
+
+  to_user: UserType;
+  from_user?: UserType;
+};
+
+export interface PaymentListType extends ErrorData {
+  payments_received: PaymentType[];
+  payments_sent: PaymentType[];
+}
+
+export interface PaymentListErrors extends ErrorData {};
+
+export type PaymentListSuccessAction = Action<typeof PAYMENT_LIST_SUCCESS, PaymentType>;
+export type PaymentListFailAction = Action<typeof PAYMENT_LIST_FAIL, PaymentListErrors>;
+export type PaymentListAction = PaymentSuccessAction | PaymentFailAction;
+export type PaymentListState = Failable<PaymentListType, PaymentErrors>
