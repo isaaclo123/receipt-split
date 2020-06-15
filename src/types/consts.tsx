@@ -1,5 +1,6 @@
 import { Dict } from "./index"
 
+export const PAYMENT_LIST_ADD_PAYMENT = "PAYMENT_LIST_ADD_PAYMENT";
 export const PAYMENT_LIST_SUCCESS = "PAYMENT_LIST_SUCCESS";
 export const PAYMENT_LIST_FAIL = "PAYMENT_LIST_FAIL";
 

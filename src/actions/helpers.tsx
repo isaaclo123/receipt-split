@@ -1,10 +1,7 @@
-import { Middleware, Dispatch } from "redux";
+import { Dispatch } from "redux";
 import {
-  Action,
   RootState,
-  ApiMiddlewareAction,
   ApiMiddlewarePayload,
-  API_MIDDLEWARE_TYPE,
   setValuePayload
 } from "../types/index";
 

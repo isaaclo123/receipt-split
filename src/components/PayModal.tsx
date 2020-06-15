@@ -64,9 +64,13 @@ const PayModalComponent = ({
   const errors = (paymentState.errors != null) ? paymentState.errors : {};
 
   const {
-    amount,
-    to_user,
-    message,
+    amount = 0.0,
+    to_user = {
+      id: -1,
+      username: "",
+      fullname: ""
+    },
+    message = "",
   } = paymentState.data;
 
 

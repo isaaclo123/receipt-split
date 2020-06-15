@@ -2,6 +2,7 @@ import { Dispatch } from "redux";
 import { batch } from "react-redux";
 import { savePayment, fetchPaymentList } from "../api/index";
 import {
+  PaymentType,
   UserType,
   PAYMENT_SAVE_FAIL,
   PAYMENT_SAVE_SUCCESS,
@@ -12,7 +13,13 @@ import {
   PAYMENT_SET_MESSAGE,
 
   PAYMENT_LIST_SUCCESS,
-  PAYMENT_LIST_FAIL
+  PAYMENT_LIST_FAIL,
+
+  PAYMENT_LIST_ADD_PAYMENT,
+
+  EDIT_DATA_PREPEND,
+  RootState,
+  PaymentState,
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -24,13 +31,24 @@ import {
 
 import { setValueAction } from "./helpers";
 
+export const addNewPayment = (payment: PaymentType) =>
+  setValueAction<PaymentType>({
+    successType: PAYMENT_LIST_ADD_PAYMENT
+  })(
+    payment,
+    [EDIT_DATA_PREPEND]
+  );
+
 export const setNewPayment = (payload: PaymentEditType): ApiMiddlewareAction =>
   apiCallAction({
     successType: PAYMENT_SAVE_SUCCESS,
     failType: PAYMENT_SAVE_FAIL,
     withToken: true,
     apiCall: savePayment,
-    apiCallArgs: [payload]
+    apiCallArgs: [payload],
+    afterSuccess: ({paymentState}: RootState) => {
+      return addNewPayment(paymentState.data as PaymentType);
+    }
   });
 
 export const setPaymentName = setValueAction<string>({

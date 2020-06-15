@@ -12,7 +12,31 @@ import {
   PAYMENT_LIST_FAIL,
 } from "./index";
 
-export type PaymentEditType = {
+export type PaymentType = {
+  id?: number;
+  date: string;
+  accepted: boolean | null;
+  message?: string;
+
+  to_user_id?: number;
+  from_user_id?: number;
+
+  amount: number;
+
+  to_user: UserType;
+  from_user: UserType;
+};
+
+export type PaymentEditType = PaymentType | {
+  id?: number;
+  date?: string;
+  accepted?: boolean | null;
+
+  to_user_id?: number;
+  from_user_id?: number;
+
+  from_user?: UserType;
+
   message: string;
   amount: number;
   to_user: UserType;
@@ -30,21 +54,6 @@ export type PaymentAction = PaymentSuccessAction | PaymentFailAction;
 export type PaymentState = Failable<PaymentEditType, PaymentErrors>
 
 // Payment List type
-
-export type PaymentType = {
-  id?: number;
-  date: string;
-  accepted: boolean | null;
-  message?: string;
-
-  to_user_id?: number;
-  from_user_id?: number;
-
-  amount: number;
-
-  to_user: UserType;
-  from_user: UserType;
-};
 
 export interface PaymentListType extends ErrorData {
   payments_received: PaymentType[];

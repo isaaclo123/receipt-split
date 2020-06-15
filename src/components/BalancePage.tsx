@@ -157,7 +157,11 @@ const BalancePageComponent = ({
             date,
             accepted,
             message,
-            from_user,
+            from_user = {
+              id: -1,
+              username: "",
+              fullname: ""
+            },
             amount
           }: PaymentType) => {
           return (
@@ -204,7 +208,11 @@ const BalancePageComponent = ({
             date,
             accepted,
             message,
-            to_user,
+            to_user = {
+              id: -1,
+              username: "",
+              fullname: ""
+            },
             amount
           }: PaymentType) => {
           return (

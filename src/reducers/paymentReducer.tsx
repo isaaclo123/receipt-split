@@ -6,7 +6,7 @@ import {
   PAYMENT_SET_AMOUNT,
   PAYMENT_SET_NAME,
   PAYMENT_SET_MESSAGE,
-  PAYMENT_SET_USER
+  PAYMENT_SET_USER,
 } from "../types/index";
 
 import { editDataReducer, setDataReducer, applyDataReducers } from "./index";
