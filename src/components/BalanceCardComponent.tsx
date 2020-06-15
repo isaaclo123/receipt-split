@@ -70,7 +70,7 @@ export const BalanceCardComponent = ({
           } = balance;
 
           return (
-            <ListGroup.Item key={id}>
+            <ListGroup.Item key={id} className="d-inline-block text-truncate">
               <span className="text-info">
               ${amount.toFixed(2)}
               </span>

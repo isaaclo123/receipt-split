@@ -332,28 +332,26 @@ def balance_sums():
 
 
 def get_payments_received(current_identity):
-    payments = Payment.query.filter(
-        Payment.accepted.is_(None),
-        Payment.to_user_id == current_identity.id
+    payments = Payment.query.filter_by(
+        accepted=None,
+        to_user_id=current_identity.id,
+        archived=False
     ).all()
 
     payments_dump = payments_schema.dump(payments)
+    app.logger.debug("get payments received - %s", payments_dump)
+    app.logger.debug("get payments received 1 - %s", payments[0].archived)
     return payments_dump
 
 
 def get_payments_sent(current_identity):
-    payments = Payment.query.filter(
-        Payment.from_user_id == current_identity.id
+    payments = Payment.query.filter_by(
+        from_user_id=current_identity.id,
+        archived=False
     ).all()
 
-    all_payments = Payment.query.all()
-    app.logger.debug("current id %s", current_identity.id)
-    app.logger.debug("payment 1 %s", all_payments[0].from_user_id)
-    app.logger.debug("all payments %s",
-                     pformat(payments_schema.dump(all_payments)))
-    app.logger.debug("SENT PAYMENTS %s", payments)
-
     payments_dump = payments_schema.dump(payments)
+    app.logger.debug("get payments sent - %s", payments_dump)
     return payments_dump
 
 
@@ -363,10 +361,12 @@ def get_payments():
     payments_received = get_payments_received(current_identity)
     payments_sent = get_payments_sent(current_identity)
 
-    return {
+    payments_result = {
         "payments_received": payments_received,
         "payments_sent": payments_sent
     }
+    app.logger.debug("/payments result - %s", payments_result)
+    return payments_result
 
 
 @views.route('/pay', methods=['POST'])

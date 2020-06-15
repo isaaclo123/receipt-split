@@ -45,6 +45,7 @@ class Payment(db.Model):
 
     # true is accepted, false is not accepted, null is not accepted or rejected
     accepted = db.Column(db.Boolean)
+    archived = db.Column(db.Boolean, default=False, nullable=False)
     message = db.Column(db.String(MAX_MESSAGE_LENGTH))
 
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

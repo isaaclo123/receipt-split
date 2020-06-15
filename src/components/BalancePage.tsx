@@ -157,17 +157,17 @@ const BalancePageComponent = ({
             date,
             accepted,
             message,
-            to_user,
+            from_user,
             amount
           }: PaymentType) => {
           return (
             <ListGroup.Item>
               <Row>
-                <Col className="mt-1 d-inline-block text-truncate">
+                <Col className="mt-1 d-inline-block text-truncate pr-0">
                   <span>
                     <span className="text-success">${amount.toFixed(2)}</span>
-                    &nbsp;to&nbsp;
-                    <span className="text-primary">{to_user.fullname}</span>
+                    &nbsp;from&nbsp;
+                    <span className="text-primary">{from_user.fullname}</span>
                     :&nbsp;
                     {message}
                   </span>
@@ -204,16 +204,16 @@ const BalancePageComponent = ({
             date,
             accepted,
             message,
-            from_user,
+            to_user,
             amount
           }: PaymentType) => {
           return (
             <ListGroup.Item>
               <Row>
-                <Col className="mt-1 d-inline-block text-truncate">
-                  <span className="text-info">${amount.toFixed(2)}</span>
+                <Col className="mt-1 d-inline-block text-truncate pr-0">
+                  <span className="text-danger">${amount.toFixed(2)}</span>
                   &nbsp;to&nbsp;
-                  <span className="text-primary">{from_user.fullname}</span>
+                  <span className="text-primary">{to_user.fullname}</span>
                   :&nbsp;
                   {message}
                 </Col>

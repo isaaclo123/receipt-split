@@ -72,7 +72,7 @@ const ReceiptPageComponent = ({
         }: ReceiptSummaryType) => {
           return (
             <>
-              <ListGroup.Item>
+              <ListGroup.Item className="d-inline-block text-truncate">
                 <span className="text-info">${amount.toFixed(2)}</span>
                 &nbsp;for&nbsp;
                 <LinkContainer to={`${match.url}/edit/${id}`}>
