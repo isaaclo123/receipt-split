@@ -1,4 +1,4 @@
-import { UserType, Dict } from "../types/index";
+import { UserType } from "../types/index";
 
 export const listDiff = <T extends {}>(
   list1: T[],

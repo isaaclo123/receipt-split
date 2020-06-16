@@ -340,7 +340,6 @@ def get_payments_received(current_identity):
 
     payments_dump = payments_schema.dump(payments)
     app.logger.debug("get payments received - %s", payments_dump)
-    app.logger.debug("get payments received 1 - %s", payments[0].archived)
     return payments_dump
 
 
@@ -358,6 +357,7 @@ def get_payments_sent(current_identity):
 @views.route('/payments', methods=['GET'])
 @jwt_required()
 def get_payments():
+    app.logger.debug("GET PAYMENTS/")
     payments_received = get_payments_received(current_identity)
     payments_sent = get_payments_sent(current_identity)
 
@@ -369,7 +369,44 @@ def get_payments():
     return payments_result
 
 
-@views.route('/pay', methods=['POST'])
+@views.route('/payments/<int:id>')
+@views.route('/payments/<int:id>/<action>', methods=['GET', 'POST'])
+@jwt_required()
+def get_payment(id, action=None):
+    payment = Payment.query.get(id)
+
+    if not payment:
+        return err("requested payment does not exist"),
+    status.HTTP_404_NOT_FOUND
+
+    if payment.to_user != current_identity and \
+            payment.from_user != current_identity:
+        return err("you are not authorized to view this payment"),
+    status.HTTP_401_UNAUTHORIZED
+
+    if action is None and request.method == 'GET':
+        payment_dump = payment_schema.dump(payment)
+        return payment_dump
+
+    # accept or reject bahavior after
+
+    if payment.to_user != current_identity:
+        return err("you are not authorized to accept or reject this payment"),
+    status.HTTP_401_UNAUTHORIZED
+
+    if (action == "accept" or action == "reject") and request.method == 'POST':
+        # change accepted value
+        payment.accepted = (action == "accept")
+        db.session.commit()
+
+        payment_dump = payment_schema.dump(payment)
+        app.logger.debug("payments %s - %s", action, payment_dump)
+        return payment_dump
+
+    return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+
+@views.route('/payment', methods=['POST'])
 @jwt_required()
 def pay_user():
     # accept json with

@@ -1,9 +1,7 @@
 import {
-  RootState,
-  Action,
   Failable,
   Dict,
-  API_MIDDLEWARE_TYPE
+  RootState
 } from "./index";
 
 export type ApiMiddlewarePayload = {
@@ -17,11 +15,11 @@ export type ApiMiddlewarePayload = {
   apiCall: (...args: any[]) => Promise<ApiFetchType>;
   apiCallArgs?: any[];
 
-  onSuccess?: (arg0: any) => any;
-  onFail?: (arg0: any) => any;
+  onSuccess?: ((arg0: any, state: RootState) => any) | ((arg0: any) => any);
+  onFail?: ((arg0: any, state: RootState) => any) | ((arg0: any) => any);
 
-  afterSuccess?: (arg0: any) => ((dispatch: any, getState: any) => void) | null;
-  afterFail?: (arg0: any) => ((dispatch: any, getState: any) => void) | null;
+  afterSuccess?: (arg0: RootState) => ((dispatch: any, getState: any) => void) | null;
+  afterFail?: (arg0: RootState) => ((dispatch: any, getState: any) => void) | null;
 };
 
 // export type ApiMiddlewareAction = Action<

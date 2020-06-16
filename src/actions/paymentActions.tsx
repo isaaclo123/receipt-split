@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
 import { batch } from "react-redux";
-import { savePayment, fetchPaymentList } from "../api/index";
+import { savePayment, fetchPaymentList, confirmPayment } from "../api/index";
 import {
   PaymentType,
   UserType,
@@ -14,12 +14,14 @@ import {
 
   PAYMENT_LIST_SUCCESS,
   PAYMENT_LIST_FAIL,
-
   PAYMENT_LIST_ADD_PAYMENT,
+
+  PAYMENT_LIST_SET_ACCEPTED_SUCCESS,
+  PAYMENT_LIST_SET_ACCEPTED_FAIL,
+  PAYMENT_LIST_SET_ACCEPTED,
 
   EDIT_DATA_PREPEND,
   RootState,
-  PaymentState,
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -46,7 +48,7 @@ export const setNewPayment = (payload: PaymentEditType): ApiMiddlewareAction =>
     withToken: true,
     apiCall: savePayment,
     apiCallArgs: [payload],
-    afterSuccess: ({paymentState}: RootState) => {
+    afterSuccess: ({ paymentState }: RootState) => {
       return addNewPayment(paymentState.data as PaymentType);
     }
   });
@@ -84,3 +86,34 @@ export const getPaymentListAndBalances = () => (dispatch: Dispatch) => {
     dispatch(getPaymentList());
   });
 };
+
+export const setPaymentConfirm = (
+  id: number,
+  action: "accept" | "reject",
+  index: number,
+): ApiMiddlewareAction =>
+  apiCallAction({
+    successType: PAYMENT_LIST_SET_ACCEPTED_SUCCESS,
+    failType: PAYMENT_LIST_SET_ACCEPTED_FAIL,
+    withToken: true,
+    apiCall: confirmPayment,
+    apiCallArgs: [id, action],
+    onSuccess: (payment: PaymentType, { paymentListState }: RootState) => {
+      const { id = -1 } = payment;
+      const { data } = paymentListState;
+
+      if (id === -1) {
+        return data;
+      }
+
+      return Object.assign({}, data, {
+        payments_received: [
+          ...data.payments_received.slice(0, index),
+          payment,
+          ...data.payments_received.slice(index + 1),
+        ]
+      });
+
+    }
+    // afterSuccess: ({ paymentState })
+  });

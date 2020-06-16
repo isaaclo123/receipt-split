@@ -57,7 +57,10 @@ export const fetchBalanceSumList = (token: string) =>
 
 // payment
 export const savePayment = (payload: PaymentEditType, token: string) =>
-  fetchData(`pay`, "POST", payload, token);
+  fetchData(`payment`, "POST", payload, token);
 
 export const fetchPaymentList = (token: string) =>
   fetchData(`payments`, "GET", null, token);
+
+export const confirmPayment = (id: number, action: "accept" | "reject", token: string) =>
+  fetchData(`payments/${id}/${action}`, "POST", null, token);

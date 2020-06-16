@@ -17,6 +17,7 @@ import {
   setPaymentAmount,
   setPaymentUser,
   setPaymentMessage,
+  setPaymentConfirm,
 } from "../actions/index";
 
 import {
@@ -50,6 +51,7 @@ const connector = connect(
     setPaymentAmount,
     setPaymentUser,
     setPaymentMessage,
+    setPaymentConfirm,
   }
 );
 
@@ -70,6 +72,7 @@ const BalancePageComponent = ({
   setPaymentAmount,
   setPaymentUser,
   setPaymentMessage,
+  setPaymentConfirm,
 }: Props) => {
   const [run, setRun] = useState(true);
   const [payShow, setPayShow] = useState(false);
@@ -163,9 +166,17 @@ const BalancePageComponent = ({
               fullname: ""
             },
             amount
-          }: PaymentType) => {
+          }: PaymentType,
+          index: number) => {
           return (
-            <ListGroup.Item>
+            <ListGroup.Item variant={(() => {
+              if (accepted === true) {
+                return "success";
+              }
+              if (accepted === false) {
+                return "danger";
+              }
+            })()}>
               <Row>
                 <Col className="mt-1 d-inline-block text-truncate pr-0">
                   <span>
@@ -180,12 +191,18 @@ const BalancePageComponent = ({
                   <ButtonGroup>
                     <Button
                       size="sm"
-                      variant="success">
+                      variant="success"
+                      onClick={() => {
+                        setPaymentConfirm(id, "accept", index);
+                      }}>
                       ACCEPT
                     </Button>
                     <Button
                       size="sm"
-                      variant="danger">
+                      variant="danger"
+                      onClick={() => {
+                        setPaymentConfirm(id, "reject", index);
+                      }}>
                       REJECT
                     </Button>
                   </ButtonGroup>
@@ -216,7 +233,14 @@ const BalancePageComponent = ({
             amount
           }: PaymentType) => {
           return (
-            <ListGroup.Item>
+            <ListGroup.Item variant={(() => {
+              if (accepted === true) {
+                return "success";
+              }
+              if (accepted === false) {
+                return "danger";
+              }
+            })()}>
               <Row>
                 <Col className="mt-1 d-inline-block text-truncate pr-0">
                   <span className="text-danger">${amount.toFixed(2)}</span>

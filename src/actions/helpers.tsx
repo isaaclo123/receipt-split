@@ -24,8 +24,8 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
     apiCall,
     apiCallArgs = [],
 
-    onSuccess = (a: any) => a,
-    onFail = (a: any) => a,
+    onSuccess = (a: any, b:any) => a,
+    onFail = (a: any, b:any) => a,
 
     afterSuccess = (a: any) => null,
     afterFail = (a: any) => null
@@ -52,7 +52,7 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
     if (successType != null) {
       await dispatch({
         type: successType,
-        payload: shouldCall != null ? data : onSuccess(data)
+        payload: shouldCall != null ? data : onSuccess(data, getState())
       });
     }
 
@@ -65,7 +65,7 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
     if (failType != null) {
       await dispatch({
         type: failType,
-        payload: shouldCall != null ? errors : onFail(errors)
+        payload: shouldCall != null ? errors : onFail(errors, getState())
       });
     }
 

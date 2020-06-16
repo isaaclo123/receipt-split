@@ -97,9 +97,7 @@ export const deleteReceipt = (
             if (result == null) {
               return null;
             }
-            console.log("DELETE MAP REDULT")
-            console.log(result)
-            console.log("DELETE MAP REDULT")
+
             return deleteReceiptInList(result, i);
           }
         }
@@ -108,17 +106,6 @@ export const deleteReceipt = (
       return null;
     }
   });
-
-// export const getReceipt = (payload: ReceiptPayload) => (dispatch: Dispatch) => {
-//   console.log("getReceipt");
-//   console.log(payload);
-//   const action: ReceiptRequestAction = {
-//     type: "RECEIPT_ID_REQUEST",
-//     payload
-//   };
-//
-//   dispatch(action);
-// };
 
 export const setReceiptName = setValueAction<string>({
   successType: RECEIPT_SET_NAME

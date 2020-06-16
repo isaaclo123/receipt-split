@@ -4,7 +4,9 @@ import {
   PAYMENT_INDEX_DELETE_MAP,
   PAYMENT_LIST_SUCCESS,
   PAYMENT_LIST_FAIL,
-  PAYMENT_LIST_ADD_PAYMENT
+  PAYMENT_LIST_ADD_PAYMENT,
+  PAYMENT_LIST_SET_ACCEPTED_SUCCESS,
+  PAYMENT_LIST_SET_ACCEPTED_FAIL
 } from "../types/index";
 
 import {
@@ -30,6 +32,15 @@ export const paymentListReducer = applyDataReducers<
   PaymentListAction
 >(initialState,
   deleteReducers.concat([
+  {
+    reducerCreator: setDataReducer,
+    args: [
+      {
+        successType: PAYMENT_LIST_SET_ACCEPTED_SUCCESS,
+        failType: PAYMENT_LIST_SET_ACCEPTED_FAIL,
+      }
+    ]
+  },
   {
     reducerCreator: setDataReducer,
     args: [
