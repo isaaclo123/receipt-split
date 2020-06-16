@@ -347,9 +347,18 @@ def get_payments_sent(current_identity):
     payments = Payment.query.filter_by(
         from_user_id=current_identity.id,
         archived=False
-    ).all()
+    )
 
-    payments_dump = payments_schema.dump(payments)
+    payments_dump = payments_schema.dump(payments.all())
+
+    # archive payments not archived yet which are not in "pending" state
+    # (null)
+    payments.filter(
+        Payment.accepted.isnot(None)
+    ).update({"archived": True})
+
+    db.session.commit()
+
     app.logger.debug("get payments sent - %s", payments_dump)
     return payments_dump
 
@@ -397,6 +406,7 @@ def get_payment(id, action=None):
     if (action == "accept" or action == "reject") and request.method == 'POST':
         # change accepted value
         payment.accepted = (action == "accept")
+        payment.archived = False
         db.session.commit()
 
         payment_dump = payment_schema.dump(payment)
