@@ -122,7 +122,7 @@ const ReceiptPageComponent = ({
       </div>
       <br />
       <h5 />
-      { receiptListOrNoneComponent(receiptListState.data.receipts_of) }
+      { receiptListOrNoneComponent(receiptListState.data.receipts_owed) }
     </>
   );
 };

@@ -33,7 +33,7 @@ export type BalanceSumType = {
 };
 
 export interface BalanceSumListType extends ErrorData {
-  balances_of: BalanceSumType[];
+  balances_owned: BalanceSumType[];
   balances_owed: BalanceSumType[];
 };
 

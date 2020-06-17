@@ -1,19 +1,18 @@
+from .meta import db
+
 # from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy.ext.associationproxy import association_proxy
 from flask import current_app as app
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import column_property, object_session
+from sqlalchemy.sql import func, select
 from sqlalchemy import and_
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import column_property
-from sqlalchemy.sql import func, select, join
 
 from datetime import date, datetime
 
 # from decimal import Decimal
 
 MAX_MESSAGE_LENGTH = 300
-
-from .meta import db
 
 friendship = db.Table(
     'friendships', db.metadata,
@@ -113,6 +112,7 @@ class Balance(db.Model):
 
     amount = db.Column(db.Float(asdecimal=True),
                        nullable=False)
+    paid = db.Column(db.Boolean, nullable=False, default=False)
 
     receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
     receipt_name = column_property(
@@ -124,6 +124,38 @@ class Balance(db.Model):
             Receipt.id == receipt_id
         ).correlate_except(Receipt)
     )
+
+
+class Settlement(db.Model):
+    __tablename__ = 'settlement'
+    __table_args__ = (
+        db.CheckConstraint('user_id <> to_user_id'),
+        # db.UniqueConstraint('user_id', 'to_user_id'),
+    )
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True,
+                        nullable=False)
+    to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+                           primary_key=True, nullable=False)
+
+    # user
+    # to_user
+
+    paid_amount = db.Column(db.Float(asdecimal=True), nullable=False,
+                            default=0.0)
+
+    @property
+    def owed_amount(self):
+        return db.session.scalar(
+            select(
+                [func.sum(Balance.amount)]
+            ).where(
+                and_(
+                    Balance.from_user_id == self.user_id,
+                    Balance.to_user_id == self.to_user_id
+                )
+            )
+        )
 
 
 class User(db.Model):
@@ -170,19 +202,40 @@ class User(db.Model):
                                       ],
                                       backref="from_user")
 
+    settlements_to_user = relationship("Settlement",
+                                       foreign_keys=[Settlement.to_user_id],
+                                       backref="to_user")
+
+    settlements_owned = relationship("Settlement",
+                                     foreign_keys=[Settlement.user_id],
+                                     backref="user")
+
     receipt_items = relationship("ReceiptItem",
                                  secondary=receiptitem_association_table,
                                  backref="users")
 
-    # receipts_of = column_property(
+    # receipts_owed = column_property(
     #     select(
     #         Receipt,
     #         id == Receipt.user_id
-    #     ).label('receipts_of')
+    #     ).label('receipts_owed')
     # )
 
+    def get_settlement_to(self, to_user):
+        result = Settlement.query.get({
+            "user_id": self.id,
+            "to_user_id": to_user.id
+        })
+
+        if result is None:
+            s = Settlement(user_id=id, to_user_id=to_user.id)
+            db.session.add(s)
+            return s
+
+        return result
+
     @property
-    def receipts_of(self):
+    def receipts_owed(self):
         result = Receipt.query.join(
             receipt_association_table,
         ).filter(
@@ -190,7 +243,7 @@ class User(db.Model):
             Receipt.user_id != self.id
         )
 
-        app.logger.info("receipts_of expression running - %s", result)
+        app.logger.info("receipts_owed expression running - %s", result)
 
         return result
 

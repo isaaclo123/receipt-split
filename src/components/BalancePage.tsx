@@ -88,7 +88,7 @@ const BalancePageComponent = ({
 
   const {
     balances_owed,
-    balances_of
+    balances_owned
   } = balanceSumListState.data;
 
   const {
@@ -289,7 +289,7 @@ const BalancePageComponent = ({
 
       <h5>Balances to Pay</h5>
 
-      {getBalanceList(balances_of, {
+      {getBalanceList(balances_owned, {
         amountColor: "danger",
       })}
 

@@ -16,7 +16,7 @@ const initialState: ReceiptListState = {
   error: false,
   data: {
     receipts_owned: [],
-    receipts_of: [],
+    receipts_owed: [],
   },
   errors: {}
 };

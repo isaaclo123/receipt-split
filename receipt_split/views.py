@@ -11,7 +11,7 @@ from sqlalchemy.sql import func
 
 from .meta import db
 # from .auth import identity
-from .models import User, Receipt, Balance, Payment
+from .models import User, Receipt, Balance, Payment, Settlement
 from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
     BalanceSumSchema, PaymentSchema, \
     RECEIPT_INFO_EXCLUDE_FIELDS
@@ -41,14 +41,14 @@ payments_schema = PaymentSchema(many=True)
 @jwt_required()
 def receipt_list():
     receipts_owned = receipts_schema.dump(current_identity.receipts_owned)
-    receipts_of = receipts_schema.dump(current_identity.receipts_of)
+    receipts_owed = receipts_schema.dump(current_identity.receipts_owed)
 
     receipt_result = {
         "receipts_owned": receipts_owned,
-        "receipts_of": receipts_of
+        "receipts_owed": receipts_owed
     }
 
-    app.logger.info("/receipt GET receipts_of - %s", receipts_of)
+    app.logger.info("/receipt GET receipts_owed - %s", receipts_owed)
     app.logger.info("/receipt GET - %s", receipt_result)
 
     return receipt_result, status.HTTP_200_OK
@@ -243,7 +243,7 @@ def get_balance_list(q):
     return balances_dump
 
 
-def get_balances_of(current_identity):
+def get_balances_owned(current_identity):
     b = db.session.query(
         Balance.id,
         Balance.to_user_id,
@@ -320,14 +320,19 @@ def get_balances_owed(current_identity):
 @views.route('/balancesums', methods=['GET'])
 @jwt_required()
 def balance_sums():
-    balances_of = get_balances_of(current_identity)
+    app.logger.debug("----------------------")
+    app.logger.debug(pformat(Settlement(user_id=2, to_user_id=1).owed_amount))
+    app.logger.debug("----------------------")
+
+
+    balances_owned = get_balances_owned(current_identity)
     balances_owed = get_balances_owed(current_identity)
 
-    app.logger.info("/balancesums result - %s", pformat(balances_of))
+    app.logger.info("/balancesums result - %s", pformat(balances_owned))
 
     return {
         "balances_owed": balances_owed,
-        "balances_of": balances_of
+        "balances_owned": balances_owned
     }
 
 
@@ -405,9 +410,13 @@ def get_payment(id, action=None):
 
     if (action == "accept" or action == "reject") and request.method == 'POST':
         # change accepted value
-        payment.accepted = (action == "accept")
-        payment.archived = False
-        db.session.commit()
+        new_accepted = (action == "accept")
+
+        if (payment.accepted != new_accepted):
+            # only modify if a change occours
+            payment.accepted = new_accepted
+            payment.archived = False
+            db.session.commit()
 
         payment_dump = payment_schema.dump(payment)
         app.logger.debug("payments %s - %s", action, payment_dump)
