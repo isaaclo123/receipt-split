@@ -1,5 +1,7 @@
 from decimal import Decimal
 from flask import current_app as app
+from .meta import db
+from .models import Balance, Settlement
 import math
 
 
@@ -25,7 +27,12 @@ def err(msg):
 
 def get_userkey(user):
     # return str(user.get("id", "-1")) + " - " + user.get("username", " ")
-    return user.get("username", "")
+    return user.username
+
+
+def get(x, *args):
+    default = None if (not args) else args[0]
+    return default if x is None else x
 
 
 def round_decimals_down(number: Decimal, decimals: int = 2):
@@ -68,10 +75,10 @@ def calculate_balances(receipt):
     """
     takes python serializer dict and calculates balances
     """
-    owner = receipt.get("user")
-    users = receipt.get("users", [])
-    receipt_amount = Decimal(receipt.get("amount"))
-    receipt_items = receipt.get("receipt_items", [])
+    owner = get(receipt.user)
+    users = get(receipt.users)
+    receipt_amount = get(receipt.amount)
+    receipt_items = get(receipt.receipt_items)
 
     # error check
     if owner is None:
@@ -81,12 +88,18 @@ def calculate_balances(receipt):
     if receipt_amount is None:
         raise TypeError("receipt amount is null!")
 
+    # delete old balances
+    for b in receipt.balances:
+        db.session.delete(b)
+
     if (len(users) <= 0):
-        return [{
-            "to_user": owner,
-            "from_user": owner,
-            "amount": receipt_amount
-        }]
+        receipt.balances = [
+            Balance(
+                to_user=owner,
+                from_user=owner,
+                amount=receipt_amount
+            )
+        ]
 
     # subtotals = sum([i.get("amount", 0.0) for i in receipt_items])
     subitem_total = Decimal(0)
@@ -98,8 +111,8 @@ def calculate_balances(receipt):
 
     # split for receipt_items
     for r in receipt_items:
-        subitem_amount = Decimal(r.get("amount", 0))
-        subitem_users = r.get("users", [])
+        subitem_amount = Decimal(get(r.amount, 0))
+        subitem_users = get(r.users, [])
 
         subitem_total = subitem_total + subitem_amount
 
@@ -118,10 +131,32 @@ def calculate_balances(receipt):
 
     split_cost(non_subitem_amount, users, owner, balance_dict)
 
-    balances = [{
-        "to_user": owner,
-        "from_user": u,
-        "amount": balance_dict.get(get_userkey(u), Decimal(0))
-    } for u in users]
+    balances = [
+        Balance(
+            to_user=owner,
+            from_user=u,
+            amount=balance_dict.get(get_userkey(u), Decimal(0))
+        ) for u in users]
 
-    return balances
+    receipt.balances = balances
+
+    # update all settlements
+    for u in users:
+        s = Settlement.query.get({
+            "user_id": owner.id,
+            "to_user_id": u.id
+        })
+        if s is not None:
+            s.update_settlement()
+
+        s = Settlement.query.get({
+            "user_id": u.id,
+            "to_user_id": owner.id
+        })
+        if s is not None:
+            s.update_settlement()
+
+        app.logger.debug("\tsettlement uid %s", u.id)
+        app.logger.debug("\tsettlement %s", s)
+
+    return receipt

@@ -2,7 +2,9 @@ from flask_api import FlaskAPI, status
 from flask import send_from_directory, request
 from config import Config
 # from flask_migrate import Migrate
+import coloredlogs
 
+import traceback
 import os
 
 import logging
@@ -27,6 +29,7 @@ def create_app():
     app.config.from_object(Config)
 
     logging.basicConfig(level=logging.DEBUG)
+    coloredlogs.install()
 
     # # To enable logging for flask-cors,
     # logging.getLogger('flask_cors').level = logging.DEBUG
@@ -51,8 +54,12 @@ def create_app():
     # Handle errors and turn them into json
     @app.errorhandler(Exception)
     def handle_error(e):
-        app.logger.error("Global Exception Error - %s", str(e))
-        return err(str(e)), status.HTTP_500_INTERNAL_SERVER_ERROR
+        trace = traceback.format_exc()
+
+        app.logger.error("EXCEPTION!!!!!!!!!!")
+        app.logger.error("%s", trace)
+        app.logger.error("EXCEPTION!!!!!!!!!!")
+        return err(trace), status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # Serve React App
     @app.route('/', defaults={'path': ''})

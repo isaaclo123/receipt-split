@@ -4,6 +4,7 @@ from flask_jwt import current_identity, jwt_required
 from pprint import pformat
 from functools import reduce
 from collections import OrderedDict
+from decimal import Decimal
 
 # from flask_cors import cross_origin
 from datetime import date
@@ -84,20 +85,13 @@ def receipt_create():
 
     app.logger.info("receipt/-1 input json data - %s", json_data)
 
-    json_data["balances"] = calculate_balances(json_data)
     receipt_data = receipt_schema.load(json_data, session=db.session)
 
     receipt_data.user = current_identity
+    calculate_balances(receipt_data)
 
     app.logger.debug("receipt creation users: %s", receipt_data.users)
     # update all settlements
-    for u in receipt_data.users:
-        s = Settlement.query.get({
-            "user_id": current_identity.id,
-            "to_user_id": u.id
-        })
-        app.logger.debug("\tsettlement %s", s)
-        # .update_settlement()
 
     db.session.add(receipt_data)
     db.session.commit()
@@ -163,34 +157,11 @@ def receipt_by_id(id):
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     if request.method == 'PUT' or request.method == 'PATCH':
-        # TODO try catch
-        json_data["balances"] = calculate_balances(json_data)
-
-        app.logger.info("receipt/%s json data is %s", id, pformat(json_data))
-        app.logger.info("receipt/%s balances is %s", id, json_data["balances"])
         receipt_data = receipt_schema.load(json_data, session=db.session)
+        calculate_balances(receipt_data)
 
         app.logger.debug("receipt creation users: %s", receipt_data.users)
         app.logger.debug("receipt user id: %s", current_identity.id)
-
-        # update all settlements
-        for u in receipt_data.users:
-            s = Settlement.query.get({
-                "user_id": current_identity.id,
-                "to_user_id": u.id
-            })
-            if s is not None:
-                s.update_settlement()
-
-            s = Settlement.query.get({
-                "user_id": u.id,
-                "to_user_id": current_identity.id
-            })
-            if s is not None:
-                s.update_settlement()
-
-            app.logger.debug("\tsettlement uid %s", u.id)
-            app.logger.debug("\tsettlement %s", s)
 
         db.session.commit()
 
@@ -260,6 +231,31 @@ def friend_list():
     return friend_result, status.HTTP_200_OK
 
 
+BALANCE_METADATA = [
+    {
+        'name': 'User',
+        'type': User,
+        'aliased': False,
+        'expr': User,
+        'entity': User
+    },
+    {
+        'name': 'Settlement',
+        'type': Settlement,
+        'aliased': False,
+        'expr': Settlement,
+        'entity': Settlement
+    },
+    {
+        'name': 'total',
+        'type': Decimal(),
+        'aliased': True,
+        'expr': Settlement.owed_amount,
+        'entity': Settlement
+    },
+]
+
+
 def get_balance_list(q):
     def find_balances(acc, cur):
         user, balance, total = cur
@@ -276,97 +272,52 @@ def get_balance_list(q):
 
 
 def get_balances_owned(current_identity):
-    # b = db.session.query(
-    #     Balance.id,
-    #     Balance.to_user_id,
-    #     Balance.amount
-    # ).filter(
-    #     Balance.to_user_id != current_identity.id,
-    #     Balance.from_user_id == current_identity.id
-    # ).subquery()
+    # balances curr user must pay
+    app.logger.debug("OWNED------START")
 
-    # s = db.session.query(
-    #     b.c.to_user_id,
-    #     func.sum(b.c.amount).label('total'),
-    # ).select_from(b).group_by(
-    #     b.c.to_user_id
-    # ).subquery()
+    # balance: FROM pays TO
 
-    # q = db.session.query(
-    #     User,
-    #     Balance,
-    #     s.c.total,
-    # ).select_from(
-    #     b
-    # ).join(
-    #     s,
-    #     b.c.to_user_id == s.c.to_user_id
-    # ).join(
-    #     User,
-    #     User.id == b.c.to_user_id
-    # ).join(
-    #     Balance,
-    #     Balance.id == b.c.id
-    # ).all()
-
-    # return get_balance_list(q)
-
-    # balances from(originating) curr user
-    balances = Balance.query.filter(
+    # balances addressed to curr user, so curr user must pay it
+    # this returns id of user issuing balances to curr user
+    balance_ids_q = db.session.query(
+        Balance.from_user_id,
+    ).filter(
         Balance.from_user_id == current_identity.id,
         Balance.to_user_id != current_identity.id
-    ).subquery("balances")
+    )
+    balance_ids = balance_ids_q.subquery("balance_ids")
+    app.logger.debug("balances_ids %s", balance_ids_q.all())
 
-    # ids of balances from curr user to others
-    balance_ids = db.session.query(
-        balances.c.to_user_id
-    ).select_from(balances).subquery("balance_ids")
-
-    # users with balances originating from curr user
-    users = User.query.filter(
-        User.id.in_(balance_ids)
-    ).subquery("users")
-
-    user_ids = db.session.query(
-        users.c.id
-    ).select_from(users).subquery("user_ids")
-
-    user_ids2 = db.session.query(
-        users.c.id
-    ).select_from(users).all()
-    print(user_ids2)
-
-    # settlements
-    # to_user is curr user, so people pay curr user
-    # ids in curr
-    settlements = Settlement.query.filter(
-        Settlement.to_user_id == current_identity.id,
-        Settlement.user_id.in_(user_ids)
-    ).subquery("settlements")
-
-    settlements2 = Settlement.query.filter(
-        Settlement.to_user_id == current_identity.id,
-        Settlement.user_id.in_(user_ids)
-    ).all()
-
-    app.logger.debug("settlemetns2 %s", settlements2)
+    # settlements curr user owes to others for balances above
+    settlements_ids_q = db.session.query(
+        Settlement.user_id,
+        Settlement.to_user_id,
+        Settlement.owed_amount
+    ).filter(
+        Settlement.user_id == current_identity.id,
+        Settlement.user_id.in_(balance_ids)
+    )
+    settlements_ids = settlements_ids_q.subquery()
+    app.logger.debug("settlements_ids %s", settlements_ids_q.all())
 
     q = db.session.query(
-        users,
-        balances,
-        settlements.c.owed_amount.label('total')
-    ).join(
-        balances,
-        users.c.id == balances.c.from_user_id
-    ).join(
-        settlements,
-        balances.c.to_user_id == settlements.c.to_user_id
-    ).with_entities(
-        User, Balance, Settlement.owed_amount
-    ).all()
-    print(q)
+        User,
+        Balance,
+        settlements_ids.c.owed_amount
+    ).select_from(
+        settlements_ids
+    ).outerjoin(  # balances addressed to current user, must be paid my curr
+        Balance,
+        Balance.from_user_id == settlements_ids.c.user_id,
+    ).join(  # get user that Balance is from, the user curr user must pay
+        User,
+        User.id == Balance.to_user_id
+    )
+    app.logger.debug("q %s", q.all())
 
-    return get_balance_list(q)
+    app.logger.debug("OWNED------END")
+
+    return get_balance_list(q.all())
 
 
 def get_balances_owed(current_identity):
@@ -374,31 +325,45 @@ def get_balances_owed(current_identity):
     # balances not from current user
     # balances are given to current user
     # aka balances current user has to pay
+    app.logger.debug("OWED------START")
 
-    balances = Balance.query.filter(
+    balances_q = Balance.query.filter(
         Balance.from_user_id != current_identity.id,
         Balance.to_user_id == current_identity.id
-    ).subquery("balances")
+    )
+    app.logger.debug("balances %s", balances_q.all())
+
+    balances = balances_q.subquery("balances")
 
     # balances ids that are addressed to current user
-    balance_ids = db.session.query(
+    balance_ids_q = db.session.query(
         balances.c.from_user_id
-    ).select_from(balances).subquery("balance_ids")
+    ).select_from(balances)
+
+    balance_ids = balance_ids_q.subquery("balance_ids")
+
+    app.logger.debug("balances_ids %s", balance_ids_q.all())
 
     # users sending balances to current user
-    users = User.query.filter(
+    users_q = User.query.filter(
         User.id.in_(balance_ids)
-    ).subquery("users")
+    )
+    users = users_q.subquery("users")
+    app.logger.debug("users %s", users_q.all())
 
-    user_ids = db.session.query(
+    user_ids_q = db.session.query(
         users.c.id
-    ).select_from(users).subquery("user_ids")
+    ).select_from(users)
+    user_ids = user_ids_q.subquery("user_ids")
+
+    app.logger.debug("user_ids %s", user_ids_q.all())
 
     # settlements owed to current user
-    settlements = Settlement.query.filter(
+    settlements_q = Settlement.query.filter(
         Settlement.user_id.in_(user_ids),
         Settlement.to_user_id == current_identity.id
-    ).subquery("settlements")
+    )
+    settlements = settlements_q.subquery("settlements")
 
     q = db.session.query(
         users,
@@ -413,7 +378,8 @@ def get_balances_owed(current_identity):
     ).with_entities(
         User, Balance, Settlement.owed_amount
     ).all()
-    print(q)
+
+    app.logger.debug("OWED------END")
 
     return get_balance_list(q)
 
