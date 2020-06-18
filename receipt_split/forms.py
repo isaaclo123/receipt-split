@@ -44,7 +44,8 @@ class SignupForm(Form):
     fullname = fields.StringField("Full Name",
                                   [va.DataRequired(), va.length(min=1)])
     password = fields.PasswordField("Username",
-                                    [va.DataRequired(), va.length(min=8),
+                                    [va.DataRequired(),
+                                     va.length(min=1),  # TODO
                                      va.EqualTo("confirm",
                                                 message="Passwords must match")
                                      ])

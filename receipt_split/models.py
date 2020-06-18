@@ -3,10 +3,9 @@ from .meta import db
 # from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy.ext.associationproxy import association_proxy
 from flask import current_app as app
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import column_property, object_session
+from sqlalchemy.orm import relationship, column_property, object_session
 from sqlalchemy.sql import func, select
-from sqlalchemy import and_
+from sqlalchemy import and_, exists, or_
 
 from datetime import date, datetime
 
@@ -50,11 +49,42 @@ class Payment(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False)
-
     # to_user
     # from_user
+
+    amount = db.Column(db.Float(asdecimal=True), nullable=False)
+
+    def accept(self):
+        if self.accepted is False or self.accepted is None:
+            # False means payment was previously rejected
+            # None means payment has not been accepted or rejected yet
+            # rejected or not added yet
+
+            # in this case, we add the payment to the settlement
+            # from user -> to user
+            s = self.from_user.get_settlement_to(self.to_user)
+            s.add_payment(self)
+
+            # unarchive
+            self.archived = False
+
+        self.accepted = True
+
+    def reject(self):
+        if self.accepted is True:
+            # True means payment was previously accepted
+            # if payment was previously accepted, we have to remove payment
+            # value
+
+            # in this case, we remove the previously added payment to the
+            # settlement from user -> to user
+            s = self.from_user.get_settlement_to(self.to_user)
+            s.remove_payment(self)
+
+            # unarchive
+            self.archived = False
+
+        self.accepted = False
 
 
 class ReceiptItem(db.Model):
@@ -144,18 +174,49 @@ class Settlement(db.Model):
     paid_amount = db.Column(db.Float(asdecimal=True), nullable=False,
                             default=0.0)
 
+    owed_amount = db.Column(db.Float(asdecimal=True), nullable=False,
+                            default=0.0)
+
     @property
-    def owed_amount(self):
-        return db.session.scalar(
-            select(
-                [func.sum(Balance.amount)]
-            ).where(
-                and_(
-                    Balance.from_user_id == self.user_id,
-                    Balance.to_user_id == self.to_user_id
-                )
-            )
-        )
+    def _zero(self):
+        return 0.0
+
+    def update_settlement(self):
+        # self.owed_amount = select(
+        #     [func.sum(Balance.amount)]
+        # ).where(
+        #     and_(
+        #         Balance.from_user_id == self.user_id,
+        #         Balance.to_user_id == self.to_user_id
+        #     )
+        # ).as_scalar()
+
+        s = db.session.query(
+            func.coalesce(func.sum(Balance.amount), self._zero)
+        ).filter_by(
+            from_user_id=self.user_id,
+            to_user_id=self.to_user_id
+        ).as_scalar()
+
+        app.logger.debug("------")
+        app.logger.debug("settlement balance %s", s)
+        app.logger.debug("settlement %s", self)
+        app.logger.debug("------")
+
+        self.owed_amount = s
+
+        # if recurse:
+        #     Settlement.query.get({
+        #         "user_id": self.to_user_id,
+        #         "to_user_id": self.user_id
+        #     }).update_settlement(recurse=False)
+
+    def add_payment(self, payment):
+        # TODO
+        self.paid_amount = self.paid_amount + payment.amount
+
+    def remove_payment(self, payment):
+        self.paid_amount = self.paid_amount - payment.amount
 
 
 class User(db.Model):
@@ -221,19 +282,6 @@ class User(db.Model):
     #     ).label('receipts_owed')
     # )
 
-    def get_settlement_to(self, to_user):
-        result = Settlement.query.get({
-            "user_id": self.id,
-            "to_user_id": to_user.id
-        })
-
-        if result is None:
-            s = Settlement(user_id=id, to_user_id=to_user.id)
-            db.session.add(s)
-            return s
-
-        return result
-
     @property
     def receipts_owed(self):
         result = Receipt.query.join(
@@ -248,9 +296,39 @@ class User(db.Model):
         return result
 
     def add_friend(self, friend):
+        if friend.id == self.id:
+            return
+
         if friend not in self.friends:
             self.friends.append(friend)
             friend.friends.append(self)
+
+        # add neccesary settlement objects
+        if Settlement.query.get({
+            "user_id": self.id,
+            "to_user_id": friend.id
+                }) is None:
+            self.settlements_owned.append(
+                Settlement(
+                    user_id=self.id,
+                    to_user_id=friend.id,
+                    paid_amount=0.0,
+                    owed_amount=0.0,
+                )
+            )
+
+        if Settlement.query.get({
+            "user_id": friend.id,
+            "to_user_id": self.id
+                }) is None:
+            friend.settlements_owned.append(
+                Settlement(
+                    user_id=friend.id,
+                    to_user_id=self.id,
+                    paid_amount=0.0,
+                    owed_amount=0.0,
+                )
+            )
 
     def delete_friend(self, friend):
         if friend in self.friends:

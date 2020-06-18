@@ -45,7 +45,7 @@ def signup_post():
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     new_user = User(username=username,
-                    fullname=json_data["username"],
+                    fullname=json_data["fullname"],
                     password=generate_password_hash(json_data["password"],
                                                     method='sha256'))
 
