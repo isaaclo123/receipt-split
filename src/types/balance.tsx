@@ -27,7 +27,8 @@ export type BalanceType = BalanceSummaryType & {
 // Balance Sum Type
 
 export type BalanceSumType = {
-  total: number,
+  owed_amount: number,
+  paid_amount: number,
   user: UserType,
   balances: BalanceSummaryType[]
 };

@@ -234,11 +234,12 @@ def friend_list():
 
 def get_balance_list(q):
     def find_balances(acc, cur):
-        user, balance, total = cur
+        user, balance, owed_amount, paid_amount = cur
         acc[user.id] = {
             "user": user,
-            "total": total,
-            "balances": acc.get(user.id, {}).get("balances", []) + [balance]
+            "balances": acc.get(user.id, {}).get("balances", []) + [balance],
+            "owed_amount": owed_amount,
+            "paid_amount": paid_amount,
         }
         return acc
 
@@ -268,7 +269,8 @@ def get_balances_owned(current_identity):
     settlements_ids_q = db.session.query(
         Settlement.user_id,
         Settlement.to_user_id,
-        Settlement.owed_amount
+        Settlement.owed_amount,
+        Settlement.paid_amount
     ).filter(
         Settlement.user_id == current_identity.id,
         Settlement.user_id.in_(balance_ids)
@@ -276,24 +278,11 @@ def get_balances_owned(current_identity):
     settlements_ids = settlements_ids_q.subquery()
     app.logger.debug("owned settlements_ids %s", settlements_ids_q.all())
 
-    # q = db.session.query(
-    #     User,
-    #     Balance,
-    #     settlements_ids.c.owed_amount
-    # ).select_from(
-    #     settlements_ids
-    # ).join(  # balances addressed to current user, must be paid my curr
-    #     Balance,
-    #     Balance.from_user_id == settlements_ids.c.user_id,
-    # ).join(  # get user that Balance is from, the user curr user must pay
-    #     User,
-    #     User.id == Balance.to_user_id,
-    # ).filter(User.id != current_identity.id)
-
     q = db.session.query(
         User,
         Balance,
-        settlements_ids.c.owed_amount
+        settlements_ids.c.owed_amount,
+        settlements_ids.c.paid_amount
     ).select_from(
         settlements_ids
     ).join(  # get uer balance is from
@@ -337,7 +326,8 @@ def get_balances_owed(current_identity):
     settlements_ids_q = db.session.query(
         Settlement.user_id,
         Settlement.to_user_id,
-        Settlement.owed_amount
+        Settlement.owed_amount,
+        Settlement.paid_amount,
     ).filter(
         Settlement.to_user_id == current_identity.id,  # to me
         Settlement.user_id.in_(balance_ids)  # from others
@@ -348,7 +338,8 @@ def get_balances_owed(current_identity):
     q = db.session.query(
         User,
         Balance,
-        settlements_ids.c.owed_amount
+        settlements_ids.c.owed_amount,
+        settlements_ids.c.paid_amount
     ).select_from(
         settlements_ids
     ).join(  # get user that Balance is from, the user curr user must pay
@@ -501,8 +492,8 @@ def pay_user():
             return err("to_user is not specified"), status.HTTP_400_BAD_REQUEST
 
         json_data["from_user"] = user_schema.dump(current_identity)
-        app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
 
+        app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
         app.logger.info("/pay POST JSON_DATA - %s", json_data)
 
         pay_data = payment_schema.load(json_data, session=db.session)

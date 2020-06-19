@@ -5,7 +5,7 @@ from .meta import db
 from flask import current_app as app
 from sqlalchemy.orm import relationship, column_property, object_session
 from sqlalchemy.sql import func, select, expression
-from sqlalchemy import and_, exists, or_
+from sqlalchemy import and_, exists, or_, literal_column
 
 from datetime import date, datetime
 
@@ -62,7 +62,12 @@ class Payment(db.Model):
 
             # in this case, we add the payment to the settlement
             # from user -> to user
-            s = self.from_user.get_settlement_to(self.to_user)
+
+            # TODO exception id settlement none
+            s = Settlement.query.get({
+                "user_id": self.from_user,
+                "to_user_id": self.to_user
+            })
             s.add_payment(self)
 
             # unarchive
@@ -189,22 +194,9 @@ class Settlement(db.Model):
     owed_amount = db.Column(db.Float(asdecimal=True), nullable=False,
                             default=0.0)
 
-    @property
-    def _zero(self):
-        return 0.0
-
     def update_settlement(self):
-        # self.owed_amount = select(
-        #     [func.sum(Balance.amount)]
-        # ).where(
-        #     and_(
-        #         Balance.from_user_id == self.user_id,
-        #         Balance.to_user_id == self.to_user_id
-        #     )
-        # ).as_scalar()
-
         s = db.session.query(
-            func.coalesce(func.sum(Balance.amount), self._zero)
+            func.coalesce(func.sum(Balance.amount), literal_column("0.0"))
         ).filter_by(
             from_user_id=self.user_id,
             to_user_id=self.to_user_id
@@ -216,12 +208,6 @@ class Settlement(db.Model):
         app.logger.debug("------")
 
         self.owed_amount = s
-
-        # if recurse:
-        #     Settlement.query.get({
-        #         "user_id": self.to_user_id,
-        #         "to_user_id": self.user_id
-        #     }).update_settlement(recurse=False)
 
     def add_payment(self, payment):
         # TODO

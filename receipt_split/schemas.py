@@ -184,7 +184,8 @@ class PaymentSchema(BaseSchema):
 
 class BalanceSumSchema(Schema):
     user = ma.Nested(UserSchema, include=USER_INFO_FIELDS, dump_only=True)
-    total = fields.Decimal(dump_only=True)
+    owed_amount = fields.Decimal(dump_only=True)
+    paid_amount = fields.Decimal(dump_only=True)
     # receipts = ma.Nested(ReceiptSchema, many=True, dump_only=True,
     #                      exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
     balances = ma.Nested(BalanceSchema, many=True, dump_only=True,

@@ -16,7 +16,8 @@ export interface BalanceCardProps extends BalanceSumType {
 
 export const BalanceCardComponent = ({
   user,
-  total,
+  owed_amount,
+  paid_amount,
   balances,
   onPay = () => {},
   amountColor = "info",
@@ -40,17 +41,19 @@ export const BalanceCardComponent = ({
       </Card.Header>
 
       <Card.Body className="text-center px-0">
-        <h1
+        <h2
           style={{
             padding: 0,
             margin: 0,
             display: "inline-block",
             overflow: "auto"
           }}
-          className={`text-${amountColor}`}
+          className={`text-${amountColor} align-middle`}
         >
-          ${total.toFixed(2)}
-        </h1>
+          <span>${owed_amount.toFixed(2)}&nbsp;-&nbsp;${paid_amount.toFixed(2)}</span>
+          <br />
+          $<u>{(owed_amount - paid_amount).toFixed(2)}</u>
+        </h2>
       </Card.Body>
 
       <hr

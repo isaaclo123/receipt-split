@@ -88,10 +88,6 @@ def calculate_balances(receipt):
     if receipt_amount is None:
         raise TypeError("receipt amount is null!")
 
-    # delete old balances
-    for b in receipt.balances:
-        db.session.delete(b)
-
     if (len(users) <= 0):
         receipt.balances = [
             Balance(
@@ -131,6 +127,9 @@ def calculate_balances(receipt):
 
     split_cost(non_subitem_amount, users, owner, balance_dict)
 
+    # Delete old balances
+    # Balance.query.filter_by(receipt_id=receipt.id).delete()
+
     balances = [
         Balance(
             to_user=owner,
@@ -141,6 +140,7 @@ def calculate_balances(receipt):
     receipt.balances = balances
 
     # update all settlements
+    # TODO
     for u in users:
         s = Settlement.query.get({
             "user_id": owner.id,

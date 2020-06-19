@@ -101,7 +101,7 @@ const BalancePageComponent = ({
       {balances_list.map((balanceSum : BalanceSumType) => {
 
         const {
-          total,
+          owed_amount,
           user
         } = balanceSum;
 
@@ -113,7 +113,7 @@ const BalancePageComponent = ({
           <BalanceCardComponent
             key={id}
             onPay={() => {
-              setPaymentAmount(total);
+              setPaymentAmount(owed_amount);
               setPaymentUser(user);
               // TODO dont know if message should be reset
               setPaymentMessage("");
