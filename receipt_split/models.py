@@ -4,7 +4,7 @@ from .meta import db
 # from sqlalchemy.ext.associationproxy import association_proxy
 from flask import current_app as app
 from sqlalchemy.orm import relationship, column_property, object_session
-from sqlalchemy.sql import func, select
+from sqlalchemy.sql import func, select, expression
 from sqlalchemy import and_, exists, or_
 
 from datetime import date, datetime
@@ -140,6 +140,12 @@ class Balance(db.Model):
     # to_user
     # from_user
 
+    # settlement_id = column_property(
+    #     expression.cast(from_user_id, db.String) +
+    #     "-" +
+    #     expression.cast(to_user_id, db.String)
+    # )
+
     amount = db.Column(db.Float(asdecimal=True),
                        nullable=False)
     paid = db.Column(db.Boolean, nullable=False, default=False)
@@ -167,6 +173,12 @@ class Settlement(db.Model):
                         nullable=False)
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
                            primary_key=True, nullable=False)
+
+    # id = column_property(
+    #     expression.cast(user_id, db.String) +
+    #     "-" +
+    #     expression.cast(to_user_id, db.String)
+    # )
 
     # user
     # to_user

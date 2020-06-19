@@ -9,6 +9,7 @@ from decimal import Decimal
 # from flask_cors import cross_origin
 from datetime import date
 from sqlalchemy.sql import func
+from sqlalchemy import and_, exists, or_
 
 from .meta import db
 # from .auth import identity
@@ -231,31 +232,6 @@ def friend_list():
     return friend_result, status.HTTP_200_OK
 
 
-BALANCE_METADATA = [
-    {
-        'name': 'User',
-        'type': User,
-        'aliased': False,
-        'expr': User,
-        'entity': User
-    },
-    {
-        'name': 'Settlement',
-        'type': Settlement,
-        'aliased': False,
-        'expr': Settlement,
-        'entity': Settlement
-    },
-    {
-        'name': 'total',
-        'type': Decimal(),
-        'aliased': True,
-        'expr': Settlement.owed_amount,
-        'entity': Settlement
-    },
-]
-
-
 def get_balance_list(q):
     def find_balances(acc, cur):
         user, balance, total = cur
@@ -285,8 +261,8 @@ def get_balances_owned(current_identity):
         Balance.from_user_id == current_identity.id,
         Balance.to_user_id != current_identity.id
     )
-    balance_ids = balance_ids_q.subquery("balance_ids")
-    app.logger.debug("balances_ids %s", balance_ids_q.all())
+    balance_ids = balance_ids_q.subquery()
+    app.logger.debug("owned balances_ids %s", balance_ids_q.all())
 
     # settlements curr user owes to others for balances above
     settlements_ids_q = db.session.query(
@@ -298,7 +274,21 @@ def get_balances_owned(current_identity):
         Settlement.user_id.in_(balance_ids)
     )
     settlements_ids = settlements_ids_q.subquery()
-    app.logger.debug("settlements_ids %s", settlements_ids_q.all())
+    app.logger.debug("owned settlements_ids %s", settlements_ids_q.all())
+
+    # q = db.session.query(
+    #     User,
+    #     Balance,
+    #     settlements_ids.c.owed_amount
+    # ).select_from(
+    #     settlements_ids
+    # ).join(  # balances addressed to current user, must be paid my curr
+    #     Balance,
+    #     Balance.from_user_id == settlements_ids.c.user_id,
+    # ).join(  # get user that Balance is from, the user curr user must pay
+    #     User,
+    #     User.id == Balance.to_user_id,
+    # ).filter(User.id != current_identity.id)
 
     q = db.session.query(
         User,
@@ -306,12 +296,15 @@ def get_balances_owned(current_identity):
         settlements_ids.c.owed_amount
     ).select_from(
         settlements_ids
-    ).outerjoin(  # balances addressed to current user, must be paid my curr
-        Balance,
-        Balance.from_user_id == settlements_ids.c.user_id,
-    ).join(  # get user that Balance is from, the user curr user must pay
+    ).join(  # get uer balance is from
         User,
-        User.id == Balance.to_user_id
+        User.id == settlements_ids.c.to_user_id,
+    ).join(  # balances addressed to current user, must be paid my curr
+        Balance,
+        and_(
+            Balance.to_user_id == User.id,
+            Balance.from_user_id == current_identity.id,
+        ),
     )
     app.logger.debug("q %s", q.all())
 
@@ -327,57 +320,48 @@ def get_balances_owed(current_identity):
     # aka balances current user has to pay
     app.logger.debug("OWED------START")
 
-    balances_q = Balance.query.filter(
-        Balance.from_user_id != current_identity.id,
-        Balance.to_user_id == current_identity.id
-    )
-    app.logger.debug("balances %s", balances_q.all())
+    # balance: FROM pays TO
 
-    balances = balances_q.subquery("balances")
-
-    # balances ids that are addressed to current user
+    # balances addressed from curr user, so other user must pay it
+    # this returns id of balances owed to curr user
     balance_ids_q = db.session.query(
-        balances.c.from_user_id
-    ).select_from(balances)
-
-    balance_ids = balance_ids_q.subquery("balance_ids")
-
-    app.logger.debug("balances_ids %s", balance_ids_q.all())
-
-    # users sending balances to current user
-    users_q = User.query.filter(
-        User.id.in_(balance_ids)
+        Balance.from_user_id,
+    ).filter(
+        Balance.from_user_id != current_identity.id,  # from is payer
+        Balance.to_user_id == current_identity.id  # to is paid
     )
-    users = users_q.subquery("users")
-    app.logger.debug("users %s", users_q.all())
+    balance_ids = balance_ids_q.subquery()
+    app.logger.debug("owed balances_ids %s", balance_ids_q.all())
 
-    user_ids_q = db.session.query(
-        users.c.id
-    ).select_from(users)
-    user_ids = user_ids_q.subquery("user_ids")
-
-    app.logger.debug("user_ids %s", user_ids_q.all())
-
-    # settlements owed to current user
-    settlements_q = Settlement.query.filter(
-        Settlement.user_id.in_(user_ids),
-        Settlement.to_user_id == current_identity.id
+    # settlements curr user owes to others for balances above
+    settlements_ids_q = db.session.query(
+        Settlement.user_id,
+        Settlement.to_user_id,
+        Settlement.owed_amount
+    ).filter(
+        Settlement.to_user_id == current_identity.id,  # to me
+        Settlement.user_id.in_(balance_ids)  # from others
     )
-    settlements = settlements_q.subquery("settlements")
+    settlements_ids = settlements_ids_q.subquery()
+    app.logger.debug("owed settlements_ids %s", settlements_ids_q.all())
 
     q = db.session.query(
-        users,
-        balances,
-        settlements.c.owed_amount.label('total')
-    ).join(
-        balances,
-        users.c.id == balances.c.from_user_id
-    ).join(
-        settlements,
-        balances.c.from_user_id == settlements.c.user_id
-    ).with_entities(
-        User, Balance, Settlement.owed_amount
-    ).all()
+        User,
+        Balance,
+        settlements_ids.c.owed_amount
+    ).select_from(
+        settlements_ids
+    ).join(  # get user that Balance is from, the user curr user must pay
+        User,
+        User.id == settlements_ids.c.user_id,
+    ).join(  # balances addressed to current user, must be paid my curr
+        Balance,
+        and_(
+            Balance.from_user_id == User.id,
+            Balance.to_user_id == current_identity.id,
+        ),
+    )
+    app.logger.debug("q %s", q.all())
 
     app.logger.debug("OWED------END")
 
