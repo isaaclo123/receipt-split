@@ -40,7 +40,8 @@ export const BalanceCardComponent = ({
         <br />
       </Card.Header>
 
-      <Card.Body className="text-center px-0">
+      <Card.Body
+        className="text-center px-0">
         <h2
           style={{
             padding: 0,
@@ -63,7 +64,11 @@ export const BalanceCardComponent = ({
         }}
       />
 
-      <ListGroup className="list-group-flush">
+      <ListGroup
+        style={{
+          borderTop: 0
+        }}
+        className="list-group-flush">
         {balances.map((balance: BalanceSummaryType) => {
           const {
             id = -1,

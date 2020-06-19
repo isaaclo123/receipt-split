@@ -445,15 +445,26 @@ def get_payment(id, action=None):
         return err("you are not authorized to accept or reject this payment"),
     status.HTTP_401_UNAUTHORIZED
 
-    if (action == "accept" or action == "reject") and request.method == 'POST':
-        # change accepted value
-        new_accepted = (action == "accept")
+    # change accepted value
+    app.logger.info("action is: %s", action)
+    app.logger.info("method is: %s", request.method)
 
-        if (payment.accepted != new_accepted):
-            # only modify if a change occours
-            payment.accepted = new_accepted
-            payment.archived = False
-            db.session.commit()
+    if (action == "accept" or action == "reject") and request.method == 'POST':
+        app.logger.debug("inside if statement")
+
+        if action == "accept":
+            app.logger.debug("in accept")
+
+            if payment.accept():
+                app.logger.info("accepted payment %s", id)
+                db.session.commit()
+
+        if action == "reject":
+            app.logger.debug("in reject")
+
+            if payment.reject():
+                app.logger.info("rejected payment %s", id)
+                db.session.commit()
 
         payment_dump = payment_schema.dump(payment)
         app.logger.debug("payments %s - %s", action, payment_dump)

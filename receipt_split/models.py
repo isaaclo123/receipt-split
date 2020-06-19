@@ -54,7 +54,10 @@ class Payment(db.Model):
 
     amount = db.Column(db.Float(asdecimal=True), nullable=False)
 
+    # methods return True if modified, else False
+
     def accept(self):
+        app.logger.debug("accepted for %s is %s", self.id, self.accepted)
         if self.accepted is False or self.accepted is None:
             # False means payment was previously rejected
             # None means payment has not been accepted or rejected yet
@@ -65,15 +68,18 @@ class Payment(db.Model):
 
             # TODO exception id settlement none
             s = Settlement.query.get({
-                "user_id": self.from_user,
-                "to_user_id": self.to_user
+                "user_id": self.from_user_id,
+                "to_user_id": self.to_user_id
             })
             s.add_payment(self)
 
             # unarchive
             self.archived = False
+            self.accepted = True
 
-        self.accepted = True
+            return True
+
+        return False
 
     def reject(self):
         if self.accepted is True:
@@ -83,13 +89,27 @@ class Payment(db.Model):
 
             # in this case, we remove the previously added payment to the
             # settlement from user -> to user
-            s = self.from_user.get_settlement_to(self.to_user)
+            # s = self.from_user.get_settlement_to(self.to_user)
+
+            s = Settlement.query.get({
+                "user_id": self.from_user_id,
+                "to_user_id": self.to_user_id
+            })
             s.remove_payment(self)
 
             # unarchive
             self.archived = False
 
-        self.accepted = False
+            self.accepted = False
+
+            return True
+
+        if self.accepted is None:
+            # None means payment is new
+            self.accepted = False
+            return True
+
+        return False
 
 
 class ReceiptItem(db.Model):
