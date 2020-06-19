@@ -35,6 +35,61 @@ receipt_association_table = db.Table(
 )
 
 
+class RequestModel(db.Model):
+    __tablename__ = 'requestmodel'
+    id = db.Column(db.Integer, primary_key=True)
+
+    accepted = db.Column(db.Boolean)
+    archived = db.Column(db.Boolean, default=False, nullable=False)
+
+    def accept(self, callback=lambda x: None):
+        app.logger.debug("accepted for %s is %s", self.id, self.accepted)
+        if self.accepted is False or self.accepted is None:
+            # False means payment was previously rejected
+            # None means payment has not been accepted or rejected yet
+            # rejected or not added yet
+
+            # in this case, we add the payment to the settlement
+            # from user -> to user
+
+            # TODO exception id settlement none
+            callback(self)
+
+            # unarchive
+            self.archived = False
+            self.accepted = True
+
+            return True
+
+        return False
+
+    def reject(self, callback=lambda x: None):
+        if self.accepted is True:
+            # True means payment was previously accepted
+            # if payment was previously accepted, we have to remove payment
+            # value
+
+            # in this case, we remove the previously added payment to the
+            # settlement from user -> to user
+            # s = self.from_user.get_settlement_to(self.to_user)
+
+            # TODO exception id settlement none
+            callback(self)
+
+            # unarchive
+            self.archived = False
+            self.accepted = False
+
+            return True
+
+        if self.accepted is None:
+            # None means payment is new
+            self.accepted = False
+            return True
+
+        return False
+
+
 class Payment(db.Model):
     __tablename__ = 'payment'
     id = db.Column(db.Integer, primary_key=True)
@@ -42,8 +97,12 @@ class Payment(db.Model):
     date = db.Column(db.DateTime(), default=datetime.utcnow(), nullable=False)
 
     # true is accepted, false is not accepted, null is not accepted or rejected
+
+    # accepted
+    # archived
     accepted = db.Column(db.Boolean)
     archived = db.Column(db.Boolean, default=False, nullable=False)
+
     message = db.Column(db.String(MAX_MESSAGE_LENGTH))
 
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
