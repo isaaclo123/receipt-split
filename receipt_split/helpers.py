@@ -134,7 +134,8 @@ def calculate_balances(receipt):
         Balance(
             to_user=owner,
             from_user=u,
-            amount=balance_dict.get(get_userkey(u), Decimal(0))
+            amount=balance_dict.get(get_userkey(u), Decimal(0)),
+            paid=(u.id == owner.id)  # set paid if owner is paying owner
         ) for u in users]
 
     receipt.balances = balances

@@ -7,8 +7,10 @@ import CardColumns from "react-bootstrap/CardColumns";
 import Col from "react-bootstrap/Col";
 
 import {
+  AcceptRejectButtonsType,
   BalanceCardComponent,
-  PayModal
+  PayModal,
+  AcceptRejectComponent
 } from "./index";
 
 import {
@@ -168,48 +170,27 @@ const BalancePageComponent = ({
             amount
           }: PaymentType,
           index: number) => {
-          return (
-            <ListGroup.Item variant={(() => {
-              if (accepted === true) {
-                return "success";
-              }
-              if (accepted === false) {
-                return "danger";
-              }
-            })()}>
-              <Row>
-                <Col className="mt-1 d-inline-block text-truncate pr-0">
-                  <span>
+            return (
+              <AcceptRejectComponent
+                accepted={accepted}
+                buttons={["accept", "reject"]}
+                onAccept={() => {
+                  setPaymentConfirm(id, "accept", index)
+                }}
+                onReject={() => {
+                  setPaymentConfirm(id, "reject", index)
+                }}
+                messageComponent={(
+                  <>
                     <span className="text-success">${amount.toFixed(2)}</span>
                     &nbsp;from&nbsp;
                     <span className="text-primary">{from_user.fullname}</span>
                     :&nbsp;
                     {message}
-                  </span>
-                </Col>
-                <Col md="auto">
-                  <ButtonGroup>
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={() => {
-                        setPaymentConfirm(id, "accept", index);
-                      }}>
-                      ACCEPT
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={() => {
-                        setPaymentConfirm(id, "reject", index);
-                      }}>
-                      REJECT
-                    </Button>
-                  </ButtonGroup>
-                </Col>
-              </Row>
-            </ListGroup.Item>
-          );
+                  </>
+                  )}
+              / >
+            );
         })}
         </ListGroup>
       </>
@@ -232,55 +213,26 @@ const BalancePageComponent = ({
             },
             amount
           }: PaymentType) => {
-          return (
-            <ListGroup.Item variant={(() => {
-              if (accepted === true) {
-                return "success";
-              }
-              if (accepted === false) {
-                return "danger";
-              }
-            })()}>
-              <Row>
-                <Col className="mt-1 d-inline-block text-truncate pr-0">
-                  <span className="text-danger">${amount.toFixed(2)}</span>
-                  &nbsp;to&nbsp;
-                  <span className="text-primary">{to_user.fullname}</span>
-                  :&nbsp;
-                  {message}
-                </Col>
-                <Col md="auto">
-                  {(() => {
-                    if (accepted === true) {
-                      return (
-                        <Button
-                          size="sm"
-                          variant="success"
-                        >
-                          ACCEPTED
-                        </Button>);
-                    }
-                    if (accepted === false) {
-                      return (
-                        <Button
-                          size="sm"
-                          variant="danger"
-                        >
-                          REJECTED
-                        </Button>);
-                    }
-                    // NULL CASE
-                    return (
-                      <Button
-                        size="sm"
-                        variant="warning"
-                      >
-                        PENDING
-                      </Button>);
-                  })()}
-                </Col>
-              </Row>
-            </ListGroup.Item>
+            const buttonType: AcceptRejectButtonsType = (
+              (accepted === true && ["accept"]) ||
+              (accepted === false && ["reject"]) ||
+              (["pending"])
+            );
+
+            return (
+              <AcceptRejectComponent
+                accepted={accepted}
+                buttons={buttonType}
+                messageComponent={(
+                  <>
+                    <span className="text-danger">${amount.toFixed(2)}</span>
+                    &nbsp;to&nbsp;
+                    <span className="text-primary">{to_user.fullname}</span>
+                    :&nbsp;
+                    {message}
+                  </>
+                  )}
+              / >
             );
           })}
         </ListGroup>

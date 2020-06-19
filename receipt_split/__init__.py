@@ -59,7 +59,7 @@ def create_app():
         app.logger.error("EXCEPTION!!!!!!!!!!")
         app.logger.error("%s", trace)
         app.logger.error("EXCEPTION!!!!!!!!!!")
-        return err(trace), status.HTTP_500_INTERNAL_SERVER_ERROR
+        return err(str(e)), status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # Serve React App
     @app.route('/', defaults={'path': ''})
