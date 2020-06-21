@@ -330,11 +330,6 @@ class User(Base):
     # friend_of
     id = db.Column(db.Integer, primary_key=True)
 
-    # friends = relationship('User',
-    #                        secondary=friendship,
-    #                        primaryjoin=id == friendship.c.user_id,
-    #                        secondaryjoin=id == friendship.c.friend_id)
-
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     fullname = db.Column(db.String(100), nullable=False)
@@ -395,14 +390,23 @@ class User(Base):
     @property
     def friends(self):
         friends_from = db.session.query(
-            Friend.from_user.label("id")
+            Friend.to_user_id.label("id")
         ).select_from(Friend).filter_by(
             from_user_id=self.id,
             accepted=True
         )
 
+        friends_from_test = db.session.query(
+            Friend.from_user_id.label("id")
+        ).select_from(Friend).filter_by(
+            from_user_id=self.id,
+            accepted=True
+        )
+        app.logger.debug("%s's 'friends_from %s", self.username,
+                         friends_from_test.all())
+
         friends_to = db.session.query(
-            Friend.to_user.label("id")
+            Friend.from_user.label("id")
         ).select_from(Friend).filter_by(
             to_user_id=self.id,
             accepted=True

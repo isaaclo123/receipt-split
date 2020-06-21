@@ -214,9 +214,9 @@ def friend_add(username):
     db.session.add(friend_request)
     db.session.commit()
 
-    friend_dump = user_schema.dump(friend_request)
+    friend_dump = friend_schema.dump(friend_request)
 
-    app.logger.info("/friend/%s request for %s - ", username,
+    app.logger.info("/friend/%s request for %s - ",
                     current_identity.username, friend_dump)
 
     return friend_dump, status.HTTP_200_OK
@@ -486,7 +486,7 @@ def friend_list():
 
 
 @views.route('/friends/<int:id>')
-@views.route('/friends/<int:id>/<action>')
+@views.route('/friends/<int:id>/<action>', methods=["GET", "POST"])
 @jwt_required()
 def friends(id, action=None):
     return create_view(
@@ -494,15 +494,17 @@ def friends(id, action=None):
             View(
                 methods=["GET"],
                 view=get_model_view,
+                auth_attrs=["to_user", "from_user"],
             ),
             View(
                 methods=["POST"],
+                auth_attrs=["to_user", "from_user"],
                 view=accept_reject_view,
+                view_args=[action]
             )
         ],
         obj=Friend.query.get(id),
-        current_identity=current_identity,
-        schema=FriendSchema
+        schema=friend_schema
     )
 
 

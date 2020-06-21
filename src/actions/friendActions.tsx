@@ -1,11 +1,15 @@
 import { Dispatch } from "redux";
 import { batch } from "react-redux";
-import { fetchFriends, fetchAddFriend } from "../api/index";
+import { fetchFriends, fetchAddFriend, confirmFriend } from "../api/index";
 import {
   FRIEND_ADD_SUCCESS,
   FRIEND_ADD_FAIL,
   FRIEND_LIST_SUCCESS,
-  FRIEND_LIST_FAIL
+  FRIEND_LIST_FAIL,
+  FRIEND_LIST_SET_ACCEPTED_SUCCESS,
+  FRIEND_LIST_SET_ACCEPTED_FAIL,
+  FriendType,
+  RootState
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -34,3 +38,38 @@ export const getUserAndFriends = () => (dispatch: Dispatch) => {
     dispatch(getFriends());
   });
 };
+
+export const setFriendConfirm = (
+  id: number,
+  action: "accept" | "reject",
+  index: number,
+): ApiMiddlewareAction =>
+  apiCallAction({
+    successType: FRIEND_LIST_SET_ACCEPTED_SUCCESS,
+    failType: FRIEND_LIST_SET_ACCEPTED_FAIL,
+    withToken: true,
+    apiCall: confirmFriend,
+    apiCallArgs: [id, action],
+    onSuccess: (friend: FriendType, { friendState }: RootState ) => {
+      const { id = -1 } = friend;
+      const { data } = friendState;
+
+      console.log("friend------")
+      console.log(friend)
+      console.log(friendState)
+      console.log("friend------")
+
+      if (id === -1) {
+        return data;
+      }
+
+      return Object.assign({}, data, {
+        friends_received: [
+          ...data.friends_received.slice(0, index),
+          friend,
+          ...data.friends_received.slice(index + 1),
+        ]
+      });
+
+    }
+  });

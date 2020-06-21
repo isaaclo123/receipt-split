@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 
 import ListGroup from "react-bootstrap/ListGroup";
 
-import { getUserAndFriends } from "../actions/index";
+import { getUserAndFriends, setFriendConfirm } from "../actions/index";
 import {
   UserListItemComponent,
   ListOrNoneComponent,
@@ -21,7 +21,10 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { getUserAndFriends }
+  {
+    getUserAndFriends,
+    setFriendConfirm,
+  }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -32,6 +35,7 @@ const PeoplePageComponent = ({
   match,
   userState,
   friendState,
+  setFriendConfirm,
   getUserAndFriends
 }: Props) => {
   const [hide, setHide] = useState(true);
@@ -69,7 +73,11 @@ const PeoplePageComponent = ({
           {friends_received.map(({
             id = -1,
             accepted,
-            from_user,
+            from_user = {
+              id:-1,
+              username:"",
+              fullname:"",
+            },
           }: FriendType,
           index: number) => {
             return (
@@ -77,10 +85,10 @@ const PeoplePageComponent = ({
                 accepted={accepted}
                 buttons={["accept", "reject"]}
                 onAccept={() => {
-                  // setPaymentConfirm(id, "accept", index)
+                  setFriendConfirm(id, "accept", index);
                 }}
                 onReject={() => {
-                  // setPaymentConfirm(id, "reject", index)
+                  setFriendConfirm(id, "reject", index);
                 }}
                 messageComponent={(
                   <>
@@ -101,7 +109,11 @@ const PeoplePageComponent = ({
           {friends_sent.map(({
             id = -1,
             accepted,
-            to_user,
+            to_user = {
+              id:-1,
+              username:"",
+              fullname:"",
+            },
           }: FriendType) => {
             const buttonType: AcceptRejectButtonsType = (
               (accepted === true && ["accept"]) ||

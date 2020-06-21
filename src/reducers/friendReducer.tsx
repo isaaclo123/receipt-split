@@ -4,7 +4,9 @@ import {
   FRIEND_LIST_SUCCESS,
   FRIEND_LIST_FAIL,
   FRIEND_ADD_SUCCESS,
-  FRIEND_ADD_FAIL
+  FRIEND_ADD_FAIL,
+  FRIEND_LIST_SET_ACCEPTED_SUCCESS,
+  FRIEND_LIST_SET_ACCEPTED_FAIL
 } from "../types/index";
 
 import { setDataReducer, applyDataReducers } from "./index";
@@ -22,6 +24,15 @@ const initialState: FriendState = {
 export const friendReducer = applyDataReducers<FriendState, FriendAction>(
   initialState,
   [
+    {
+      reducerCreator: setDataReducer,
+      args: [
+        {
+          successType: FRIEND_LIST_SET_ACCEPTED_SUCCESS,
+          failType: FRIEND_LIST_SET_ACCEPTED_FAIL
+        }
+      ]
+    },
     {
       reducerCreator: setDataReducer,
       args: [

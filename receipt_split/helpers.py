@@ -5,6 +5,8 @@ from flask_api import status
 from functools import reduce
 from dataclasses import dataclass, field
 from typing import Any, List, Dict, Callable
+from flask_jwt import current_identity
+from pprint import pformat
 import math
 
 from .meta import db
@@ -171,7 +173,6 @@ def calculate_balances(receipt):
 
 def get_model_view(obj,
                    no_auth=False,
-                   current_identity=None,
                    allowed_users=[],
                    schema=None):
     if obj is None:
@@ -181,7 +182,7 @@ def get_model_view(obj,
     if no_auth:
         return schema.dump(obj)
 
-    if not is_authorized(obj, current_identity, allowed_users):
+    if not is_authorized(obj, allowed_users):
         return err("User is not authorized"), status.HTTP_401_UNAUTHORIZED
 
     return schema.dump(obj)
@@ -190,7 +191,6 @@ def get_model_view(obj,
 def accept_reject_view(action,
 
                        obj=None,
-                       current_identity=None,
                        schema=None,
 
                        # model=None,
@@ -222,12 +222,13 @@ def accept_reject_view(action,
                 db.session.commit()
 
         obj_dump = schema.dump(obj)
+        app.logger.debug("obj_dump %s", obj)
         return obj_dump
 
     return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
-def is_authorized(allowed_attrs, obj=None, current_identity=None):
+def is_authorized(allowed_attrs, obj=None, **kwargs):
     if current_identity is None:
         return False
 
@@ -239,6 +240,9 @@ def is_authorized(allowed_attrs, obj=None, current_identity=None):
         True  # default: user is authorized to access
     )
 
+    app.logger.debug("%s for %s authorized status %s",
+                     current_identity.username, obj, authorized)
+
     return authorized
 
 
@@ -249,7 +253,7 @@ class View:
     auth_attrs: List[str]
     auth_use_id: bool = False
     view_args: List[Any] = field(default_factory=list)
-    view_kwargs: Dict[Any, Any] = field(default_factory=Dict)
+    view_kwargs: Dict[Any, Any] = field(default_factory=dict)
 
 
 """
@@ -259,7 +263,7 @@ class View:
     "auth_use_id": False
             #(Usually use current_identity compare, otherwise curr.id)
     "view": view((...args), ...view_args, obj=obj,
-                    current_identity=current_identity, ...view_kwargs)
+                    , ...view_kwargs)
     "view_args": []
     "view_kwargs": \{\}
         # function that does view
@@ -271,26 +275,32 @@ class View:
 def create_view(behaviors,
                 *args,
                 obj=None,
-                current_identity=None,
                 schema=None):
 
+    app.logger.debug("request.method %s", request.method)
+
+    app.logger.debug("behaviors %s, len %s", behaviors, len(behaviors))
     for b in behaviors:
+        app.logger.debug("b.method %s", b.methods)
         if request.method not in b.methods:
-            break
+            continue
+
+        app.logger.debug("after break")
 
         default_kwargs = {
-            "current_identity": current_identity,
             "obj": obj,
             "schema": schema
         }
 
-        if b.auth_attrs is not None and\
-                is_authorized(b.auth_attrs, **default_kwargs):
+        if b.auth_attrs is None or \
+                not is_authorized(b.auth_attrs, **default_kwargs):
             return err("Not Authorized"), status.HTTP_401_UNAUTHORIZED
 
         new_kwargs = {**default_kwargs, **b.view_kwargs}
 
         # pass original args, then view_args, then kwargs
-        return b.view(*args, *b.view_args, **new_kwargs)
+        result = b.view(*args, *b.view_args, **new_kwargs)
+        app.logger.debug("view result - %s", pformat(result))
+        return result
 
     return err("Method not Allowed"), status.HTTP_405_METHOD_NOT_ALLOWED

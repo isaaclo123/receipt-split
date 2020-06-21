@@ -50,6 +50,9 @@ export const fetchFriends = (token: string) =>
 export const fetchAddFriend = (username: string, token: string) =>
   fetchData(`friend/${username}`, "POST", null, token);
 
+export const confirmFriend = (id: number, action: "accept" | "reject", token: string) =>
+  fetchData(`friends/${id}/${action}`, "POST", null, token);
+
 // balance_sum
 
 export const fetchBalanceSumList = (token: string) =>
