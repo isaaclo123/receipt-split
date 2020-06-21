@@ -73,13 +73,19 @@ class RequestMixin(OwnedMixin, object):
 
     @classmethod
     def get_sent(cls, user):
-        sent = cls.query.filter_by(
+        return cls.query.filter_by(
             from_user_id=user.id,
             archived=False
         )
 
+    @classmethod
+    def archive_sent(cls, user):
         # archive payments not archived yet which are not in "pending" state
         # (null)
+        sent = cls.query.filter_by(
+            from_user_id=user.id,
+            archived=False
+        )
         sent.filter(
             cls.accepted.isnot(None)
         ).update({"archived": True})

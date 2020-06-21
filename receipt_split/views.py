@@ -482,6 +482,8 @@ def friend_list():
         "friends": friends
     }
 
+    Friend.archive_sent(current_identity)
+
     return friend_result, status.HTTP_200_OK
 
 
