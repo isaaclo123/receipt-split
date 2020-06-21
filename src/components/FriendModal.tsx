@@ -53,7 +53,7 @@ const FriendModalComponent = ({
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">Add Friend</Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">Send Friend Request</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>

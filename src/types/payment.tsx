@@ -1,5 +1,6 @@
 import {
-  UserType,
+  // UserType,
+  AcceptRejectRequest,
 
   Action,
   ErrorData,
@@ -12,10 +13,10 @@ import {
   PAYMENT_LIST_FAIL,
 } from "./index";
 
-export type PaymentType = {
+export interface PaymentType extends AcceptRejectRequest {
   id?: number;
   date: string;
-  accepted: boolean | null;
+  // accepted: boolean | null;
   message?: string;
 
   to_user_id?: number;
@@ -23,24 +24,26 @@ export type PaymentType = {
 
   amount: number;
 
-  to_user: UserType;
-  from_user: UserType;
+  // to_user: UserType;
+  // from_user: UserType;
 };
 
-export type PaymentEditType = PaymentType | {
-  id?: number;
-  date?: string;
-  accepted?: boolean | null;
 
-  to_user_id?: number;
-  from_user_id?: number;
-
-  from_user?: UserType;
-
-  message: string;
-  amount: number;
-  to_user: UserType;
-};
+export type PaymentEditType = PaymentType;
+// | {
+//   id?: number;
+//   date?: string;
+//   accepted?: boolean | null;
+//
+//   to_user_id?: number;
+//   from_user_id?: number;
+//
+//   from_user?: UserType;
+//
+//   message: string;
+//   amount: number;
+//   to_user: UserType;
+// };
 
 export interface PaymentErrors extends ErrorData {
   to_user?: string;

@@ -8,9 +8,11 @@ import { getUserAndFriends } from "../actions/index";
 import {
   UserListItemComponent,
   ListOrNoneComponent,
-  FriendModal
+  FriendModal,
+  AcceptRejectComponent,
+  AcceptRejectButtonsType
 } from "./index";
-import { RootState, UserType } from "../types/index";
+import { RootState, UserType, FriendType } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
   const { userState, friendState } = state;
@@ -44,6 +46,12 @@ const PeoplePageComponent = ({
 
   const { username, fullname } = userState.data;
 
+  const {
+    friends,
+    friends_received,
+    friends_sent
+  } = friendState.data;
+
   return (
     <>
       <FriendModal
@@ -52,6 +60,71 @@ const PeoplePageComponent = ({
           setHide(true);
         }}
       />
+
+      {((friends_received).length > 0) &&
+      <>
+        <h5>Received Friend Requests</h5>
+
+        <ListGroup className="mb-3">
+          {friends_received.map(({
+            id = -1,
+            accepted,
+            from_user,
+          }: FriendType,
+          index: number) => {
+            return (
+              <AcceptRejectComponent
+                accepted={accepted}
+                buttons={["accept", "reject"]}
+                onAccept={() => {
+                  // setPaymentConfirm(id, "accept", index)
+                }}
+                onReject={() => {
+                  // setPaymentConfirm(id, "reject", index)
+                }}
+                messageComponent={(
+                  <>
+                    <span className="text-primary">{from_user.fullname}</span>
+                  </>
+                  )}
+              / >
+            );
+        })}
+        </ListGroup>
+      </>}
+
+      {(friends_sent.length > 0) &&
+      <>
+        <h5>Pending Friend Requests</h5>
+
+        <ListGroup className="mb-3">
+          {friends_sent.map(({
+            id = -1,
+            accepted,
+            to_user,
+          }: FriendType) => {
+            const buttonType: AcceptRejectButtonsType = (
+              (accepted === true && ["accept"]) ||
+              (accepted === false && ["reject"]) ||
+              (["pending"])
+            );
+
+            return (
+              <AcceptRejectComponent
+                accepted={accepted}
+                buttons={buttonType}
+                messageComponent={(
+                  <>
+                    <span className="text-primary">{to_user.fullname}</span>
+                  </>
+                  )}
+              / >
+            );
+          })}
+        </ListGroup>
+      </>
+      }
+
       <h5>User Info</h5>
       <ListGroup className="mb-3">
         <ListGroup.Item>
@@ -75,7 +148,7 @@ const PeoplePageComponent = ({
 
       <ListGroup className="mb-3">
         <ListOrNoneComponent<UserType>
-          list={friendState.data.friends}
+          list={friends}
           listComponent={(user: UserType) => (
             <UserListItemComponent user={user} />
           )}

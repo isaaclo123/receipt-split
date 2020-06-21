@@ -13,12 +13,12 @@ from sqlalchemy import and_, exists, or_
 
 from .meta import db
 # from .auth import identity
-from .models import User, Receipt, Balance, Payment, Settlement
-from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
-    BalanceSumSchema, PaymentSchema, \
-    RECEIPT_INFO_EXCLUDE_FIELDS
+from .models import User, Receipt, Balance, Payment, Settlement, Friend
+from .schemas import UserSchema, ReceiptSchema, BalanceSchema,\
+    BalanceSumSchema, PaymentSchema, FriendSchema, RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm, PaymentForm
-from .helpers import calculate_balances, ok, err
+from .helpers import calculate_balances, ok, err, accept_reject_view, \
+    create_view, View, get_model_view
 
 # import requests
 
@@ -37,6 +37,9 @@ receipts_schema = ReceiptSchema(many=True, exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
 
 payment_schema = PaymentSchema()
 payments_schema = PaymentSchema(many=True)
+
+friend_schema = FriendSchema()
+friends_schema = FriendSchema(many=True)
 
 
 @views.route('/receipt', methods=['GET'])
@@ -206,30 +209,17 @@ def friend_add(username):
                         current_identity.username)
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
-    current_identity.add_friend(friend)
+    friend_request = Friend(from_user=current_identity, to_user=friend)
 
+    db.session.add(friend_request)
     db.session.commit()
 
-    friend_dump = user_schema.dump(friend)
+    friend_dump = user_schema.dump(friend_request)
 
-    app.logger.info("/friend/%s added for %s - ", username,
+    app.logger.info("/friend/%s request for %s - ", username,
                     current_identity.username, friend_dump)
 
     return friend_dump, status.HTTP_200_OK
-
-
-@views.route('/friends', methods=['GET'])
-@jwt_required()
-def friend_list():
-    friends = users_schema.dump(current_identity.friends)
-    app.logger.info("/friend list get - %s - %s", current_identity.username,
-                    friends)
-
-    friend_result = {
-        "friends": friends
-    }
-
-    return friend_result, status.HTTP_200_OK
 
 
 def get_balance_list(q):
@@ -267,13 +257,13 @@ def get_balances_owned(current_identity):
 
     # settlements curr user owes to others for balances above
     settlements_ids_q = db.session.query(
-        Settlement.user_id,
+        Settlement.from_user_id,
         Settlement.to_user_id,
         Settlement.owed_amount,
         Settlement.paid_amount
     ).filter(
-        Settlement.user_id == current_identity.id,
-        Settlement.user_id.in_(balance_ids)
+        Settlement.from_user_id == current_identity.id,
+        Settlement.from_user_id.in_(balance_ids)
     )
     settlements_ids = settlements_ids_q.subquery()
     app.logger.debug("owned settlements_ids %s", settlements_ids_q.all())
@@ -324,13 +314,13 @@ def get_balances_owed(current_identity):
 
     # settlements curr user owes to others for balances above
     settlements_ids_q = db.session.query(
-        Settlement.user_id,
+        Settlement.from_user_id,
         Settlement.to_user_id,
         Settlement.owed_amount,
         Settlement.paid_amount,
     ).filter(
         Settlement.to_user_id == current_identity.id,  # to me
-        Settlement.user_id.in_(balance_ids)  # from others
+        Settlement.from_user_id.in_(balance_ids)  # from others
     )
     settlements_ids = settlements_ids_q.subquery()
     app.logger.debug("owed settlements_ids %s", settlements_ids_q.all())
@@ -344,7 +334,7 @@ def get_balances_owed(current_identity):
         settlements_ids
     ).join(  # get user that Balance is from, the user curr user must pay
         User,
-        User.id == settlements_ids.c.user_id,
+        User.id == settlements_ids.c.from_user_id,
     ).join(  # balances addressed to current user, must be paid my curr
         Balance,
         and_(
@@ -471,6 +461,49 @@ def get_payment(id, action=None):
         return payment_dump
 
     return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+
+@views.route('/friends', methods=['GET'])
+@jwt_required()
+def friend_list():
+    friends = users_schema.dump(current_identity.friends)
+    friends_received = friends_schema.dump(
+        Friend.get_received(current_identity)
+    )
+    friends_sent = friends_schema.dump(
+        Friend.get_sent(current_identity)
+    )
+    app.logger.info("/friend list get - %s - %s", current_identity.username,
+                    friends)
+
+    friend_result = {
+        "friends_received": friends_received,
+        "friends_sent": friends_sent,
+        "friends": friends
+    }
+
+    return friend_result, status.HTTP_200_OK
+
+
+@views.route('/friends/<int:id>')
+@views.route('/friends/<int:id>/<action>')
+@jwt_required()
+def friends(id, action=None):
+    return create_view(
+        [
+            View(
+                methods=["GET"],
+                view=get_model_view,
+            ),
+            View(
+                methods=["POST"],
+                view=accept_reject_view,
+            )
+        ],
+        obj=Friend.query.get(id),
+        current_identity=current_identity,
+        schema=FriendSchema
+    )
 
 
 @views.route('/payment', methods=['POST'])

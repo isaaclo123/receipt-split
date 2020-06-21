@@ -1,4 +1,5 @@
 import { rootReducer } from "../reducers/rootReducer";
+import { UserType } from "./user";
 
 export * from "./api";
 export * from "./setValue";
@@ -63,3 +64,11 @@ export type DataReducerType = {
   reducerCreator: ReducerCreatorType;
   args: any[];
 };
+
+export interface AcceptRejectRequest {
+  id?: number;
+  accepted: boolean | null;
+  archived?: boolean;
+  to_user: UserType;
+  from_user: UserType;
+}

@@ -1,8 +1,14 @@
 from decimal import Decimal
+from flask import request
 from flask import current_app as app
+from flask_api import status
+from functools import reduce
+from dataclasses import dataclass, field
+from typing import Any, List, Dict, Callable
+import math
+
 from .meta import db
 from .models import Balance, Settlement
-import math
 
 
 def ok(msg):
@@ -144,14 +150,14 @@ def calculate_balances(receipt):
     # TODO
     for u in users:
         s = Settlement.query.get({
-            "user_id": owner.id,
+            "from_user_id": owner.id,
             "to_user_id": u.id
         })
         if s is not None:
             s.update_settlement()
 
         s = Settlement.query.get({
-            "user_id": u.id,
+            "from_user_id": u.id,
             "to_user_id": owner.id
         })
         if s is not None:
@@ -161,3 +167,130 @@ def calculate_balances(receipt):
         app.logger.debug("\tsettlement %s", s)
 
     return receipt
+
+
+def get_model_view(obj,
+                   no_auth=False,
+                   current_identity=None,
+                   allowed_users=[],
+                   schema=None):
+    if obj is None:
+        return err("requested data does not exist"), status.HTTP_404_NOT_FOUND
+
+    # allowed_users is None means allowed
+    if no_auth:
+        return schema.dump(obj)
+
+    if not is_authorized(obj, current_identity, allowed_users):
+        return err("User is not authorized"), status.HTTP_401_UNAUTHORIZED
+
+    return schema.dump(obj)
+
+
+def accept_reject_view(action,
+
+                       obj=None,
+                       current_identity=None,
+                       schema=None,
+
+                       # model=None,
+                       accept="accept",
+                       reject="reject"):
+    if schema is None:
+        raise TypeError("Schema Model argument is None")
+    if obj is None:
+        raise TypeError("Object is None")
+    # obj = model.query.get(id)
+
+    # accept or reject bahavior after
+
+    if obj.to_user != current_identity:
+        return err("you are not authorized to accept or reject this"),
+    status.HTTP_401_UNAUTHORIZED
+
+    if action is None:
+        return err("No action was given"), status.HTTP_400_BAD_REQUEST,
+
+    if (action == accept or action == reject) and \
+            request.method == 'POST':
+        if action == accept:
+            if obj.accept():
+                db.session.commit()
+
+        if action == reject:
+            if obj.reject():
+                db.session.commit()
+
+        obj_dump = schema.dump(obj)
+        return obj_dump
+
+    return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+
+def is_authorized(allowed_attrs, obj=None, current_identity=None):
+    if current_identity is None:
+        return False
+
+    authorized = reduce(
+        # if one True attr, then all True
+        lambda acc, cur:
+            acc or (getattr(obj, cur) == current_identity),
+        allowed_attrs,
+        True  # default: user is authorized to access
+    )
+
+    return authorized
+
+
+@dataclass
+class View:
+    view: Callable[[Any], Any]
+    methods: List[str]
+    auth_attrs: List[str]
+    auth_use_id: bool = False
+    view_args: List[Any] = field(default_factory=list)
+    view_kwargs: Dict[Any, Any] = field(default_factory=Dict)
+
+
+"""
+[{
+    "methods": ["GET", ...]
+    "auth_attrs": ["to_user", ...] OR None
+    "auth_use_id": False
+            #(Usually use current_identity compare, otherwise curr.id)
+    "view": view((...args), ...view_args, obj=obj,
+                    current_identity=current_identity, ...view_kwargs)
+    "view_args": []
+    "view_kwargs": \{\}
+        # function that does view
+        # obj and current_identity passed in by default
+}, ...]
+"""
+
+
+def create_view(behaviors,
+                *args,
+                obj=None,
+                current_identity=None,
+                schema=None):
+
+    for b in behaviors:
+        if request.method not in b.methods:
+            break
+
+        default_kwargs = {
+            "current_identity": current_identity,
+            "obj": obj,
+            "schema": schema
+        }
+
+        if b.auth_attrs is not None and\
+                is_authorized(b.auth_attrs, **default_kwargs):
+            return err("Not Authorized"), status.HTTP_401_UNAUTHORIZED
+
+        new_kwargs = {**default_kwargs, **b.view_kwargs}
+
+        # pass original args, then view_args, then kwargs
+        return b.view(*args, *b.view_args, **new_kwargs)
+
+    return err("Method not Allowed"), status.HTTP_405_METHOD_NOT_ALLOWED

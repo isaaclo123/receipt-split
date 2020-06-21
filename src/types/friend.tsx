@@ -1,9 +1,14 @@
-import { UserType, Dict, Action, Failable, ErrorData } from "./index";
+import { UserType, Dict, Action, Failable, ErrorData, AcceptRejectRequest } from "./index";
 
 import { FRIEND_LIST_SUCCESS, FRIEND_LIST_FAIL } from "../types/index";
 
+export interface FriendType extends AcceptRejectRequest {
+};
+
 export interface FriendListType extends ErrorData {
   friends: UserType[];
+  friends_received: FriendType[];
+  friends_sent: FriendType[];
 };
 
 export type FriendListSuccessAction = Action<

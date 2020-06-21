@@ -12,7 +12,9 @@ import { setDataReducer, applyDataReducers } from "./index";
 const initialState: FriendState = {
   error: false,
   data: {
-    friends: []
+    friends: [],
+    friends_received: [],
+    friends_sent: []
   },
   errors: {}
 };
@@ -36,9 +38,12 @@ export const friendReducer = applyDataReducers<FriendState, FriendAction>(
           successType: FRIEND_ADD_SUCCESS,
           failType: FRIEND_ADD_FAIL,
           onSuccess: (data: any, payload: any[]) => {
-            return {
-              "friends": [payload].concat(data.friends)
-            }
+            // return {
+            //   "friends": [payload].concat(data.friends)
+            // }
+            return Object.assign({}, data, {
+              "friends_sent": [payload].concat(data.friends_sent)
+            });
           }
         }
       ]

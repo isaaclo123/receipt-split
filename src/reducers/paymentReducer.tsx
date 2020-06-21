@@ -14,7 +14,14 @@ import { editDataReducer, setDataReducer, applyDataReducers } from "./index";
 const initialState: PaymentState = {
   error: false,
   data: {
+    date: "",
+    accepted: null,
     to_user: {
+      id: -1,
+      username: "",
+      fullname: ""
+    },
+    from_user: {
       id: -1,
       username: "",
       fullname: ""

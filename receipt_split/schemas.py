@@ -1,6 +1,6 @@
 from flask import current_app as app
 from marshmallow import EXCLUDE, fields, post_load, Schema
-from .models import User, Receipt, ReceiptItem, Balance, Payment
+from .models import User, Receipt, ReceiptItem, Balance, Payment, Friend
 
 from .meta import ma, db
 # db
@@ -84,12 +84,12 @@ def get_existing_users(self, data, original_data, **kwargs):
 
     data["users"] = newusers
     return data
-
-
-class FriendSchema(BaseSchema):
-    class Meta(BaseSchema.Meta):
-        model = User
-        fields = ('id', 'fullname', 'username')
+#
+#
+# class FriendSchema(BaseSchema):
+#     class Meta(BaseSchema.Meta):
+#         model = User
+#         fields = ('id', 'fullname', 'username')
 
 
 class UserSchema(BaseSchema):
@@ -180,6 +180,15 @@ class PaymentSchema(BaseSchema):
                                      user_field="from_user", **kwargs)
         app.logger.debug("GET EXISTING USER END PAYMENT_SCHEMA")
         return fromuser
+
+
+class FriendSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        model = Friend
+        fields = ('id', 'to_user', 'from_user', 'accepted', 'archived')
+
+    to_user = ma.Nested(UserSchema)
+    from_user = ma.Nested(UserSchema)
 
 
 class BalanceSumSchema(Schema):
