@@ -18,7 +18,7 @@ from .schemas import UserSchema, ReceiptSchema, BalanceSchema,\
     BalanceSumSchema, PaymentSchema, FriendSchema, RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm, PaymentForm
 from .helpers import calculate_balances, ok, err, accept_reject_view, \
-    create_view, View, get_model_view
+    create_view, View, get_model_view, Call, is_authorized
 
 # import requests
 
@@ -184,9 +184,7 @@ def receipt_by_id(id):
 @views.route('/user', methods=['GET'])
 @jwt_required()
 def user():
-    user_dump = user_schema.dump(current_identity)
-    app.logger.info("/user data - %s", user_dump)
-    return user_dump, status.HTTP_200_OK
+    return get_model_view(obj=current_identity, schema=user_schema)
 
 
 @views.route('/friend/<username>', methods=['POST'])
@@ -358,54 +356,26 @@ def balance_sums():
     app.logger.info("/balancesums result - %s", pformat(balances_owned))
 
     return {
+        "balances_owned": balances_owned,
         "balances_owed": balances_owed,
-        "balances_owned": balances_owned
     }
-
-
-def get_payments_received(current_identity):
-    payments = Payment.query.filter_by(
-        accepted=None,
-        to_user_id=current_identity.id,
-        archived=False
-    ).all()
-
-    payments_dump = payments_schema.dump(payments)
-    app.logger.debug("get payments received - %s", payments_dump)
-    return payments_dump
-
-
-def get_payments_sent(current_identity):
-    payments = Payment.query.filter_by(
-        from_user_id=current_identity.id,
-        archived=False
-    )
-
-    payments_dump = payments_schema.dump(payments.all())
-
-    # archive payments not archived yet which are not in "pending" state
-    # (null)
-    payments.filter(
-        Payment.accepted.isnot(None)
-    ).update({"archived": True})
-
-    db.session.commit()
-
-    app.logger.debug("get payments sent - %s", payments_dump)
-    return payments_dump
 
 
 @views.route('/payments', methods=['GET'])
 @jwt_required()
 def get_payments():
     app.logger.debug("GET PAYMENTS/")
-    payments_received = get_payments_received(current_identity)
-    payments_sent = get_payments_sent(current_identity)
 
     payments_result = {
-        "payments_received": payments_received,
-        "payments_sent": payments_sent
+        "payments_received": payments_schema.dump(
+            Payment.get_received(current_identity)
+        ),
+        "payments_sent": payments_schema.dump(
+            Payment.get_sent(current_identity)
+        )
     }
+
+    Payment.archive_sent(current_identity)
     app.logger.debug("/payments result - %s", payments_result)
     return payments_result
 
@@ -414,53 +384,36 @@ def get_payments():
 @views.route('/payments/<int:id>/<action>', methods=['GET', 'POST'])
 @jwt_required()
 def get_payment(id, action=None):
-    payment = Payment.query.get(id)
-
-    if not payment:
-        return err("requested payment does not exist"),
-    status.HTTP_404_NOT_FOUND
-
-    if payment.to_user != current_identity and \
-            payment.from_user != current_identity:
-        return err("you are not authorized to view this payment"),
-    status.HTTP_401_UNAUTHORIZED
-
-    if action is None and request.method == 'GET':
-        payment_dump = payment_schema.dump(payment)
-        return payment_dump
-
-    # accept or reject bahavior after
-
-    if payment.to_user != current_identity:
-        return err("you are not authorized to accept or reject this payment"),
-    status.HTTP_401_UNAUTHORIZED
-
-    # change accepted value
-    app.logger.info("action is: %s", action)
-    app.logger.info("method is: %s", request.method)
-
-    if (action == "accept" or action == "reject") and request.method == 'POST':
-        app.logger.debug("inside if statement")
-
-        if action == "accept":
-            app.logger.debug("in accept")
-
-            if payment.accept():
-                app.logger.info("accepted payment %s", id)
-                db.session.commit()
-
-        if action == "reject":
-            app.logger.debug("in reject")
-
-            if payment.reject():
-                app.logger.info("rejected payment %s", id)
-                db.session.commit()
-
-        payment_dump = payment_schema.dump(payment)
-        app.logger.debug("payments %s - %s", action, payment_dump)
-        return payment_dump
-
-    return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
+    return create_view([
+        View(
+            methods=["GET"],
+            calls=[
+                Call(
+                    func=is_authorized,
+                    args=[["to_user", "from_user"]]
+                ),
+                Call(
+                    func=get_model_view,
+                )
+            ]
+        ),
+        View(
+            methods=["POST"],
+            calls=[
+                Call(
+                    func=is_authorized,
+                    args=[["to_user"]]
+                ),
+                Call(
+                    func=accept_reject_view,
+                    args=[action]
+                )
+            ]
+        )
+        ],
+        obj=Payment.query.get(id),
+        schema=payment_schema
+    )
 
 
 @views.route('/friends', methods=['GET'])
@@ -491,19 +444,32 @@ def friend_list():
 @views.route('/friends/<int:id>/<action>', methods=["GET", "POST"])
 @jwt_required()
 def friends(id, action=None):
-    return create_view(
-        [
-            View(
-                methods=["GET"],
-                view=get_model_view,
-                auth_attrs=["to_user", "from_user"],
-            ),
-            View(
-                methods=["POST"],
-                auth_attrs=["to_user", "from_user"],
-                view=accept_reject_view,
-                view_args=[action]
-            )
+    return create_view([
+        View(
+            methods=["GET"],
+            calls=[
+                Call(
+                    func=is_authorized,
+                    args=[["to_user", "from_user"]]
+                ),
+                Call(
+                    func=get_model_view,
+                )
+            ]
+        ),
+        View(
+            methods=["POST"],
+            calls=[
+                Call(
+                    func=is_authorized,
+                    args=[["to_user", "from_user"]]
+                ),
+                Call(
+                    func=accept_reject_view,
+                    args=[action]
+                )
+            ]
+        )
         ],
         obj=Friend.query.get(id),
         schema=friend_schema

@@ -98,6 +98,12 @@ const BalancePageComponent = ({
     payments_sent
   } = paymentListState.data;
 
+  console.log("paymentListState")
+  console.log(paymentListState)
+  console.log(payments_received)
+  console.log(payments_sent)
+  console.log("paymentListState")
+
   const getBalanceList = (balances_list: BalanceSumType[], props: Dict) => (
     <CardColumns>
       {balances_list.map((balanceSum : BalanceSumType) => {

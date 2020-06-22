@@ -30,6 +30,8 @@ import {
   UserType,
   EDIT_DATA_APPEND,
   EDIT_DATA_PREPEND,
+  RECEIPT_EDIT_RESET,
+  RootState,
   // RootState,
   // ReceiptAction
 } from "../types/index";
@@ -45,16 +47,29 @@ export const getReceiptList = (): ApiMiddlewareAction =>
     apiCall: fetchReceiptList
   });
 
-export const getReceipt = (id: number): ApiMiddlewareAction =>
-  apiCallAction({
-    successType: RECEIPT_ID_SUCCESS,
-    failType: RECEIPT_ID_FAIL,
-    withToken: true,
-    // shouldCallApi: (state: RootState) => state.receiptDictState.data[id], TODO
-    // onSuccess: (cur: any) => Object.assign({}, prev, cur),
-    apiCall: fetchReceiptById,
-    apiCallArgs: [id]
-  });
+
+export const resetReceipt = setValueAction<{}>({
+  successType: RECEIPT_EDIT_RESET,
+  onSuccess: (payload: any, { userState }: RootState) => {
+    return userState.data
+  }
+})({}, []);
+
+export const getReceipt = (id: number): ApiMiddlewareAction => {
+  if (id === -1) {
+    return resetReceipt;
+  }
+
+  return apiCallAction({
+      successType: RECEIPT_ID_SUCCESS,
+      failType: RECEIPT_ID_FAIL,
+      withToken: true,
+      // shouldCallApi: (state: RootState) => state.receiptDictState.data[id], TODO
+      // onSuccess: (cur: any) => Object.assign({}, prev, cur),
+      apiCall: fetchReceiptById,
+      apiCallArgs: [id]
+    });
+}
 
 export const saveReceipt = (
   id: number,

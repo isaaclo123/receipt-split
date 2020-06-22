@@ -9,13 +9,24 @@ import {
   EDIT_DATA_APPEND
 } from "../types/index";
 
+export const getCurrentDate = () => {
+  const today = new Date()
+
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = today.getFullYear();
+
+  const date = `${yyyy}-${mm}-${dd}`;
+  return date;
+}
+
 export const setDataReducer = (
   initialState: any,
   {
     successType,
     failType,
-    onSuccess = (a: Dict, b: any) => b,
-    onFail = (a: Dict, b: any) => b
+    onSuccess = (data: Dict, payload: any) => payload,
+    onFail = (data: Dict, payload: any) => payload
   }: SetDataReducerType
 ) => (state: Failable<any, any>, action: Action<string, any>) => {
   switch (action.type) {

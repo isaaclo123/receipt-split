@@ -56,6 +56,10 @@ const PeoplePageComponent = ({
     friends_sent
   } = friendState.data;
 
+  console.log("friendState")
+  console.log(friendState)
+  console.log("friendState")
+
   return (
     <>
       <FriendModal

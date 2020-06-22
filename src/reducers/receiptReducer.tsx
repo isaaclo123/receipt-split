@@ -13,34 +13,53 @@ import {
   RECEIPT_ITEM_SET_NAME,
   RECEIPT_ITEM_SET_AMOUNT,
   RECEIPT_ITEM_ADD_USER,
-  RECEIPT_ITEM_DELETE_USER
+  RECEIPT_ITEM_DELETE_USER,
+  RECEIPT_EDIT_RESET,
+  UserType,
+  Dict
 } from "../types/index";
 
 import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
+import { getCurrentDate } from "./helpers";
 
-const initialState: ReceiptState = {
-  error: false,
-  data: {
+const initialState = (
+  user:UserType={
     id: -1,
-    name: "",
-    amount: 0,
-    date: "",
-    resolved: false,
-    user: {
+    fullname: "",
+    username: ""
+  }): ReceiptState => {
+  return {
+    error: false,
+    data: {
       id: -1,
-      fullname: "",
-      username: ""
+      name: "New Receipt",
+      amount: 0,
+      date: getCurrentDate(),
+      resolved: false,
+      user: user,
+      users: [],
+      balances: [],
+      receipt_items: []
     },
-    users: [],
-    balances: [],
-    receipt_items: []
-  },
-  errors: {}
+    errors: {}
+  };
 };
 
 export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
-  initialState,
+  initialState(undefined),
   [
+    {
+      reducerCreator: setDataReducer,
+      args: [
+        {
+          successType: RECEIPT_EDIT_RESET,
+          // sets data to initial state
+          onSuccess: (_: any, { data }: any) => {
+            return initialState(data).data;
+          },
+        }
+      ]
+    },
     {
       reducerCreator: setDataReducer,
       args: [

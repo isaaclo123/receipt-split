@@ -1,3 +1,4 @@
+
 from decimal import Decimal
 from flask import request
 from flask import current_app as app
@@ -8,6 +9,7 @@ from typing import Any, List, Dict, Callable
 from flask_jwt import current_identity
 from pprint import pformat
 import math
+from functools import partial
 
 from .meta import db
 from .models import Balance, Settlement
@@ -171,28 +173,31 @@ def calculate_balances(receipt):
     return receipt
 
 
-def get_model_view(obj=None, schema=None):
-    if obj is None:
-        return err("requested data does not exist"), status.HTTP_404_NOT_FOUND
+def get_model_view(schema=None):
+    outer_schema = schema
 
-    return schema.dump(obj)
+    def wrapper(obj=None, schema=None,
+                callback=lambda *x, **xx: None, *args, **kwargs):
+        if obj is None:
+            return err("requested data does not exist"),
+        status.HTTP_404_NOT_FOUND
+
+        if outer_schema is not None:
+            return outer_schema.dump(obj)
+        return schema.dump(obj)
+
+    return wrapper
 
 
-def accept_reject_view(action,
-
-                       obj=None,
-                       schema=None,
-
+def accept_reject_view(action=None,
                        # model=None,
                        accept="accept",
                        reject="reject"):
     if schema is None:
         raise TypeError("Schema Model argument is None")
     if obj is None:
-        return err("Resource does not exist"), status.HTTP_404_NOT_FOUND
-    # obj = model.query.get(id)
+        raise TypeError("Object is None")
 
-    # accept or reject bahavior after
     if action is None:
         return err("No action was given"), status.HTTP_400_BAD_REQUEST,
 
@@ -213,50 +218,67 @@ def accept_reject_view(action,
     return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
-def is_authorized(allowed_attrs, obj=None, **kwargs):
-    if current_identity is None:
-        return err("Requesting User invalid"),
-    status.HTTP_500_INTERNAL_SERVER_ERROR
+def is_authorized(allowed_attrs=[]):
+    # requires obj and optionall callback
+    def wrapper(obj=None, callback=lambda *x, **xx: None,
+                *args, **kwargs):
+        if obj is None:
+            return err("No Object for Comparison Found"),
+        status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    authorized = reduce(
-        # if one True attr, then all True
-        lambda acc, cur:
-            acc or (getattr(obj, cur) == current_identity),
-        allowed_attrs,
-        True  # default: user is authorized to access
-    )
+        if current_identity is None:
+            return err("User Invalid"), status.HTTP_401_UNAUTHORIZED
 
-    app.logger.debug("%s for %s authorized status %s",
-                     current_identity.username, obj, authorized)
+        authorized = reduce(
+            # if one True attr, then all True
+            lambda acc, cur:
+                acc or (getattr(obj, cur) == current_identity),
+            allowed_attrs,
+            True  # default: user is authorized to access
+        )
 
-    if not authorized:
-        return err("Not Authorized to access"), status.HTTP_401_UNAUTHORIZED
+        app.logger.debug("%s for %s authorized status %s",
+                         current_identity.username, obj, authorized)
 
-    return None
+        if authorized:
+            # return function that takes callback to next function
+            return partial(callback, *args, obj=obj, **kwargs)
 
+        return err("Unauthorized"), status.HTTP_401_UNAUTHORIZED
 
-@dataclass
-class Call:
-    func: Callable[[Any], Any]
-    args: List[Any] = field(default_factory=list)
-    kwargs: Dict[Any, Any] = field(default_factory=dict)
+    return wrapper
 
 
 @dataclass
 class View:
+    view: Callable[[Any], Any]
     methods: List[str]
-    # accepts list of functions that return null on success, otherwise, result
-    # to return
+    view_args: List[Any] = field(default_factory=list)
+    view_kwargs: Dict[Any, Any] = field(default_factory=dict)
+    # accepts list of functions that return true or false
     # passes "obj" into check function
-    calls: List[Call] = field(default_factory=list)
+    checks: List[Any] = field(default_factory=list)
+
+
+"""
+[{
+    "methods": ["GET", ...]
+    "auth_use_id": False
+            #(Usually use current_identity compare, otherwise curr.id)
+    "view": view((...args), ...view_args, obj=obj,
+                    , ...view_kwargs)
+    "view_args": []
+    "view_kwargs": \{\}
+        # function that does view
+        # obj and current_identity passed in by default
+}, ...]
+"""
 
 
 def create_view(behaviors,
                 *args,
                 obj=None,
                 schema=None):
-    if obj is None:
-        return err("requested data does not exist"), status.HTTP_404_NOT_FOUND
 
     app.logger.debug("request.method %s", request.method)
 
@@ -273,17 +295,15 @@ def create_view(behaviors,
             "schema": schema
         }
 
-        for c in b.calls:
-            new_kwargs = {
-                **default_kwargs,
-                **c.kwargs
-            }
-            app.logger.debug("new_kwargs %s", new_kwargs)
-            app.logger.debug("c.args %s", c.args)
-            app.logger.debug("c.kwargs %s", c.kwargs)
+        if b.auth_attrs is None or \
+                not is_authorized(b.auth_attrs, **default_kwargs):
+            return err("Not Authorized"), status.HTTP_401_UNAUTHORIZED
 
-            result = c.func(*args, *c.args, **new_kwargs)
-            if result is not None:
-                return result
+        new_kwargs = {**default_kwargs, **b.view_kwargs}
+
+        # pass original args, then view_args, then kwargs
+        result = b.view(*args, *b.view_args, **new_kwargs)
+        app.logger.debug("view result - %s", pformat(result))
+        return result
 
     return err("Method not Allowed"), status.HTTP_405_METHOD_NOT_ALLOWED

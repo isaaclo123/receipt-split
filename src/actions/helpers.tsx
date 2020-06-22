@@ -11,7 +11,7 @@ export const getToken = (getState: () => RootState) => {
 
 export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
   dispatch: Dispatch,
-  getState: any
+  getState: () => RootState
 ) => {
   const {
     successType = null,
@@ -80,16 +80,19 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
 export const setValueAction = <T extends {}>({
   successType,
   failType = null,
-  validate = (a: T) => true
+  validate = (a: T) => true,
+  onSuccess = (payload: any, state:any) => payload,
+  onFail = (payload: any, state:any) => payload,
   }: setValuePayload<T>) => (payload: T, ids: number[] = []) => (
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  getState: () => RootState
 ) => {
   if (validate(payload)) {
     dispatch({
       type: successType,
       payload: {
         ids,
-        data: payload
+        data: onSuccess(payload, getState()),
       }
     });
   } else if (failType != null) {
@@ -97,7 +100,7 @@ export const setValueAction = <T extends {}>({
       type: failType,
       payload: {
         ids,
-        data: payload
+        data: onFail(payload, getState()),
       }
     });
   }
