@@ -34,7 +34,7 @@ yarn-error.log*
 /coverage
 
 # production
-# /build
+/build
 
 # misc
 .DS_Store
@@ -82,7 +82,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-# build/
+build/
 develop-eggs/
 dist/
 downloads/
