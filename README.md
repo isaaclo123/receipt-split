@@ -1,5 +1,15 @@
 # Receipt-split
 
+## Screenshots
+
+![Balance Pay Page](screenshots/balancepay.png)
+
+![Friend Page](screenshots/friendpage.png)
+
+![Receipt Edit Page](screenshots/receiptedit.png)
+
+## Project description
+
 1. Project Type: Plan A or B or C
 
     * I tried to go for Plan A
@@ -10,7 +20,7 @@
 
 3. Link to live Application:
 
-    * http://receipt-split.herokuapp.com/
+    * http://receipt-split.herokuapp.com/ (not working yet)
 
 4. Link to Github Code Repository: Make sure that you provide the link to project code and not the link to your homepage of GitHub repository.
 
