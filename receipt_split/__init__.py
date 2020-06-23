@@ -1,25 +1,19 @@
+from config import Config
+
 from flask_api import FlaskAPI, status
 from flask import send_from_directory
-from config import Config
-# from flask_migrate import Migrate
-import coloredlogs
 
+import coloredlogs
 import traceback
 import os
-
 import logging
 import wtforms_json
 
-# from .models import db
-from .auth import auth as auth_blueprint, authenticate, identity
-from .views import views as views_blueprint
-
 from flask_jwt import JWT
 from flask_cors import CORS
-# db.init_app(app)
-# migrate = Migrate(app, db)
-# from .models import *
 
+from .auth import auth as auth_blueprint, authenticate, identity
+from .views import views as views_blueprint
 from .meta import db, ma, migrate
 from .helpers import err
 

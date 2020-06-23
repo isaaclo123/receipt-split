@@ -12,6 +12,7 @@ from flask_migrate import Migrate
 #     "pk": "pk_%(table_name)s"
 # }
 # db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
+
 db = SQLAlchemy()
 
 ma = Marshmallow()
