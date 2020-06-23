@@ -3,7 +3,6 @@ from marshmallow import EXCLUDE, fields, post_load, Schema
 from .models import User, Receipt, ReceiptItem, Balance, Payment, Friend
 
 from .meta import ma, db
-# db
 
 USER_INFO_FIELDS = ('id', 'fullname', 'username')
 RECEIPT_INFO_EXCLUDE_FIELDS = ('receipt_items', 'balances', 'users')
@@ -84,19 +83,9 @@ def get_existing_users(self, data, original_data, **kwargs):
 
     data["users"] = newusers
     return data
-#
-#
-# class FriendSchema(BaseSchema):
-#     class Meta(BaseSchema.Meta):
-#         model = User
-#         fields = ('id', 'fullname', 'username')
 
 
 class UserSchema(BaseSchema):
-    # friends = ma.Nested(FriendSchema, many=True, include=USER_INFO_FIELDS)
-
-    # balances_to_user = ma.Nested(BalanceSchema, many=True)
-    # balances_from_user = ma.Nested(BalanceSchema, many=True)
     class Meta(BaseSchema.Meta):
         model = User
         fields = ('id', 'fullname', 'username')
@@ -200,7 +189,5 @@ class BalanceSumSchema(Schema):
     user = ma.Nested(UserSchema, include=USER_INFO_FIELDS, dump_only=True)
     owed_amount = fields.Decimal(dump_only=True)
     paid_amount = fields.Decimal(dump_only=True)
-    # receipts = ma.Nested(ReceiptSchema, many=True, dump_only=True,
-    #                      exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
     balances = ma.Nested(BalanceSchema, many=True, dump_only=True,
                          exclude=('from_user', 'to_user'))
