@@ -108,7 +108,7 @@ class BalanceSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Balance
         fields = ('id', 'to_user', 'from_user', 'amount', 'receipt_name',
-                  'receipt_id')
+                  'receipt_id', 'paid')
 
     to_user = ma.Nested(UserSchema)
     from_user = ma.Nested(UserSchema)

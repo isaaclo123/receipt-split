@@ -49,7 +49,7 @@ class Base(db.Model):
     @declared_attr
     def __mapper_args__(cls):
         return {
-            "order_by": cls.created_on
+            "order_by": cls.created_on.desc()
         }
 
 
@@ -329,6 +329,8 @@ class Settlement(Base):
     owed_amount = db.Column(db.Float(asdecimal=True), nullable=False,
                             default=0.0)
 
+    diff_amount = column_property(owed_amount - paid_amount)
+
     def update_settlement(self):
         s = db.session.query(
             func.coalesce(func.sum(Balance.amount), literal_column("0.0"))
@@ -350,6 +352,27 @@ class Settlement(Base):
 
     def remove_payment(self, payment):
         self.paid_amount = self.paid_amount - payment.amount
+
+    def apply_balance(self, balance):
+        # return True if paid
+        if balance.paid:
+            return False
+        if self.paid_amount < balance.amount\
+                or self.owed_amount < balance.amount:
+            app.logger.debug("balance id %s", balance.id)
+            app.logger.debug("bal_err paid %s, owed %s cur_bal %s",
+                             self.paid_amount, self.owed_amount,
+                             balance.amount)
+            return False
+
+        self.paid_amount = self.paid_amount - balance.amount
+        self.owed_amount = self.owed_amount - balance.amount
+        balance.paid = True
+
+        app.logger.debug("bal_OK! paid %s, owed %s cur_bal %s",
+                         self.paid_amount, self.owed_amount,
+                         balance.amount)
+        return True
 
 
 class User(Base):
@@ -423,21 +446,20 @@ class User(Base):
             accepted=True
         )
 
-        friends_from_test = db.session.query(
-            Friend.from_user_id.label("id")
-        ).select_from(Friend).filter_by(
-            from_user_id=self.id,
-            accepted=True
-        )
+        app.logger.debug("----------------")
         app.logger.debug("%s's 'friends_from %s", self.username,
-                         friends_from_test.all())
+                         friends_from.all())
 
         friends_to = db.session.query(
-            Friend.from_user.label("id")
+            Friend.from_user_id.label("id")
         ).select_from(Friend).filter_by(
             to_user_id=self.id,
             accepted=True
         )
+
+        app.logger.debug("----------------")
+        app.logger.debug("%s's 'friends_to%s", self.username,
+                         friends_to.all())
 
         all_friends_ids = friends_from.union(friends_to).subquery()
 

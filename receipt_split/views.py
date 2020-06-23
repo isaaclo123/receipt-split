@@ -19,7 +19,7 @@ from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
     RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm, PaymentForm
 from .helpers import calculate_balances, ok, err, accept_reject_view, \
-    create_view, View, get_model_view, Call, is_authorized
+    create_view, View, get_model_view, Call, is_authorized, pay_balances
 
 # import requests
 
@@ -370,40 +370,107 @@ def get_payments():
     return payments_result
 
 
+# @views.route('/payments/<int:id>')
+# @views.route('/payments/<int:id>/<action>', methods=['GET', 'POST'])
+# @jwt_required()
+# def get_payment(id, action=None):
+#     def pay_user_balances(*args, obj=None, **kwargs):
+#         app.logger.debug("PAYMENT kwargs %s", kwargs)
+#         app.logger.debug("PAYMENT OBJ %s", obj)
+#         app.logger.debug("PAYMENT OBJ FROM_USER %s", obj.from_user)
+#         app.logger.debug("PAYMENT OBJ FROM_USER_ID %s", obj.from_user_id)
+#         pay_user_balances(obj.from_user)
+#         pay_user_balances(obj.to_user)
+#         db.session.commit()
+#         return None
+#
+#     app.logger.debug("Payment.query.get(id)")
+#     app.logger.debug(Payment.query.get(id))
+#
+#     return create_view([
+#         View(
+#             methods=["GET"],
+#             calls=[
+#                 Call(
+#                     func=is_authorized,
+#                     args=[["to_user", "from_user"]]
+#                 ),
+#                 Call(
+#                     func=get_model_view,
+#                 )
+#             ]
+#         ),
+#         View(
+#             methods=["POST"],
+#             calls=[
+#                 Call(
+#                     func=is_authorized,
+#                     args=[["to_user"]]
+#                 ),
+#                 Call(
+#                     func=accept_reject_view,
+#                     args=[action]
+#                 ),
+#                 Call(
+#                     func=pay_user_balances,
+#                     kwargs={
+#                         "obj": Payment.query.get(id)
+#                     }
+#                 ),
+#                 Call(
+#                     func=get_model_view,
+#                 )
+#             ]
+#         )
+#         ],
+#         obj=Payment.query.get(id),
+#         schema=payment_schema
+#     )
+
 @views.route('/payments/<int:id>')
 @views.route('/payments/<int:id>/<action>', methods=['GET', 'POST'])
 @jwt_required()
 def get_payment(id, action=None):
-    return create_view([
-        View(
-            methods=["GET"],
-            calls=[
-                Call(
-                    func=is_authorized,
-                    args=[["to_user", "from_user"]]
-                ),
-                Call(
-                    func=get_model_view,
-                )
-            ]
-        ),
-        View(
-            methods=["POST"],
-            calls=[
-                Call(
-                    func=is_authorized,
-                    args=[["to_user"]]
-                ),
-                Call(
-                    func=accept_reject_view,
-                    args=[action]
-                )
-            ]
-        )
-        ],
-        obj=Payment.query.get(id),
-        schema=payment_schema
-    )
+    payment = Payment.query.get(id)
+
+    if not payment:
+        return err("requested payment does not exist"),
+    status.HTTP_404_NOT_FOUND
+
+    if payment.to_user != current_identity and \
+            payment.from_user != current_identity:
+        return err("you are not authorized to view this payment"),
+    status.HTTP_401_UNAUTHORIZED
+
+    if action is None and request.method == 'GET':
+        payment_dump = payment_schema.dump(payment)
+        return payment_dump
+
+    # accept or reject bahavior after
+
+    if payment.to_user != current_identity:
+        return err("you are not authorized to accept or reject this payment"),
+    status.HTTP_401_UNAUTHORIZED
+
+    if (action == "accept" or action == "reject") and request.method == 'POST':
+        # change accepted value
+
+        if action == "accept":
+            if payment.accept():
+                pay_balances(payment.from_user)
+                pay_balances(payment.to_user)
+
+                db.session.commit()
+
+        if action == "reject":
+            if payment.reject():
+                db.session.commit()
+
+        payment_dump = payment_schema.dump(payment)
+        app.logger.debug("payments %s - %s", action, payment_dump)
+        return payment_dump
+
+    return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
 @views.route('/friends', methods=['GET'])
@@ -457,6 +524,9 @@ def friends(id, action=None):
                 Call(
                     func=accept_reject_view,
                     args=[action]
+                ),
+                Call(
+                    func=get_model_view,
                 )
             ]
         )
@@ -505,14 +575,26 @@ def pay_user():
         app.logger.debug("AFTER PAYMENT SCHEMA LOAD")
 
         if pay_data.to_user not in current_identity.friends:
+            app.logger.debug("curr ident friends")
+            app.logger.debug(current_identity.friends)
+            app.logger.debug("curr user")
+            app.logger.debug(current_identity)
+            app.logger.debug("pay_data to_user")
+            app.logger.debug(pay_data.to_user)
+            app.logger.debug("pay_data from_user")
+            app.logger.debug(pay_data.from_user)
+            app.logger.debug("Cant pay non friend")
             return err("Cannot pay a non-friended user"),\
                 status.HTTP_400_BAD_REQUEST
 
         if pay_data.to_user == current_identity:
+            app.logger.debug("Cant pay self")
             return err("Cannot pay yourself"),\
                 status.HTTP_400_BAD_REQUEST
 
         # pay_data.from_user = current_identity
+
+        app.logger.debug("BEFORE DB COMMIT")
 
         db.session.add(pay_data)
         db.session.commit()

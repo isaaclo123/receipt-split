@@ -8,6 +8,7 @@ from typing import Any, List, Dict, Callable
 from flask_jwt import current_identity
 from pprint import pformat
 import math
+from sqlalchemy import and_, exists, or_
 
 from .meta import db
 from .models import Balance, Settlement
@@ -112,7 +113,7 @@ def update_settlements(receipt):
 
 def calculate_balances(receipt):
     """
-    takes python serializer dict and calculates balances
+    takes receipt model object and calculate balances
     """
     owner = get(receipt.user)
     users = get(receipt.users)
@@ -169,24 +170,79 @@ def calculate_balances(receipt):
     # Delete old balances
     # Balance.query.filter_by(receipt_id=receipt.id).delete()
 
+    owner_in_users = False
+
+    def is_owner(u_id, owner_id):
+        global owner_in_users
+        if u_id == owner_id:
+            owner_in_users = True
+            return True
+        return False
+
     balances = [
         Balance(
             to_user=owner,
             from_user=u,
             amount=balance_dict.get(get_userkey(u), Decimal(0)),
-            paid=(u.id == owner.id)  # set paid if owner is paying owner
+            paid=is_owner(u.id, owner.id)  # set paid if owner is paying owner
         ) for u in users]
 
     receipt.balances = balances
 
     update_settlements(receipt)
 
+    user_list = users if owner_in_users else [owner] + users
+    for u in user_list:
+        pay_balances(u)
+
     return receipt
 
 
 def pay_balances(user):
-    payments_received = Payment.get_received(user) # list of user's payments
-    return
+    # balances user must pay, older dates first
+    balances = Balance.query.filter(
+        and_(
+            and_(
+                Balance.to_user_id != user.id,  # no self addressed
+                Balance.from_user_id == user.id,  # balances user must pay
+            ),
+            Balance.paid.is_(False)  # only get unpaid balances
+        )
+    ).order_by(Balance.created_on).all()
+
+    app.logger.debug("Balances pay_balances %s", balances)
+
+    settlement_dict = {}
+
+    for balance in balances:
+        # if already got settlement, fetch it from dict,
+        # else get it and save it
+        key = f"{user.id}-{balance.to_user_id}"
+        set_fetch = settlement_dict.get(key)
+
+        settlement = Settlement.query.get({
+                        "from_user_id": user.id,
+                        "to_user_id": balance.to_user_id,
+                     }) if set_fetch is None else set_fetch
+
+        app.logger.debug("pay_balances key %s", key)
+        app.logger.debug("pay_balances diffamount %s",
+                         settlement.diff_amount)
+        app.logger.debug("pay_balances balanceamount %s",
+                         balance.amount)
+
+        # less than amount paid
+        if balance.amount <= settlement.paid_amount:
+            app.logger.debug("Paid!")
+            settlement.apply_balance(balance)
+            app.logger.debug("before balance %s , paid %s", balance,
+                             balance.paid)
+            balance.paid = True
+            app.logger.debug("after balance %s , paid %s", balance,
+                             balance.paid)
+
+        if set_fetch is None:
+            settlement_dict[key] = settlement
 
 
 def get_model_view(obj=None, schema=None):
@@ -200,6 +256,9 @@ def accept_reject_view(action,
 
                        obj=None,
                        schema=None,
+
+                       on_success=lambda x: None,
+                       on_fail=lambda x: None,
 
                        # model=None,
                        accept="accept",
@@ -224,9 +283,8 @@ def accept_reject_view(action,
             if obj.reject():
                 db.session.commit()
 
-        obj_dump = schema.dump(obj)
-        app.logger.debug("obj_dump %s", obj)
-        return obj_dump
+        # continue
+        return None
 
     return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
 

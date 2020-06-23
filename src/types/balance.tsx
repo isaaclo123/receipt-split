@@ -13,6 +13,7 @@ export type BalanceSummaryType = {
   amount: number;
   receipt_name: string;
   receipt_id: number;
+  paid: boolean
   id?: number;
 }
 

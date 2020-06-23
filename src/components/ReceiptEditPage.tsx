@@ -336,7 +336,7 @@ Props) => {
       <ListOrNoneComponent
         list={balances}
         noneComponent={noneComponent}
-        listComponent={({ to_user, from_user, amount }: BalanceType) => {
+        listComponent={({ to_user, from_user, amount, paid }: BalanceType) => {
           return (
             <Card className="mb-3">
               <Card.Body>
@@ -347,6 +347,8 @@ Props) => {
                     <span className="text-primary">{to_user.fullname}</span>
                   </span>
                   <span className="text-info float-right">
+                    {paid && (<b>(PAID) </b>)}
+
                     ${amount.toFixed(2)}
                   </span>
                 </Card.Title>
