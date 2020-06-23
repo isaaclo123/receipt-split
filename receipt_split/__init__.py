@@ -1,5 +1,5 @@
 from flask_api import FlaskAPI, status
-from flask import send_from_directory, request
+from flask import send_from_directory
 from config import Config
 # from flask_migrate import Migrate
 import coloredlogs
@@ -72,12 +72,5 @@ def create_app():
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(views_blueprint)
-
-    # @app.before_first_request
-    # def before_first_request_func():
-    #     # db.metadata.clear()
-    #     # db.drop_all()
-    #     db.create_all()
-    #     db.session.commit()
 
     return app
