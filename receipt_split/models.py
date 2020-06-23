@@ -46,6 +46,12 @@ class Base(db.Model):
     updated_on = db.Column(db.DateTime(), default=db.func.now(),
                            onupdate=db.func.now())
 
+    @declared_attr
+    def __mapper_args__(cls):
+        return {
+            "order_by": cls.created_on
+        }
+
 
 class OwnedMixin(object):
     # payer
@@ -69,7 +75,7 @@ class RequestMixin(OwnedMixin, object):
             accepted=None,
             to_user_id=user.id,
             archived=False
-        ).all()
+        )
 
     @classmethod
     def get_sent(cls, user):
@@ -245,7 +251,7 @@ class Receipt(Base):
                      default=date.today(),
                      nullable=False)
 
-    resolved = db.Column(db.Boolean)
+    # resolved = db.Column(db.Boolean)
 
     # user
     # users
@@ -258,6 +264,25 @@ class Receipt(Base):
     receipt_items = relationship("ReceiptItem", backref="receipt",
                                  foreign_keys=[ReceiptItem.receipt_id],
                                  cascade="all,delete-orphan")
+
+    @property
+    def resolved(self):
+        balances = db.session.query(
+            Balance.paid
+        ).filter_by(receipt_id=self.id)
+
+        # if no balances, is 0
+        if balances.count() <= 0:
+            return False
+
+        unpaid_count = balances.filter(
+            balances.c.paid.is_(False)
+        ).count()
+
+        if unpaid_count > 0:
+            return False
+
+        return True
 
 
 class Balance(OwnedMixin, Base):

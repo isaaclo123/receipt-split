@@ -145,6 +145,7 @@ class ReceiptSchema(BaseSchema):
 
     id = fields.Int()
 
+    resolved = ma.Boolean(dump_only=True)
     balances = ma.Nested(BalanceSchema, many=True)
     receipt_items = ma.Nested(ReceiptItemSchema, many=True)
     user = ma.Nested(UserSchema)
@@ -160,6 +161,10 @@ class ReceiptSchema(BaseSchema):
 
     to_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
     from_user = ma.Nested(UserSchema, include=USER_INFO_FIELDS)
+
+
+class ReceiptCreateSchema(ReceiptSchema):
+    id = fields.Int(dump_only=True)
 
 
 class PaymentSchema(BaseSchema):

@@ -79,6 +79,37 @@ def split_cost(subitem_amount, subitem_users, owner, balance_dict):
                                    split_remainder)
 
 
+def update_settlements(receipt):
+    owner = get(receipt.user)
+    users = get(receipt.users)
+
+    # error check
+    if owner is None:
+        raise TypeError("owner user is null!")
+    if users is None:
+        raise TypeError("receipt users is null!")
+
+    # update all settlements
+    # TODO
+    for u in users:
+        s = Settlement.query.get({
+            "from_user_id": owner.id,
+            "to_user_id": u.id
+        })
+        if s is not None:
+            s.update_settlement()
+
+        s = Settlement.query.get({
+            "from_user_id": u.id,
+            "to_user_id": owner.id
+        })
+        if s is not None:
+            s.update_settlement()
+
+        app.logger.debug("\tsettlement uid %s", u.id)
+        app.logger.debug("\tsettlement %s", s)
+
+
 def calculate_balances(receipt):
     """
     takes python serializer dict and calculates balances
@@ -92,7 +123,7 @@ def calculate_balances(receipt):
     if owner is None:
         raise TypeError("owner user is null!")
     if users is None:
-        raise TypeError("owner user is null!")
+        raise TypeError("receipt users is null!")
     if receipt_amount is None:
         raise TypeError("receipt amount is null!")
 
@@ -148,27 +179,14 @@ def calculate_balances(receipt):
 
     receipt.balances = balances
 
-    # update all settlements
-    # TODO
-    for u in users:
-        s = Settlement.query.get({
-            "from_user_id": owner.id,
-            "to_user_id": u.id
-        })
-        if s is not None:
-            s.update_settlement()
-
-        s = Settlement.query.get({
-            "from_user_id": u.id,
-            "to_user_id": owner.id
-        })
-        if s is not None:
-            s.update_settlement()
-
-        app.logger.debug("\tsettlement uid %s", u.id)
-        app.logger.debug("\tsettlement %s", s)
+    update_settlements(receipt)
 
     return receipt
+
+
+def pay_balances(user):
+    payments_received = Payment.get_received(user) # list of user's payments
+    return
 
 
 def get_model_view(obj=None, schema=None):
@@ -223,7 +241,7 @@ def is_authorized(allowed_attrs, obj=None, **kwargs):
         lambda acc, cur:
             acc or (getattr(obj, cur) == current_identity),
         allowed_attrs,
-        True  # default: user is authorized to access
+        False  # default: user is not authorized to access
     )
 
     app.logger.debug("%s for %s authorized status %s",
@@ -254,8 +272,9 @@ class View:
 def create_view(behaviors,
                 *args,
                 obj=None,
+                no_obj=False,
                 schema=None):
-    if obj is None:
+    if obj is None and not no_obj:
         return err("requested data does not exist"), status.HTTP_404_NOT_FOUND
 
     app.logger.debug("request.method %s", request.method)

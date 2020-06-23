@@ -14,8 +14,9 @@ from sqlalchemy import and_, exists, or_
 from .meta import db
 # from .auth import identity
 from .models import User, Receipt, Balance, Payment, Settlement, Friend
-from .schemas import UserSchema, ReceiptSchema, BalanceSchema,\
-    BalanceSumSchema, PaymentSchema, FriendSchema, RECEIPT_INFO_EXCLUDE_FIELDS
+from .schemas import UserSchema, ReceiptSchema, BalanceSchema, \
+    ReceiptCreateSchema, BalanceSumSchema, PaymentSchema, FriendSchema,\
+    RECEIPT_INFO_EXCLUDE_FIELDS
 from .forms import ReceiptForm, PaymentForm
 from .helpers import calculate_balances, ok, err, accept_reject_view, \
     create_view, View, get_model_view, Call, is_authorized
@@ -34,6 +35,7 @@ balance_sum_schema = BalanceSumSchema(many=True)
 
 receipt_schema = ReceiptSchema()
 receipts_schema = ReceiptSchema(many=True, exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
+receipt_create_schema = ReceiptCreateSchema()
 
 payment_schema = PaymentSchema()
 payments_schema = PaymentSchema(many=True)
@@ -59,21 +61,9 @@ def receipt_list():
     return receipt_result, status.HTTP_200_OK
 
 
-@views.route('/receipt/-1', methods=['GET', 'POST', 'PUT'])
+@views.route('/receipt/-1', methods=['POST', 'PUT'])
 @jwt_required()
 def receipt_create():
-    if request.method == 'GET':
-        return {
-            "name": "New Receipt",
-            "amount": 0.0,
-            "date": str(date.today()),
-            "user": user_schema.dump(current_identity),
-            "users": [],
-            "receipt_items": [],
-            "balances": [],
-            "resolved": False
-        }, status.HTTP_200_OK
-
     if not request.is_json:
         return err("Not JSON"), status.HTTP_400_BAD_REQUEST
 
@@ -89,7 +79,7 @@ def receipt_create():
 
     app.logger.info("receipt/-1 input json data - %s", json_data)
 
-    receipt_data = receipt_schema.load(json_data, session=db.session)
+    receipt_data = receipt_create_schema.load(json_data, session=db.session)
 
     receipt_data.user = current_identity
     calculate_balances(receipt_data)
@@ -99,6 +89,8 @@ def receipt_create():
 
     db.session.add(receipt_data)
     db.session.commit()
+
+    app.logger.debug("RECEIPT CREATED!")
 
     receipt_dump = receipt_schema.dump(receipt_data)
 
@@ -202,9 +194,7 @@ def friend_add(username):
                         current_identity.username)
         return err("cannot friend yourself"), status.HTTP_400_BAD_REQUEST
 
-    if friend in current_identity.friends or friend in friend.friends:
-        app.logger.info("/friend/%s already added - %s", username,
-                        current_identity.username)
+    if friend in current_identity.friends:
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
     friend_request = Friend(from_user=current_identity, to_user=friend)
@@ -462,7 +452,7 @@ def friends(id, action=None):
             calls=[
                 Call(
                     func=is_authorized,
-                    args=[["to_user", "from_user"]]
+                    args=[["to_user"]]
                 ),
                 Call(
                     func=accept_reject_view,

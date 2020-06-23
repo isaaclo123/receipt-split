@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import InputGroup from 'react-bootstrap/InputGroup'
 import Col from 'react-bootstrap/Col'
 
 import { BadgeListComponent } from './BadgeListComponent'
@@ -67,7 +66,9 @@ export const ExpenseCardComponent = ({
       <Card.Body>
         <Form>
           <Form.Row className="mb-0">
-            <Form.Group as={Col} sm="8" className="mb-0">
+            <Form.Group as={Col} xs="8" sm="9" className="mb-0 pr-0" style={{
+              minWidth: 0
+              }}>
               <Form.Control
                 style={inputStyle}
                 plaintext
@@ -84,7 +85,9 @@ export const ExpenseCardComponent = ({
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} sm="4" className="mb-0">
+            <Form.Group as={Col} xs="4" sm="3" className="mb-0 pl-0" style={{
+              minWidth: 0,
+              }}>
               {(!editing) ?
                 (<Form.Control
                     style={Object.assign({}, inputStyle, { textAlign: "right" })}
