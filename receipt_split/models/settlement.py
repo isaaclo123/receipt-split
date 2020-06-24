@@ -30,11 +30,13 @@ class Settlement(Base):
     diff_amount = column_property(owed_amount - paid_amount)
 
     def update_settlement(self):
+        # get balance from adding up unpaid balances
         s = db.session.query(
             func.coalesce(func.sum(Balance.amount), literal_column("0.0"))
         ).filter_by(
             from_user_id=self.from_user_id,
-            to_user_id=self.to_user_id
+            to_user_id=self.to_user_id,
+            paid=False
         ).as_scalar()
 
         app.logger.debug("------")

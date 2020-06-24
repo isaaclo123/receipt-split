@@ -38,7 +38,8 @@ def get_balances_owned(current_identity):
         Balance.from_user_id,
     ).filter(
         Balance.from_user_id == current_identity.id,
-        Balance.to_user_id != current_identity.id
+        Balance.to_user_id != current_identity.id,
+        Balance.paid.is_(False)
     )
     balance_ids = balance_ids_q.subquery()
     app.logger.debug("owned balances_ids %s", balance_ids_q.all())
@@ -69,6 +70,7 @@ def get_balances_owned(current_identity):
     ).join(  # balances addressed to current user, must be paid my curr
         Balance,
         and_(
+            Balance.paid.is_(False),
             Balance.to_user_id == User.id,
             Balance.from_user_id == current_identity.id,
         ),
@@ -95,7 +97,8 @@ def get_balances_owed(current_identity):
         Balance.from_user_id,
     ).filter(
         Balance.from_user_id != current_identity.id,  # from is payer
-        Balance.to_user_id == current_identity.id  # to is paid
+        Balance.to_user_id == current_identity.id,  # to is paid
+        Balance.paid.is_(False)
     )
     balance_ids = balance_ids_q.subquery()
     app.logger.debug("owed balances_ids %s", balance_ids_q.all())
@@ -126,6 +129,7 @@ def get_balances_owed(current_identity):
     ).join(  # balances addressed to current user, must be paid my curr
         Balance,
         and_(
+            Balance.paid.is_(False),
             Balance.from_user_id == User.id,
             Balance.to_user_id == current_identity.id,
         ),
