@@ -1,5 +1,6 @@
 from .helpers import *
 from .user import *
+from .balance import *
 from .receipt import *
 from .payment import *
 from .friend import *

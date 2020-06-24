@@ -29,6 +29,7 @@ export const TOKEN_LOCALSTORAGE = "TOKEN_LOCALSTORAGE";
 export const RECEIPT_INDEX_DELETE_MAP: Dict<string> = {
   "receipts_owed": "RECEIPT_OF_INDEX_DELETE",
   "receipts_owned": "RECEIPT_OWNED_INDEX_DELETE",
+  "receipts_resolved": "RECEIPT_RESOLVED_INDEX_DELETE",
 };
 
 export const RECEIPT_EDIT_RESET = "RECEIPT_EDIT_RESET";

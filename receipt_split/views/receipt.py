@@ -13,12 +13,20 @@ from . import views, calculate_balances, ok, err
 @views.route('/receipt', methods=['GET'])
 @jwt_required()
 def receipt_list():
-    receipts_owned = receipts_schema.dump(current_identity.receipts_owned)
-    receipts_owed = receipts_schema.dump(current_identity.receipts_owed)
+    receipts_owned = receipts_schema.dump(
+        current_identity.receipts_owned_unresolved
+    )
+    receipts_owed = receipts_schema.dump(
+        current_identity.receipts_owed_unresolved
+    )
+    receipts_resolved = receipts_schema.dump(
+        current_identity.receipts_resolved
+    )
 
     receipt_result = {
         "receipts_owned": receipts_owned,
-        "receipts_owed": receipts_owed
+        "receipts_owed": receipts_owed,
+        "receipts_resolved": receipts_resolved
     }
 
     app.logger.info("/receipt GET receipts_owed - %s", receipts_owed)
@@ -35,8 +43,8 @@ def receipt_create():
 
     json_data = request.get_json()
 
-    if id in json_data:
-        del json_data["id"]
+    # if id in json_data:
+    #     del json_data["id"]
 
     form = ReceiptForm.from_json(json_data)
     if not form.validate():

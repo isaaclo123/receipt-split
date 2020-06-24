@@ -1,7 +1,8 @@
 from receipt_split.meta import db
 from . import receiptitem_association_table, receipt_association_table, Base,\
-    Settlement, Friend, Payment, Balance, Receipt
+    Settlement, Friend, Payment, Receipt, Balance
 
+from sqlalchemy.sql import expression, or_
 from flask import current_app as app
 from sqlalchemy.orm import relationship
 
@@ -106,6 +107,28 @@ class User(Base):
         return all_friends
 
     @property
+    def receipts_owned_unresolved(self):
+        result = Receipt.query.filter(
+            Receipt.user_id == self.id,
+            Receipt.resolved.is_(False)
+        )
+        return result
+
+    @property
+    def receipts_owed_unresolved(self):
+        result = Receipt.query.join(
+            receipt_association_table,
+        ).filter(
+            receipt_association_table.c.left_id == self.id,
+            Receipt.user_id != self.id,
+            Receipt.resolved == expression.literal(False)
+        )
+
+        app.logger.info("receipts_owed expression running - %s", result)
+
+        return result
+
+    @property
     def receipts_owed(self):
         result = Receipt.query.join(
             receipt_association_table,
@@ -115,5 +138,21 @@ class User(Base):
         )
 
         app.logger.info("receipts_owed expression running - %s", result)
+
+        return result
+
+    @property
+    def receipts_resolved(self):
+        result = Receipt.query.filter_by(
+            resolved=True
+        ).join(
+            receipt_association_table,
+        ).filter(
+            or_(
+                receipt_association_table.c.left_id == self.id,
+                receipt_association_table.c.right_id == self.id
+            ),
+            # Receipt.resolved == expression.literal(True)
+        )
 
         return result

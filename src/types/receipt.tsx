@@ -35,6 +35,7 @@ export type ReceiptState = Failable<ReceiptType, ReceiptError>;
 export interface ReceiptListType extends ErrorData {
   receipts_owned: ReceiptType[];
   receipts_owed: ReceiptType[];
+  receipts_resolved: ReceiptType[];
 };
 
 export type ReceiptListSuccessAction = Action<

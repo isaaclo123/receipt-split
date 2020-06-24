@@ -1,9 +1,9 @@
-from receipt_split.meta import db
-from . import Base, OwnedMixin
+# from flask import current_app as app
+from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.sql import func, select, exists, and_
 
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func, select
-from sqlalchemy.orm import column_property
+from receipt_split.meta import db
+from . import Base, Balance
 
 receiptitem_association_table = db.Table(
     'user_receiptitem_association',
@@ -59,45 +59,29 @@ class Receipt(Base):
                                  foreign_keys=[ReceiptItem.receipt_id],
                                  cascade="all,delete-orphan")
 
-    @property
-    def resolved(self):
-        balances = db.session.query(
-            Balance.paid
-        ).filter_by(receipt_id=self.id)
+    resolved = column_property(
+        and_(
+            exists(  # check that balance exists, else not resolved
+                select(
+                    [Balance.id]
+                ).select_from(
+                    Balance
+                ).where(
+                    Balance.receipt_id == id,
+                ).correlate_except(Balance)
+            ),
+            ~exists(  # if bal exist, check that no unpaid balances exist
+                select(
+                    [Balance.id]
+                ).select_from(
+                    Balance
+                ).where(
+                    and_(
+                        Balance.receipt_id == id,
+                        Balance.paid.is_(False)
+                    )
+                ).correlate_except(Balance)
+            )
 
-        # if no balances, is 0
-        if balances.count() <= 0:
-            return False
-
-        unpaid_count = balances.filter(
-            balances.c.paid.is_(False)
-        ).count()
-
-        if unpaid_count > 0:
-            return False
-
-        return True
-
-
-class Balance(OwnedMixin, Base):
-    __tablename__ = 'balance'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    # to_user
-    # from_user
-
-    amount = db.Column(db.Float(asdecimal=True),
-                       nullable=False)
-    paid = db.Column(db.Boolean, nullable=False, default=False)
-
-    receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'))
-    receipt_name = column_property(
-        select(
-            [Receipt.name]
-        ).select_from(
-            Receipt
-        ).where(
-            Receipt.id == receipt_id
-        ).correlate_except(Receipt)
+        )
     )

@@ -17,6 +17,7 @@ const initialState: ReceiptListState = {
   data: {
     receipts_owned: [],
     receipts_owed: [],
+    receipts_resolved: [],
   },
   errors: {}
 };

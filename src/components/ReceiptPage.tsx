@@ -123,6 +123,13 @@ const ReceiptPageComponent = ({
       <br />
       <h5 />
       { receiptListOrNoneComponent(receiptListState.data.receipts_owed) }
+
+      <div className="align-middle">
+        <h5 className="float-left">Receipts Resolved</h5>
+      </div>
+      <br />
+      <h5 />
+      { receiptListOrNoneComponent(receiptListState.data.receipts_resolved) }
     </>
   );
 };
