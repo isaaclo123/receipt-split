@@ -64,15 +64,39 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
     paid_balances = {}
     paid_balance_list = []
     new_balances = []
+    # deleted_users = {}  # paid and deleted user
+    deleted_list = []  # paid and deleted user
+
     app.logger.debug("old_balances %s", old_balances)
     app.logger.debug("new_balance_dict %s", new_balance_dict)
     app.logger.debug("owner_id %s", owner_id)
     app.logger.debug("old-------")
 
+    # def set_dict(b):
+    #     val = paid_balances.get(b.from_user_id, {}).get(b.to_user_id)
+    #     opp_val = paid_balances.get(b.to_user_id, {}).get(b.from_user_id)
+
+    #     if val is None and opp_val is None:
+    #         paid_balances.setdefault(
+    #             b.from_user_id, {
+    #                 b.to_user_id: b.amount
+    #             })
+    #     elif val is not None:
+    #         paid_balances[b.from_user_id][b.to_user_id] += b.amount
+    #     else:  # opp_val is None
+    #         paid_balances[b.to_user_id][b.from_user_id] -= b.amount
+
     # get old paid balances to consider
     for b in old_balances:
-        if b.paid and not b.is_to_and_from_owner:
-            # TODO delete functionality for paid
+        if b.paid and not b.is_to_and_from_owner:  # to/from owner already ok
+            # if user not in new balances, they were deleted
+            # this indicates that a user was in old balances and paid, but is
+            # now deleted
+            if b.from_user_id not in new_balance_dict or \
+                    b.to_user_id not in new_balance_dict:
+                # deleted_users[b.to_user_id] = True
+                deleted_list += [b]
+
             # if b.from_user_id not in new_balance_dict or b.to_user_id not in\
             #         new_balance_dict:
             #     app.logger.debug("User has been removed")
@@ -116,12 +140,16 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
             # paid_amount and new_amount represent how much
             # from payer -> to payee
             # TODO
-            if payer not in new_balance_dict:
-                app.logger.debug("payer not in dict, so user removed")
-                continue
+            new_amount = Decimal(0)
 
-            new_amount = new_balance_dict[payer]
-            # TODO?
+            if payer not in new_balance_dict:
+                # deleted user
+                app.logger.debug("deleted user %s", payer)
+                continue
+            else:
+                new_amount = new_balance_dict[payer]
+
+            # TODO
             diff_amount = new_amount - old_amount
             app.logger.debug("diff amount %s", diff_amount)
 
@@ -155,12 +183,26 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
                     amount=amount
                 )
             ]
+
+    new_deleted_list = []
+    for b in deleted_list:
+        val = paid_balances.get(b.from_user, {}).get(b.to_user)
+        if val is None:  # if deleted balance is unpaid paid
+            new_deleted_list += [
+                # create equal and opposite balance for the deleted user
+                Balance(
+                    from_user_id=b.to_user_id,
+                    to_user_id=b.from_user_id,
+                    amount=b.amount
+                )
+            ]
+
     app.logger.debug("=-------------GET new balances --------")
     app.logger.debug("new balances %s", new_balances)
     app.logger.debug("paid balances dict %s", paid_balances)
     app.logger.debug("paid balances %s", paid_balance_list)
 
-    new_balances = paid_balance_list + new_balances
+    new_balances = paid_balance_list + new_balances + new_deleted_list
 
     return new_balances
 
