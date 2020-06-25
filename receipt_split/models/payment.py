@@ -33,7 +33,7 @@ class Payment(RequestMixin, Base):
                 "from_user_id": self.from_user_id,
                 "to_user_id": self.to_user_id
             })
-            s.add_payment(self)
+            s.add_amount(self.amount)
 
         return super().accept(callback=callback)
 
@@ -43,6 +43,6 @@ class Payment(RequestMixin, Base):
                 "from_user_id": self.from_user_id,
                 "to_user_id": self.to_user_id
             })
-            s.remove_payment(self)
+            s.remove_amount(self.amount)
 
         return super().reject(callback=callback)

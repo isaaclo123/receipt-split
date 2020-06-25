@@ -29,6 +29,8 @@ class Settlement(Base):
 
     diff_amount = column_property(owed_amount - paid_amount)
 
+# TODO
+# https://stackoverflow.com/questions/34057756/how-to-combine-sqlalchemys-hybrid-property-decorator-with-werkzeugs-cached-pr
     def update_settlement(self):
         # get balance from adding up unpaid balances
         s = db.session.query(
@@ -46,12 +48,11 @@ class Settlement(Base):
 
         self.owed_amount = s
 
-    def add_payment(self, payment):
-        # TODO
-        self.paid_amount = self.paid_amount + payment.amount
+    def add_amount(self, amount):
+        self.paid_amount = self.paid_amount + amount
 
-    def remove_payment(self, payment):
-        self.paid_amount = self.paid_amount - payment.amount
+    def remove_amount(self, amount):
+        self.paid_amount = self.paid_amount - amount
 
     def apply_balance(self, balance):
         # return True if paid
@@ -70,6 +71,21 @@ class Settlement(Base):
         balance.paid = True
 
         app.logger.debug("bal_OK! paid %s, owed %s cur_bal %s",
+                         self.paid_amount, self.owed_amount,
+                         balance.amount)
+        return True
+
+    def add_balance_back(self, balance):
+        app.logger.debug("Balance AddedBack bal %s settlement %s, %s->%s",
+                         balance.id, self.from_user_id, self.to_user_id)
+        if not balance.paid:
+            app.logger.debug("\tDid not add back, as balance unpaid")
+            return False
+
+        self.paid_amount = self.paid_amount + balance.amount
+        self.update_settlement()
+        # self.owed_amount = self.owed_amount + balance.amount
+        app.logger.debug("\t bal_ADDED! paid %s, owed %s cur_bal %s",
                          self.paid_amount, self.owed_amount,
                          balance.amount)
         return True

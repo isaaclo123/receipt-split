@@ -16,7 +16,7 @@ from . import err
 
 def get_userkey(user):
     # return str(user.get("id", "-1")) + " - " + user.get("username", " ")
-    return user.username
+    return user.id
 
 
 def get(x, *args):
@@ -60,6 +60,111 @@ def split_cost(subitem_amount, subitem_users, owner, balance_dict):
                                    split_remainder)
 
 
+def get_new_balances(old_balances, new_balance_dict, owner_id):
+    paid_balances = {}
+    paid_balance_list = []
+    new_balances = []
+    app.logger.debug("old_balances %s", old_balances)
+    app.logger.debug("new_balance_dict %s", new_balance_dict)
+    app.logger.debug("owner_id %s", owner_id)
+    app.logger.debug("old-------")
+
+    # get old paid balances to consider
+    for b in old_balances:
+        if b.paid and not b.is_to_and_from_owner:
+            # TODO delete functionality for paid
+            # if b.from_user_id not in new_balance_dict or b.to_user_id not in\
+            #         new_balance_dict:
+            #     app.logger.debug("User has been removed")
+            #     continue
+            val = paid_balances.get(b.from_user_id, {}).get(b.to_user_id)
+            opp_val = paid_balances.get(b.to_user_id, {}).get(b.from_user_id)
+
+            if val is None and opp_val is None:
+                paid_balances.setdefault(
+                    b.from_user_id, {
+                        b.to_user_id: b.amount
+                    })
+            elif val is not None:
+                paid_balances[b.from_user_id][b.to_user_id] += b.amount
+            else:  # opp_val is None
+                paid_balances[b.to_user_id][b.from_user_id] -= b.amount
+
+            paid_balance_list += [b]
+
+    app.logger.debug("paid balance list %s", paid_balance_list)
+
+    # new_balance dict is keys is from_user -> owner to_user
+
+    for from_user, to_users in paid_balances.items():
+        for to_user, amount in to_users.items():
+            old_amount = Decimal(0)
+            payer = None
+            payee = owner_id
+
+            if from_user == owner_id:
+                # paid balance is something owner must pay.
+                # new_balances always from a -> owner
+                old_amount = -1 * amount
+                payer = to_user
+            elif to_user == owner_id:
+                old_amount = amount
+                payer = from_user
+            else:
+                continue
+
+            # paid_amount and new_amount represent how much
+            # from payer -> to payee
+            # TODO
+            if payer not in new_balance_dict:
+                app.logger.debug("payer not in dict, so user removed")
+                continue
+
+            new_amount = new_balance_dict[payer]
+            # TODO?
+            diff_amount = new_amount - old_amount
+            app.logger.debug("diff amount %s", diff_amount)
+
+            if diff_amount < 0:
+                payee = payer
+                payer = owner_id
+                # turn amount positive, as we flip payee and payer
+                diff_amount *= -1
+            if diff_amount == 0:
+                # empty balance, so remove balance
+                continue
+
+            new_balances += [
+                Balance(
+                    from_user_id=payer,
+                    to_user_id=payee,
+                    amount=diff_amount
+                )
+            ]
+
+    # add new unpaid balances
+    for from_user, amount in new_balance_dict.items():
+        val = paid_balances.get(from_user, {}).get(owner_id)
+        opp_val = paid_balances.get(owner_id, {}).get(from_user)
+        # check to see balance not in paid_balances
+        if val is None and opp_val is None:
+            new_balances += [
+                Balance(
+                    from_user_id=from_user,
+                    to_user_id=owner_id,
+                    amount=amount
+                )
+            ]
+    app.logger.debug("=-------------GET new balances --------")
+    app.logger.debug("new balances %s", new_balances)
+    app.logger.debug("paid balances dict %s", paid_balances)
+    app.logger.debug("paid balances %s", paid_balance_list)
+
+    new_balances = paid_balance_list + new_balances
+
+    return new_balances
+
+
 def update_settlements(receipt):
     owner = get(receipt.user)
     users = get(receipt.users)
@@ -89,6 +194,34 @@ def update_settlements(receipt):
 
         app.logger.debug("\tsettlement uid %s", u.id)
         app.logger.debug("\tsettlement %s", s)
+
+
+def reapply_balances(receipt, delete=True):
+    """
+    reapply balances before receipt delete
+    """
+    owner = get(receipt.user)
+    balances = get(receipt.balances, [])
+
+    for b in balances:
+        # ignore self-addressed balances
+        if not b.is_to_and_from_owner:
+            s = Settlement.query.get({
+                "from_user_id": b.from_user_id,  # from pays to
+                "to_user_id": owner.id
+            })  # this is the settlement paying the owner of receipt
+
+            # if paid, add balance back to original user
+            # add back balance before delete receipt if paid
+            if s.add_balance_back(b):
+                app.logger.debug("\treapply balances %s from %s to %s", b,
+                                 b.from_user, b.to_user)
+
+    for b in balances:
+        pay_balances(b.from_user)
+
+        if delete:
+            db.session.delete(b)
 
 
 def calculate_balances(receipt):
@@ -150,8 +283,6 @@ def calculate_balances(receipt):
     # Delete old balances
     # Balance.query.filter_by(receipt_id=receipt.id).delete()
 
-    owner_in_users = False
-
     def is_owner(u_id, owner_id):
         global owner_in_users
         if u_id == owner_id:
@@ -159,21 +290,27 @@ def calculate_balances(receipt):
             return True
         return False
 
-    balances = [
-        Balance(
-            to_user=owner,
-            from_user=u,
-            amount=balance_dict.get(get_userkey(u), Decimal(0)),
-            paid=is_owner(u.id, owner.id)  # set paid if owner is paying owner
-        ) for u in users]
+    # new_balances = [
+    #     Balance(
+    #         to_user=owner,
+    #         from_user=u,
+    #         amount=balance_dict.get(get_userkey(u), Decimal(0)),
+    #         paid=is_owner(u.id, owner.id)  # set paid if owner is paying
+    # owner
+    #     ) for u in users]
 
-    receipt.balances = balances
+    new_balances = get_new_balances(receipt.balances, balance_dict, owner.id)
+
+    receipt.balances = new_balances
 
     update_settlements(receipt)
 
-    user_list = users if owner_in_users else [owner] + users
-    for u in user_list:
-        pay_balances(u)
+    for u in users:
+        if u.id != owner.id:
+            # we will pay owner always, so skip owner
+            pay_balances(u)
+
+    pay_balances(owner)
 
     return receipt
 
@@ -181,13 +318,9 @@ def calculate_balances(receipt):
 def pay_balances(user):
     # balances user must pay, older dates first
     balances = Balance.query.filter(
-        and_(
-            and_(
-                Balance.to_user_id != user.id,  # no self addressed
-                Balance.from_user_id == user.id,  # balances user must pay
-            ),
-            Balance.paid.is_(False)  # only get unpaid balances
-        )
+        Balance.to_user_id != user.id,  # no self addressed
+        Balance.from_user_id == user.id,  # balances user must pay
+        Balance.paid.is_(False)  # only get unpaid balances
     ).order_by(Balance.created_on).all()
 
     app.logger.debug("Balances pay_balances %s", balances)

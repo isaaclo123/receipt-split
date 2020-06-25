@@ -121,7 +121,7 @@ class User(Base):
         ).filter(
             receipt_association_table.c.left_id == self.id,
             Receipt.user_id != self.id,
-            Receipt.resolved == expression.literal(False)
+            Receipt.resolved.is_(False)
         )
 
         app.logger.info("receipts_owed expression running - %s", result)
