@@ -29,6 +29,8 @@ export interface ExpenseCardParams {
   handleAddUserClick: () => void;
 
   extraComponent?: React.ReactNode;
+
+  placeholder?: string
 }
 
 export const ExpenseCardComponent = ({
@@ -48,6 +50,7 @@ export const ExpenseCardComponent = ({
 
   variant = "info",
   prefix = "",
+  placeholder = "",
 
   handleDeleteClick
 }: ExpenseCardParams) => {
@@ -71,6 +74,7 @@ export const ExpenseCardComponent = ({
               }}>
               <Form.Control
                 style={inputStyle}
+                placeholder={placeholder}
                 plaintext
                 className="form-control-lg"
                 value={name}

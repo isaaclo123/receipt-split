@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
+import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -104,6 +105,12 @@ const PayModalComponent = ({
         </Modal.Header>
 
         <Modal.Body>
+          { ("error" in errors) &&
+            <Alert variant="danger">
+              {errors.error}
+            </Alert>
+          }
+
           <Form className="mb-3">
             <Form.Group>
               <Form.Label>Amount</Form.Label>

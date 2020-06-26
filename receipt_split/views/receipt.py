@@ -7,7 +7,7 @@ from receipt_split.models import Receipt
 from receipt_split.schemas import receipt_schema, receipts_schema,\
     receipt_create_schema
 from receipt_split.forms import ReceiptForm
-from . import views, calculate_balances, ok, err, reapply_balances
+from . import views, calculate_balances, ok, err
 
 
 @views.route('/receipt', methods=['GET'])
@@ -112,6 +112,7 @@ def receipt_by_id(id):
 
         # TODO reapply balance bad?
         # reapply_balances(receipt, delete=True)
+        db.session.delete(receipt)
         db.session.commit()
 
         return ok("Success"), status.HTTP_200_OK

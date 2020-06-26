@@ -110,6 +110,7 @@ const BalancePageComponent = ({
 
         const {
           owed_amount,
+          paid_amount,
           user
         } = balanceSum;
 
@@ -121,7 +122,7 @@ const BalancePageComponent = ({
           <BalanceCardComponent
             key={id}
             onPay={() => {
-              setPaymentAmount(owed_amount);
+              setPaymentAmount(owed_amount - paid_amount);
               setPaymentUser(user);
               // TODO dont know if message should be reset
               setPaymentMessage("");

@@ -18,6 +18,10 @@ export type AcceptRejectComponentProps = {
   onPending?: () => void;
   onReject?: () => void;
 
+  acceptText?: string;
+  rejectText?: string;
+  pendingText?: string;
+
   buttons: AcceptRejectButtonsType;
 }
 
@@ -27,6 +31,9 @@ export const AcceptRejectComponent = ({
   onPending = () => {},
   messageComponent = null,
   accepted = null,
+  acceptText = "ACCEPT",
+  rejectText = "REJECT",
+  pendingText = "PENDING",
   buttons
 }: AcceptRejectComponentProps) => {
   return (
@@ -54,7 +61,7 @@ export const AcceptRejectComponent = ({
                       size="sm"
                       variant="success"
                       onClick={onAccept}>
-                      ACCEPT
+                      {acceptText}
                     </Button>
                   );
                 case "reject":
@@ -63,7 +70,7 @@ export const AcceptRejectComponent = ({
                       size="sm"
                       variant="danger"
                       onClick={onReject}>
-                      REJECT
+                      {rejectText}
                     </Button>
                   );
                 case "pending":
@@ -72,7 +79,7 @@ export const AcceptRejectComponent = ({
                       size="sm"
                       variant="warning"
                       onClick={onPending}>
-                      PENDING
+                      {pendingText}
                     </Button>
                 );
                 default:

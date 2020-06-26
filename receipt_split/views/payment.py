@@ -3,10 +3,10 @@ from flask_api import status
 from flask_jwt import current_identity, jwt_required
 
 from receipt_split.forms import PaymentForm
-from receipt_split.models import Payment
+from receipt_split.models import Payment, Settlement
 from receipt_split.meta import db
 from receipt_split.schemas import payments_schema, payment_schema, user_schema
-from . import views, err, pay_balances
+from . import views, err, pay_balances, round_decimals_down
 
 
 @views.route('/payments/<int:id>')
@@ -104,6 +104,40 @@ def pay_user():
             return err("to_user is not specified"), status.HTTP_400_BAD_REQUEST
 
         json_data["from_user"] = user_schema.dump(current_identity)
+
+        from_user_id = json_data.get("from_user", {}).get("id")
+        to_user_id = json_data.get("to_user", {}).get("id")
+
+        s = Settlement.query.get({
+            "from_user_id": from_user_id,
+            "to_user_id": to_user_id
+        })
+
+        app.logger.debug("settlement %s", s)
+        app.logger.debug("settlement is None is: %s", s is None)
+
+        if s is None:
+            return err(f"no settlement from {from_user_id} to {to_user_id}"),\
+                status.HTTP_400_BAD_REQUEST
+
+        payment_amount = json_data.get("amount", 0)
+
+        app.logger.debug(f"Payment amount ${payment_amount} and owed " +
+                         f"amount ${str('{:.2f}'.format(s.owed_amount))}")
+
+        if s is not None and payment_amount > s.owed_amount:
+            return err(f"Payment amount ${payment_amount} is over owed " +
+                       f"amount ${s.owed_amount}"), status.HTTP_400_BAD_REQUEST
+
+        existing_pending = db.session.query(Payment.query.filter_by(
+            from_user_id=from_user_id,
+            to_user_id=to_user_id,
+            accepted=None
+        ).exists()).scalar()
+
+        if existing_pending:
+            return err(f"You still have a pending payment existing"), \
+                status.HTTP_400_BAD_REQUEST
 
         app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
         app.logger.info("/pay POST JSON_DATA - %s", json_data)

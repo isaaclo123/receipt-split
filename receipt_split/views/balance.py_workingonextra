@@ -6,7 +6,7 @@ from collections import OrderedDict
 from receipt_split.schemas import balance_sum_schema
 from receipt_split.models import Balance, Settlement, User
 from receipt_split.meta import db
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from . import views
 
 
@@ -46,18 +46,31 @@ def get_balances_owned(current_identity):
     app.logger.debug("owned balances_ids %s", balance_ids_q.all())
 
     # settlements curr user owes to others for balances above
-    settlements_ids_q = db.session.query(
-        Settlement.from_user_id,
-        Settlement.to_user_id,
-        Settlement.owed_amount,
-        Settlement.paid_amount
+    settlements_bal_q = db.session.query(
+        Settlement.from_user_id.label("from_user_id"),
+        Settlement.to_user_id.label("to_user_id"),
+        Settlement.owed_amount.label("owed_amount"),
+        Settlement.paid_amount.label("paid_amount")
     ).filter(
         Settlement.from_user_id == current_identity.id,
         # Settlement.owed_amount > Settlement.paid_amount
-        Settlement.from_user_id.in_(balance_ids)  # from others
+        Settlement.from_user_id.in_(balance_ids),  # from others
     )
+
+    settlements_neg_q = db.session.query(
+        Settlement.from_user_id.label("from_user_id"),
+        Settlement.to_user_id.label("to_user_id"),
+        Settlement.paid_amount.label("owed_amount"),
+        Settlement.owed_amount.label("paid_amount"),
+    ).filter(
+        Settlement.from_user_id == current_identity.id,  # to me
+        Settlement.owed_amount < Settlement.paid_amount,
+    )
+
+    settlements_ids_q = settlements_bal_q.union(settlements_neg_q)
+
     settlements_ids = settlements_ids_q.subquery()
-    app.logger.debug("owned settlements_ids %s", settlements_ids_q.all())
+    app.logger.debug("owed settlements_ids %s", settlements_ids_q.all())
 
     q = db.session.query(
         User,
@@ -69,7 +82,8 @@ def get_balances_owned(current_identity):
     ).join(  # get uer balance is from
         User,
         User.id == settlements_ids.c.to_user_id,
-    ).join(  # balances addressed to current user, must be paid my curr
+    ).outerjoin(  # balances addressed to current user, must be paid my curr
+        # was outer join before
         Balance,
         and_(
             Balance.paid.is_(False),
@@ -106,16 +120,29 @@ def get_balances_owed(current_identity):
     app.logger.debug("owed balances_ids %s", balance_ids_q.all())
 
     # settlements curr user owes to others for balances above
-    settlements_ids_q = db.session.query(
-        Settlement.from_user_id,
-        Settlement.to_user_id,
-        Settlement.owed_amount,
-        Settlement.paid_amount,
+    settlements_bal_q = db.session.query(
+        Settlement.from_user_id.label("from_user_id"),
+        Settlement.to_user_id.label("to_user_id"),
+        Settlement.owed_amount.label("owed_amount"),
+        Settlement.paid_amount.label("paid_amount")
     ).filter(
         Settlement.to_user_id == current_identity.id,  # to me
-        Settlement.from_user_id.in_(balance_ids)  # from others
-        # Settlement.owed_amount < Settlement.paid_amount
+        Settlement.from_user_id.in_(balance_ids),  # from others
+        # Settlement.owed_amount < Settlement.paid_amount,
     )
+
+    settlements_neg_q = db.session.query(
+        Settlement.from_user_id.label("from_user_id"),
+        Settlement.to_user_id.label("to_user_id"),
+        Settlement.paid_amount.label("owed_amount"),
+        Settlement.owed_amount.label("paid_amount"),
+    ).filter(
+        Settlement.to_user_id == current_identity.id,  # to me
+        Settlement.owed_amount < Settlement.paid_amount,
+    )
+
+    settlements_ids_q = settlements_bal_q.union(settlements_neg_q)
+
     settlements_ids = settlements_ids_q.subquery()
     app.logger.debug("owed settlements_ids %s", settlements_ids_q.all())
 
@@ -129,7 +156,7 @@ def get_balances_owed(current_identity):
     ).join(  # get user that Balance is from, the user curr user must pay
         User,
         User.id == settlements_ids.c.from_user_id,
-    ).join(  # balances addressed to current user, must be paid my curr
+    ).outerjoin(  # balances addressed to current user, must be paid my curr
         Balance,
         and_(
             Balance.paid.is_(False),

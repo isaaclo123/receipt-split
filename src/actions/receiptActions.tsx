@@ -146,7 +146,7 @@ export const addReceiptItem = () =>
     successType: RECEIPT_ADD_RECEIPT_ITEM
   })(
     {
-      name: "New Receipt Item",
+      name: "",
       amount: 0,
       users: []
     },

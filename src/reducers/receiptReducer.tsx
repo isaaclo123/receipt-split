@@ -16,7 +16,6 @@ import {
   RECEIPT_ITEM_DELETE_USER,
   RECEIPT_EDIT_RESET,
   UserType,
-  Dict
 } from "../types/index";
 
 import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
@@ -32,7 +31,7 @@ const initialState = (
     error: false,
     data: {
       id: -1,
-      name: "New Receipt",
+      name: "",
       amount: 0,
       date: getCurrentDate(),
       resolved: false,

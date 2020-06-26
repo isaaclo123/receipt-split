@@ -139,7 +139,8 @@ Props) => {
     user,
     users,
     receipt_items,
-    date
+    date,
+    resolved
   }: ReceiptType = receiptState.data;
 
   // const error = receiptState.error;
@@ -212,6 +213,12 @@ Props) => {
           style={{ display: "inline", lineHeight: "2rem" }}
         >
           Receipt Info
+          {
+            resolved &&
+            <span className="text-success">
+              &nbsp;[RESOLVED!]
+            </span>
+          }
         </h5>
         <Button
           size="sm"
@@ -259,6 +266,7 @@ Props) => {
         }
         prefix="*"
         variant="info"
+        placeholder = "Enter Receipt Name"
 
         name={name}
         nameError={errors.name}
@@ -301,7 +309,8 @@ Props) => {
           return (
             <ExpenseCardComponent
               prefix="-"
-              variant="danger"
+              variant="info"
+              placeholder = "Enter Receipt Item Name"
 
               name={name}
               handleNameChange={(name: string) => {
@@ -337,18 +346,28 @@ Props) => {
         list={balances}
         noneComponent={noneComponent}
         listComponent={({ to_user, from_user, amount, paid }: BalanceType) => {
+          // border={(() => {
+          //   if (paid === true) {
+          //     return "success";
+          //   }
+          //   return undefined;
+          // })()}>
           return (
             <Card className="mb-3">
               <Card.Body>
                 <Card.Title>
                   <span className="float-left">
-                    <span className="text-primary">{from_user.fullname}</span>{" "}
-                    pays{" "}
+                    <span className="text-primary">{from_user.fullname}</span>
+                    &nbsp;
+                    {paid ? "has paid" : "must pay"}
+                    &nbsp;
                     <span className="text-primary">{to_user.fullname}</span>
                   </span>
-                  <span className="text-info float-right">
-                    {paid && (<b>(PAID) </b>)}
-
+                  <span className={`
+                    ${
+                      paid ? "text-success": "text-danger"
+                    }
+                    float-right`}>
                     ${amount.toFixed(2)}
                   </span>
                 </Card.Title>
