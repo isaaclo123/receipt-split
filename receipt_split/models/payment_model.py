@@ -29,20 +29,21 @@ class Payment(RequestMixin, Base):
     # methods return True if modified, else False
     def accept(self):
         def callback():
-            s = Settlement.query.get({
-                "from_user_id": self.from_user_id,
-                "to_user_id": self.to_user_id
-            })
-            s.add_amount(self.amount)
+            s = Settlement.get_settlement(
+                self.from_user_id,
+                self.to_user_id
+            )
+            s.pay(self.to_user_id, self.amount)
 
         return super().accept(callback=callback)
 
     def reject(self):
         def callback():
-            s = Settlement.query.get({
-                "from_user_id": self.from_user_id,
-                "to_user_id": self.to_user_id
-            })
-            s.remove_amount(self.amount)
+            s = Settlement.get_settlement(
+                self.from_user_id,
+                self.to_user_id
+            )
+            # pay back from_user
+            s.pay(self.from_user_id, self.amount)
 
         return super().reject(callback=callback)

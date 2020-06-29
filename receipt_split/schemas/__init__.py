@@ -1,10 +1,10 @@
-from .helpers import *
-from .user import *
-from .balance import *
-from .receipt import *
-from .payment import *
-from .friend import *
-from .balancesum import *
+from .helpers_schema import *
+from .user_schema import *
+from .balance_schema import *
+from .receipt_schema import *
+from .payment_schema import *
+from .friend_schema import *
+from .balancesum_schema import *
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)

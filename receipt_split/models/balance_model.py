@@ -38,7 +38,7 @@ class Balance(OwnedMixin, Base):
 
     @property
     def receipt_name(self):
-        from .receipt import Receipt
+        from .receipt_model import Receipt
 
         receipt_name = select(
                 [Receipt.name]

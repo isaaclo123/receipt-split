@@ -7,10 +7,9 @@ from functools import reduce
 from dataclasses import dataclass, field
 from typing import Any, List, Dict, Callable
 import math
-from sqlalchemy import and_
 
 from receipt_split.meta import db
-from receipt_split.models import Balance, Settlement
+from receipt_split.models import Balance, Settlement, Receipt
 from . import err
 
 
@@ -358,12 +357,25 @@ def calculate_balances(receipt):
 
 
 def pay_balances(user):
+    """
+    Accepts argument that is a user model instance
+
+    pays balances in order of receipt creation, oldest first,
+    then by balance amount, lowest first
+    """
+
     # balances user must pay, older dates first
     balances = Balance.query.filter(
         Balance.to_user_id != user.id,  # no self addressed
         Balance.from_user_id == user.id,  # balances user must pay
         Balance.paid.is_(False)  # only get unpaid balances
-    ).order_by(Balance.created_on).all()
+    ).join(
+        Receipt,
+        Balance.receipt_id == Receipt.id
+    ).order_by(
+        Receipt.created_on,
+        Balance.amount
+    ).all()
 
     app.logger.debug("Balances pay_balances %s", balances)
 
@@ -372,13 +384,11 @@ def pay_balances(user):
     for balance in balances:
         # if already got settlement, fetch it from dict,
         # else get it and save it
-        key = f"{user.id}-{balance.to_user_id}"
+        key = f"{user.id} - {balance.to_user_id}"
         set_fetch = settlement_dict.get(key)
 
-        settlement = Settlement.query.get({
-                        "from_user_id": user.id,
-                        "to_user_id": balance.to_user_id,
-                     }) if set_fetch is None else set_fetch
+        settlement = Settlement.get(user.id, balance.to_user_id) \
+            if set_fetch is None else set_fetch
 
         app.logger.debug("pay_balances key %s", key)
         app.logger.debug("pay_balances diffamount %s",
@@ -387,14 +397,18 @@ def pay_balances(user):
                          balance.amount)
 
         # less than amount paid
-        if balance.amount <= settlement.paid_amount:
+        if balance.amount <= settlement.get_paid_amount(user.id):
             app.logger.debug("Paid!")
+
             settlement.apply_balance(balance)
+
             app.logger.debug("before balance %s , paid %s", balance,
                              balance.paid)
-            balance.paid = True
             app.logger.debug("after balance %s , paid %s", balance,
                              balance.paid)
+        else:
+            # if cannot pay anymore balances, return
+            return
 
         if set_fetch is None:
             settlement_dict[key] = settlement
