@@ -8,6 +8,9 @@ branches:
   only:
   - master
 
+after_success:
+  - npm run build
+
 deploy:
   provider: s3
   access_key_id: $AWS_ACCESS_KEY
