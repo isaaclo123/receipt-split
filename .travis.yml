@@ -17,4 +17,5 @@ deploy:
   secret_access_key: $AWS_SECRET_KEY
   bucket: "receipt-split"
   skip_cleanup: true
+  region: "us-east-1"
   local_dir: build
