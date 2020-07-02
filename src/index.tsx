@@ -13,7 +13,7 @@ import * as serviceWorker from "./serviceWorker";
 
 import { App, Login, Signup, PrivateRoute } from "./components/index";
 
-ReactDOM.render(
+export const Index = () => (
   <Provider store={configureStore()}>
     <HashRouter>
       <PrivateRoute exact path="/" component={Login} />
@@ -21,8 +21,12 @@ ReactDOM.render(
       <Route path="/signup" component={Signup} />
       <PrivateRoute path="/app" component={App} />
     </HashRouter>
-  </Provider>,
-  document.getElementById("root")
+  </Provider>
+);
+
+ReactDOM.render(
+  <Index />,
+  document.getElementById("root") || document.createElement('div')
 );
 
 // If you want your app to work offline and load faster, you can change
