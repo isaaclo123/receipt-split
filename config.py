@@ -5,7 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    DEBUG = False
+    FLASK_ENV = "production"
+
     TESTING = False
     SECRET_KEY = os.environ.get('SECRET_KEY', '99DEBUG_KEY_CHANGE_IN_PROD99')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
@@ -25,18 +26,20 @@ class Config(object):
         'flask_api.parsers.MultiPartParser'
     ]
 
-    # @property
-    # def DATABASE_URI(self):         # Note: all caps
-    #     return 'mysql://user@{}/foo'.format(self.DB_SERVER)
+    @property
+    def IS_DEVELOPMENT(self):
+        return self.FLASK_ENV == "development"
 
 
-# class ProductionConfig(Config):
-#     DATABASE_URI = 'mysql://user@localhost/foo'
-#
-#
-# class DevelopmentConfig(Config):
-#     DEBUG = True
-#
-#
-# class TestingConfig(Config):
-#     TESTING = True
+class ProductionConfig(Config):
+    FLASK_ENV = "production"
+
+    SQLALCHEMY_DATABASE_URI = os.environ.get('AWS_DB_URI')
+    SECRET_KEY = os.environ.get('AWS_FLASK_SECRET_KEY')
+
+
+class DevelopmentConfig(Config):
+    FLASK_ENV = "development"
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
+                                                          'app.db.sqlite3')

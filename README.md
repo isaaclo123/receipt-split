@@ -92,6 +92,6 @@
 
 ```bash
 flask db init
-dlask db migrate
+flask db migrate
 flask db upgrade
 ```
