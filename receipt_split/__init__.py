@@ -1,6 +1,7 @@
 from config import ProductionConfig, DevelopmentConfig
 
 from flask_api import FlaskAPI, status
+from flaskext.mysql import MySQL
 # from flask import send_from_directory
 
 import coloredlogs

@@ -24,6 +24,7 @@ gunicorn = "*"
 requests = "*"
 pip = "*"
 coloredlogs = "*"
+pymysql = "*"
 
 [requires]
 python_version = "3.7"
