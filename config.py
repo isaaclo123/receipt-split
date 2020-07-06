@@ -34,8 +34,7 @@ class Config(object):
 class ProductionConfig(Config):
     FLASK_ENV = "production"
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('AWS_DB_URI')
-    SECRET_KEY = os.environ.get('AWS_FLASK_SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URI')
 
 
 class DevelopmentConfig(Config):

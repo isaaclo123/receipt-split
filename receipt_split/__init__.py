@@ -19,7 +19,7 @@ from .helpers import err
 
 
 def create_app():
-    app = FlaskAPI(__name__, static_folder="../build")
+    app = FlaskAPI(__name__)
 
     if (os.environ.get('DEBUG') == "True"):
         app.config.from_object(DevelopmentConfig)
