@@ -27,6 +27,7 @@ ENV DEBUG=False
 RUN pipenv install
 
 CMD [ \
+"sh", "-c", \
 "pipenv run flask db stamp head;", \
 "pipenv run flask db migrate;", \
 "pipenv run flask db upgrade;", \
