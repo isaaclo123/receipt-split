@@ -11,7 +11,6 @@ COPY ./Pipfile .
 COPY ./Pipfile.lock .
 
 COPY ./app.py .
-COPY ./run.sh .
 
 # Start Args
 
@@ -26,11 +25,10 @@ ENV DEBUG=False
 # End Args
 
 RUN pipenv install
-RUN chmod +x run.sh
 
-CMD [
-    "sh", "-c",
-    "pipenv run flask db migrate;"
-    "pipenv run flask db upgrade;"
-    "pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'"
+CMD [ \
+    "sh", "-c", \
+    "pipenv run flask db migrate;", \
+    "pipenv run flask db upgrade;", \
+    "pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'" \
 ]
