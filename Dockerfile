@@ -27,8 +27,9 @@ ENV DEBUG=False
 RUN pipenv install
 
 CMD [ \
-    "sh", "-c", \
-    "pipenv run flask db migrate;", \
-    "pipenv run flask db upgrade;", \
-    "pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'" \
+"sh", "-c", \
+"pipenv run flask db stamp head;", \
+"pipenv run flask db migrate;", \
+"pipenv run flask db upgrade;", \
+"pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'" \
 ]
