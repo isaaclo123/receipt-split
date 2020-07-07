@@ -25,7 +25,6 @@ ENV DEBUG=False
 
 # End Args
 
-
 RUN pipenv install
 RUN chmod +x run.sh
 
