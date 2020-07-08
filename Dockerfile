@@ -11,6 +11,7 @@ COPY ./Pipfile .
 COPY ./Pipfile.lock .
 
 COPY ./app.py .
+COPY ./docker-entrypoint.sh .
 
 # Start Args
 
@@ -26,11 +27,24 @@ ENV DEBUG=False
 
 RUN pipenv install
 
+# CMD [ \
+# "bash", \
+# "-c", \
+# "export SECRET_KEY=$SECRET_KEY; \
+# export DEBUG=$DEBUG; \
+# export DB_URI=$DB_URI; \
+# pipenv run flask db stamp head; \
+# pipenv run flask db migrate; \
+# pipenv run flask db upgrade; \
+# pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'" \
+# ]
+#
+
 CMD [ \
 "bash", \
 "-c", \
-"pipenv run flask db stamp head; \
-pipenv run flask db migrate; \
-pipenv run flask db upgrade; \
-pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'" \
+"./docker-entrypoint.sh \
+--db-uri $DB_URI \
+--secret-key $SECRET_KEY \
+--wsgi-workers $WSGI_WORKERS" \
 ]
