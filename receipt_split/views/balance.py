@@ -166,7 +166,7 @@ def get_data_list(q):
             acc[1][user.id] = {
                 "user": user,
                 "balances": acc[1].get(user.id, {}).get("balances", []) + newbalance,
-                "owed_amount": -1 * balance_amount,
+                "owed_amount": balance_amount,
                 "paid_amount": paid_amount,
             }
         return acc
@@ -189,11 +189,14 @@ def join_pad_tables(q1, q2):
 
     result = []
 
-    while q1_i < len(q1) and q2_i < len(q2):
-        q1_id, q1_amount = q1[q1_i] if len(q1) > 0 else (math.inf,
-                                                         Decimal(0.0))
-        q2_id, q2_amount = q2[q2_i] if len(q2) > 0 else (math.inf,
-                                                         Decimal(0.0))
+    app.logger.debug("JOINPAD START, q1 %s q2 %s", q1, q2)
+
+    while q1_i < len(q1) or q2_i < len(q2):
+        app.logger.debug("    In JOINPAD q1_i %s q2_i %s", q1_i, q2_i)
+        q1_id, q1_amount = q1[q1_i] if q1_i < len(q1) else (math.inf,
+                                                            Decimal(0.0))
+        q2_id, q2_amount = q2[q2_i] if q2_i < len(q2) else (math.inf,
+                                                            Decimal(0.0))
 
         if q1_id < q2_id:
             result.append((
@@ -253,10 +256,16 @@ def get_data(current_identity):
         # Balance.paid.is_(False)  # TODO
     ).group_by("bal_id").order_by("bal_id")
 
+    app.logger.info("BALANCE_FROM %s", balance_from.all())
+    app.logger.info("BALANCE_TO %s", balance_to.all())
+
     balance_data = apply_func(
         join_pad_tables(balance_from.all(), balance_to.all()),
         operator.sub
     )
+
+    app.logger.info("BALANCE_DATA %s",
+                    join_pad_tables(balance_from.all(), balance_to.all()))
 
     # payment from cur to other
     payments_from = db.session.query(
@@ -279,6 +288,9 @@ def get_data(current_identity):
         Payment.to_user_id == current_identity.id,
         Payment.accepted.is_(True)
     ).group_by("pay_id").order_by("pay_id")
+
+    app.logger.info("PAYMENT_FROM %s", payments_from.all())
+    app.logger.info("PAYMENT_TO %s", payments_to.all())
 
     payment_data = apply_func(
         join_pad_tables(payments_from.all(), payments_to.all()),
