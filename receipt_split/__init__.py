@@ -44,6 +44,8 @@ def create_app():
     is_sqlite = app.config.get("SQLALCHEMY_DATABASE_URI",
                                "").startswith('sqlite:')
 
+    logging.debug("%s", app.config.get("SQLALCHEMY_DATABASE_URI"))
+
     if is_sqlite:
         migrate.init_app(app, db, render_as_batch=is_sqlite)
     else:

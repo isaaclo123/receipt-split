@@ -5,6 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
+    DEBUG = False
     FLASK_ENV = "production"
 
     TESTING = False
@@ -38,8 +39,9 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
+    DEBUG = True
     FLASK_ENV = "development"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
                                                           'app.db.sqlite3')
-    SQLALCHEMY_ECHO = True
+    # SQLALCHEMY_ECHO = True

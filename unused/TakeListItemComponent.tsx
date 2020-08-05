@@ -8,6 +8,7 @@ import {
 import {
   ButtonProps
 } from '../types/index'
+import { inflate } from 'zlib';
 
 export interface TakeProps {
   amount: number,
