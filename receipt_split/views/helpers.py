@@ -220,17 +220,17 @@ def update_settlements(receipt):
     # update all settlements
     # TODO
     for u in users:
-        s = Settlement.query.get({
-            "from_user_id": owner.id,
-            "to_user_id": u.id
-        })
+        s = Settlement.get(
+            owner.id,
+            u.id
+        )
         if s is not None:
             s.update_settlement()
 
-        s = Settlement.query.get({
-            "from_user_id": u.id,
-            "to_user_id": owner.id
-        })
+        s = Settlement.get(
+            u.id,
+            owner.id
+        )
         if s is not None:
             s.update_settlement()
 
@@ -248,10 +248,8 @@ def reapply_balances(receipt, delete=True):
     for b in balances:
         # ignore self-addressed balances
         if not b.is_to_and_from_owner:
-            s = Settlement.query.get({
-                "from_user_id": b.from_user_id,  # from pays to
-                "to_user_id": owner.id
-            })  # this is the settlement paying the owner of receipt
+            s = Settlement.get(b.from_user_id, owner.id)
+            # this is the settlement paying the owner of receipt
 
             # if paid, add balance back to original user
             # add back balance before delete receipt if paid
@@ -375,10 +373,10 @@ def pay_balances(user):
         key = f"{user.id}-{balance.to_user_id}"
         set_fetch = settlement_dict.get(key)
 
-        settlement = Settlement.query.get({
-                        "from_user_id": user.id,
-                        "to_user_id": balance.to_user_id,
-                     }) if set_fetch is None else set_fetch
+        settlement = Settlement.get(
+                        user.id,
+                        balance.to_user_id,
+                     ) if set_fetch is None else set_fetch
 
         app.logger.debug("pay_balances key %s", key)
         app.logger.debug("pay_balances diffamount %s",

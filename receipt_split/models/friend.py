@@ -14,27 +14,21 @@ class Friend(RequestMixin, Base):
         def callback():
             # add settlement objects for each user in the friendrequest on
             # accept
-            if Settlement.query.get({
-                "from_user_id": self.from_user_id,
-                "to_user_id": self.to_user_id
-                    }) is None:
+            if Settlement.get(self.from_user_id, self.to_user_id) is None:
                 db.session.add(
                     Settlement(
-                        from_user_id=self.from_user_id,
-                        to_user_id=self.to_user_id,
+                        left_user_id=self.from_user_id,
+                        right_user_id=self.to_user_id,
                         paid_amount=0.0,
                         owed_amount=0.0,
                     )
                 )
 
-            if Settlement.query.get({
-                "from_user_id": self.to_user_id,
-                "to_user_id": self.from_user_id
-                    }) is None:
+            if Settlement.get(self.to_user_id, self.from_user_id) is None:
                 db.session.add(
                     Settlement(
-                        from_user_id=self.to_user_id,
-                        to_user_id=self.from_user_id,
+                        left_user_id=self.to_user_id,
+                        right_user_id=self.from_user_id,
                         paid_amount=0.0,
                         owed_amount=0.0,
                     )

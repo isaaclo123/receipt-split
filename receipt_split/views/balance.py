@@ -233,7 +233,10 @@ def get_user(data):
     ]
 
 
-def get_data(current_identity):
+def get_data_old(current_identity):
+    app.logger.debug("SETTLMENETS GET DATA %s",
+                     current_identity.settlements.all())
+
     # balance from cur to other (cur most pay other)
     balance_from = db.session.query(
         Balance.to_user_id.label("bal_id"),
@@ -304,6 +307,29 @@ def get_data(current_identity):
     # app.logger.info("RESULT DATA%s", result_data)
 
     return get_data_list(result_data)
+
+
+def get_data(current_identity):
+    id = current_identity.id
+    balance_owned = []
+    balance_owed = []
+    for s in current_identity.settlements:
+        to_add = {
+            "user": User.query.get(s.get_other_user_id(id)),
+            "balances": [],
+            "owed_amount": s.get_owed_amount(id),
+            "paid_amount": s.get_paid_amount(id),
+        }
+
+        if to_add.get("owed_amount") > to_add.get("paid_amount"):
+            balance_owned.append(to_add)
+        else:
+            balance_owed.append(to_add)
+
+    balances_owned_dump = balance_sum_schema.dump(balance_owned)
+    balances_owed_dump = balance_sum_schema.dump(balance_owed)
+
+    return (balances_owned_dump, balances_owed_dump)
 
 
 @views.route('/balancesums', methods=['GET'])

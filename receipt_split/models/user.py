@@ -2,7 +2,7 @@ from receipt_split.meta import db
 from . import receiptitem_association_table, receipt_association_table, Base,\
     Settlement, Friend, Payment, Receipt, Balance
 
-from sqlalchemy.sql import expression, or_
+from sqlalchemy.sql import expression, or_, and_
 from flask import current_app as app
 from sqlalchemy.orm import relationship
 
@@ -45,13 +45,15 @@ class User(Base):
                                       ],
                                       backref="from_user")
 
-    settlements_to_user = relationship("Settlement",
-                                       foreign_keys=[Settlement.to_user_id],
-                                       backref="to_user")
+    settlements_right_user = relationship("Settlement",
+                                          foreign_keys=[
+                                              Settlement.right_user_id
+                                          ],
+                                          backref="to_user")
 
-    settlements_from_user = relationship("Settlement",
+    settlements_left_user = relationship("Settlement",
                                          foreign_keys=[
-                                             Settlement.from_user_id
+                                             Settlement.left_user_id
                                          ],
                                          backref="user")
 
@@ -68,6 +70,44 @@ class User(Base):
                                     foreign_keys=[
                                         Friend.from_user_id
                                     ], backref="from_user")
+
+    @property
+    def settlements(self):
+        settle_from = db.session.query(
+            Settlement.left_user_id.label("left_user_id"),
+            Settlement.right_user_id.label("right_user_id")
+        ).filter_by(
+            left_user_id=self.id
+        )
+
+        app.logger.debug("settle_from %s", settle_from.all())
+
+        settle_to = db.session.query(
+            Settlement.left_user_id.label("left_user_id"),
+            Settlement.right_user_id.label("right_user_id")
+        ).filter_by(
+            right_user_id=self.id
+        )
+
+        app.logger.debug("settle_from %s", settle_to.all())
+
+        result_ids = settle_from.union(settle_to).subquery()
+
+        result = db.session.query(
+            Settlement
+        ).select_from(
+            result_ids
+        ).join(
+            Settlement,
+            and_(
+                Settlement.left_user_id == result_ids.c.left_user_id,
+                Settlement.right_user_id == result_ids.c.right_user_id
+            )
+        )
+
+        app.logger.info("%s SETTLEMENTS", result.all())
+
+        return result
 
     @property
     def friends(self):

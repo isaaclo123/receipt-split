@@ -1,6 +1,7 @@
-from flask import current_app as app
+from flask import request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
+from sqlalchemy.sql import exists
 
 from receipt_split.models import Friend, User
 from receipt_split.schemas import friend_schema, friends_schema, users_schema
@@ -68,36 +69,44 @@ def friend_list():
 @views.route('/friends/<int:id>/<action>', methods=["GET", "POST"])
 @jwt_required()
 def friends(id, action=None):
-    return create_view([
-        View(
-            methods=["GET"],
-            calls=[
-                Call(
-                    func=is_authorized,
-                    args=[["to_user", "from_user"]]
-                ),
-                Call(
-                    func=get_model_view,
-                )
-            ]
-        ),
-        View(
-            methods=["POST"],
-            calls=[
-                Call(
-                    func=is_authorized,
-                    args=[["to_user"]]
-                ),
-                Call(
-                    func=accept_reject_view,
-                    args=[action]
-                ),
-                Call(
-                    func=get_model_view,
-                )
-            ]
-        )
-        ],
-        obj=Friend.query.get(id),
-        schema=friend_schema
-    )
+    friend = Friend.query.get(id)
+
+    if not friend:
+        app.logger.info("/friend/%s NOT FOUND", id)
+        return err("friend not found"), \
+            status.HTTP_404_NOT_FOUND
+
+    if friend.to_user_id != current_identity.id:
+        app.logger.info("/friend/%s from_user incorrect", id)
+        return err("you are not authorized to add friends from this user"), \
+            status.HTTP_401_UNAUTHORIZED
+
+    if friend.from_user_id == current_identity.id:
+        app.logger.info("/friend/%s can't friend self", id)
+        return err("Cannot friend self"), status.HTTP_401_UNAUTHORIZED
+
+    if not db.session.query(exists().where(
+                            User.id == friend.to_user_id)).scalar():
+        return err("User to friend not found"), status.HTTP_404_NOT_FOUND
+
+    if action is None and request.method == 'GET':
+        friend_dump = friend_schema.dump(friend)
+        return friend_dump
+
+    # accept or reject bahavior after
+
+    if (action == "accept" or action == "reject") and request.method == 'POST':
+        # change accepted value
+
+        if action == "accept":
+            if friend.accept():
+                db.session.commit()
+
+        if action == "reject":
+            if friend.reject():
+                db.session.commit()
+
+        friend_dump = friend_schema.dump(friend)
+        return friend_dump
+
+    return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR

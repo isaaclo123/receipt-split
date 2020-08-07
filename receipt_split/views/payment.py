@@ -108,10 +108,10 @@ def pay_user():
         from_user_id = json_data.get("from_user", {}).get("id")
         to_user_id = json_data.get("to_user", {}).get("id")
 
-        s = Settlement.query.get({
-            "from_user_id": from_user_id,
-            "to_user_id": to_user_id
-        })
+        s = Settlement.get(
+            from_user_id,
+            to_user_id
+        )
 
         app.logger.debug("settlement %s", s)
         app.logger.debug("settlement is None is: %s", s is None)
@@ -121,13 +121,15 @@ def pay_user():
                 status.HTTP_400_BAD_REQUEST
 
         payment_amount = json_data.get("amount", 0)
+        owed_amount = s.get_owed_amount(current_identity.id)
 
         app.logger.debug(f"Payment amount ${payment_amount} and owed " +
-                         f"amount ${str('{:.2f}'.format(s.owed_amount))}")
+                         f"amount ${str('{:.2f}'.format(owed_amount))}")
 
-        if s is not None and payment_amount > s.owed_amount:
+        if s is not None and \
+                payment_amount > s.get_owed_amount(current_identity.id):
             return err(f"Payment amount ${payment_amount} is over owed " +
-                       f"amount ${s.owed_amount}"), status.HTTP_400_BAD_REQUEST
+                       f"amount ${owed_amount}"), status.HTTP_400_BAD_REQUEST
 
         existing_pending = db.session.query(Payment.query.filter_by(
             from_user_id=from_user_id,
