@@ -227,13 +227,6 @@ def update_settlements(receipt):
         if s is not None:
             s.update_settlement()
 
-        s = Settlement.get(
-            u.id,
-            owner.id
-        )
-        if s is not None:
-            s.update_settlement()
-
         app.logger.debug("\tsettlement uid %s", u.id)
         app.logger.debug("\tsettlement %s", s)
 
@@ -385,7 +378,7 @@ def pay_balances(user):
                          balance.amount)
 
         # less than amount paid
-        if balance.amount <= settlement.paid_amount:
+        if balance.amount <= settlement.get_paid_amount(user.id):
             app.logger.debug("Paid!")
             settlement.apply_balance(balance)
             app.logger.debug("before balance %s , paid %s", balance,

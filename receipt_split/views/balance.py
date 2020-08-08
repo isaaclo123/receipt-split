@@ -321,9 +321,14 @@ def get_data(current_identity):
             "paid_amount": s.get_paid_amount(id),
         }
 
-        if to_add.get("owed_amount") > to_add.get("paid_amount"):
+        if to_add.get("owed_amount") == to_add.get("paid_amount"):
+            continue
+        elif to_add.get("owed_amount") > to_add.get("paid_amount"):
             balance_owned.append(to_add)
         else:
+            to_add["owed_amount"] = -1 * s.get_owed_amount(id)
+            to_add["paid_amount"] = -1 * s.get_paid_amount(id)
+
             balance_owed.append(to_add)
 
     balances_owned_dump = balance_sum_schema.dump(balance_owned)

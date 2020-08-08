@@ -126,10 +126,10 @@ def pay_user():
         app.logger.debug(f"Payment amount ${payment_amount} and owed " +
                          f"amount ${str('{:.2f}'.format(owed_amount))}")
 
-        if s is not None and \
-                payment_amount > s.get_owed_amount(current_identity.id):
-            return err(f"Payment amount ${payment_amount} is over owed " +
-                       f"amount ${owed_amount}"), status.HTTP_400_BAD_REQUEST
+        # if s is not None and \
+        #         payment_amount > s.get_owed_amount(current_identity.id):
+        #     return err(f"Payment amount ${payment_amount} is over owed " +
+        #                f"amount ${owed_amount}"), status.HTTP_400_BAD_REQUEST
 
         existing_pending = db.session.query(Payment.query.filter_by(
             from_user_id=from_user_id,
