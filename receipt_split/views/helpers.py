@@ -336,7 +336,8 @@ def calculate_balances(receipt):
 
     receipt.balances = new_balances
 
-    update_settlements(receipt)
+    # TODO dont think i need this
+    # update_settlements(receipt)
 
     for u in users:
         if u.id != owner.id:

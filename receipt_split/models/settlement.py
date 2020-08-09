@@ -132,24 +132,6 @@ class Settlement(Base):
         return add(self, payment.from_user_id, "paid_amount",
                    -1 * payment.amount)
 
-    # def add_balance(self, balance):
-    #     if balance.from_user_id == self.left_user_id:
-    #         self.paid_amount += balance.amount
-    #     elif balance.from_user_id == self.right_user_id:
-    #         self.paid_amount -= balance.amount
-    #     else:
-    #         return False
-    #     return True
-
-    # def remove_balance(self, balance):
-    #     if balance.from_user_id == self.left_user_id:
-    #         self.paid_amount -= balance.amount
-    #     elif balance.from_user_id == self.right_user_id:
-    #         self.paid_amount += balance.amount
-    #     else:
-    #         return False
-    #     return True
-
     def apply_balance(self, balance):
         # return True if paid
         if balance.paid:
@@ -166,20 +148,12 @@ class Settlement(Base):
                              balance.amount)
             return False
 
-        add(self, balance.from_user_id, "paid_amount", -1 * balance.amount)
-        add(self, balance.from_user_id, "owed_amount", balance.amount)
-
-        # if balance.from_user_id == self.left_user_id:
-        #     self.paid_amount -= balance.amount
-        #     self.owed_amount += balance.amount
-        # elif balance.from_user_id == self.right_user_id:
-        #     self.paid_amount += balance.amount
-        #     self.owed_amount -= balance.amount
-
-        # self.paid_amount = self.paid_amount - balance.amount
-        # self.owed_amount = self.owed_amount - balance.amount
-
-        balance.paid = True
+        if add(self, balance.from_user_id, "paid_amount", -1 * balance.amount)\
+            and add(self, balance.from_user_id, "owed_amount",
+                    balance.amount):
+            balance.paid = True
+        else:
+            return False
 
         app.logger.debug("bal_OK! paid %s, owed %s cur_bal %s",
                          self.paid_amount, self.owed_amount,
@@ -193,11 +167,12 @@ class Settlement(Base):
             app.logger.debug("\tDid not add back, as balance unpaid")
             return False
 
-        if not add(self, balance.from_user_id, "paid_amount", balance.amount):
+        # paid balance
+        if not add(self, balance.from_user_id, "paid_amount", balance.amount)\
+            or not add(self, balance.from_user_id, "owed_amount", -1 *
+                       balance.amount):
             return False
 
-        # self.update_settlement()
-        # self.owed_amount = self.owed_amount + balance.amount
         app.logger.debug("\t bal_ADDED! paid %s, owed %s cur_bal %s",
                          self.paid_amount, self.owed_amount,
                          balance.amount)
