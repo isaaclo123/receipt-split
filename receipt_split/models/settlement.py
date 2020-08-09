@@ -8,6 +8,32 @@ from sqlalchemy.sql import func
 from sqlalchemy import literal_column
 
 
+def get(self_, user_id, field, default=None):
+    data = getattr(self_, field, None)
+    if not data:
+        return default
+
+    if user_id == self_.left_user_id:
+        return data
+    elif user_id == self_.right_user_id:
+        return -1 * data
+    return default
+
+
+def add(self_, user_id, field, amount):
+    data = getattr(self_, field, None)
+    if not data:
+        return False
+
+    if user_id == self_.left_user_id:
+        setattr(self_, field, data + amount)
+        return True
+    elif user_id == self_.right_user_id:
+        setattr(self_, field, data - amount)
+        return True
+    return False
+
+
 class Settlement(Base):
     __tablename__ = 'settlement'
     __table_args__ = (
@@ -91,61 +117,20 @@ class Settlement(Base):
         return None
 
     def get_paid_amount(self, user_id):
-        if user_id == self.left_user_id:
-            return self.paid_amount
-        elif user_id == self.right_user_id:
-            return -1 * self.paid_amount
-        return Decimal(0.0)
+        return get(self, user_id, "paid_amount", Decimal(0.0))
 
     def get_owed_amount(self, user_id):
-        if user_id == self.left_user_id:
-            return self.owed_amount
-        elif user_id == self.right_user_id:
-            return -1 * self.owed_amount
-        return Decimal(0.0)
+        return get(self, user_id, "owed_amount", Decimal(0.0))
 
     def get_diff_total(self, user_id):
-        if user_id == self.left_user_id:
-            return self.diff_total
-        elif user_id == self.right_user_id:
-            return -1 * self.diff_total
-        return Decimal(0.0)
+        return get(self, user_id, "diff_total", Decimal(0.0))
 
     def add_payment(self, payment):
-        if payment.from_user_id == self.left_user_id:
-            self.paid_amount += payment.amount
-        elif payment.from_user_id == self.right_user_id:
-            self.paid_amount -= payment.amount
-        else:
-            return False
-        return True
+        return add(self, payment.from_user_id, "paid_amount", payment.amount)
 
     def remove_payment(self, payment):
-        if payment.from_user_id == self.left_user_id:
-            self.paid_amount -= payment.amount
-        elif payment.from_user_id == self.right_user_id:
-            self.paid_amount += payment.amount
-        else:
-            return False
-        return True
-
-    def add_balance(self, balance):
-        if balance.from_user_id == self.left_user_id:
-            self.owed_amount += balance.amount
-        elif balance.from_user_id == self.right_user_id:
-            self.owed_amount -= balance.amount
-        else:
-            return False
-        return True
-
-    def remove_balance(self, balance):
-        if balance.from_user_id == self.left_user_id:
-            self.owed_amount -= balance.amount
-        elif balance.from_user_id == self.right_user_id:
-            self.owed_amount += balance.amount
-        else:
-            return False
-        return True
+        return add(self, payment.from_user_id, "paid_amount",
+                   -1 * payment.amount)
 
     # def add_balance(self, balance):
     #     if balance.from_user_id == self.left_user_id:
@@ -169,16 +154,31 @@ class Settlement(Base):
         # return True if paid
         if balance.paid:
             return False
-        if self.paid_amount < balance.amount\
-                or self.owed_amount < balance.amount:
+
+        paid_amount = self.get_paid_amount(balance.from_user_id)
+        # owed_amount = self.get_owed_amount(balance.from_user_id)
+
+        # if paid_amount < balance.amount or owed_amount < balance.amount:
+        if paid_amount < balance.amount:
             app.logger.debug("balance id %s", balance.id)
             app.logger.debug("bal_err paid %s, owed %s cur_bal %s",
                              self.paid_amount, self.owed_amount,
                              balance.amount)
             return False
 
-        self.paid_amount = self.paid_amount - balance.amount
-        self.owed_amount = self.owed_amount - balance.amount
+        add(self, balance.from_user_id, "paid_amount", -1 * balance.amount)
+        add(self, balance.from_user_id, "owed_amount", balance.amount)
+
+        # if balance.from_user_id == self.left_user_id:
+        #     self.paid_amount -= balance.amount
+        #     self.owed_amount += balance.amount
+        # elif balance.from_user_id == self.right_user_id:
+        #     self.paid_amount += balance.amount
+        #     self.owed_amount -= balance.amount
+
+        # self.paid_amount = self.paid_amount - balance.amount
+        # self.owed_amount = self.owed_amount - balance.amount
+
         balance.paid = True
 
         app.logger.debug("bal_OK! paid %s, owed %s cur_bal %s",
@@ -193,12 +193,8 @@ class Settlement(Base):
             app.logger.debug("\tDid not add back, as balance unpaid")
             return False
 
-        # from pays to, (to should pay from now)
-        if balance.from_user_id == self.left_user_id:
-            # add back to payment total
-            self.paid_amount += balance.amount
-        elif balance.from_user_id == self.right_user_id:
-            self.paid_amount -= balance.amount
+        if not add(self, balance.from_user_id, "paid_amount", balance.amount):
+            return False
 
         # self.update_settlement()
         # self.owed_amount = self.owed_amount + balance.amount

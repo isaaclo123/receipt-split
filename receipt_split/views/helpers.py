@@ -377,13 +377,10 @@ def pay_balances(user):
         app.logger.debug("pay_balances balanceamount %s",
                          balance.amount)
 
-        # less than amount paid
-        if balance.amount <= settlement.get_paid_amount(user.id):
+        if settlement.apply_balance(balance):
             app.logger.debug("Paid!")
-            settlement.apply_balance(balance)
             app.logger.debug("before balance %s , paid %s", balance,
                              balance.paid)
-            balance.paid = True
             app.logger.debug("after balance %s , paid %s", balance,
                              balance.paid)
 
