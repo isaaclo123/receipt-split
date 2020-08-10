@@ -131,20 +131,21 @@ def pay_user():
         #     return err(f"Payment amount ${payment_amount} is over owed " +
         #                f"amount ${owed_amount}"), status.HTTP_400_BAD_REQUEST
 
-        existing_pending = db.session.query(Payment.query.filter_by(
-            from_user_id=from_user_id,
-            to_user_id=to_user_id,
-            accepted=None
-        ).exists()).scalar()
+        # existing_pending = db.session.query(Payment.query.filter_by(
+        #     from_user_id=from_user_id,
+        #     to_user_id=to_user_id,
+        #     accepted=None
+        # ).exists()).scalar()
 
-        if existing_pending:
-            return err(f"You still have a pending payment existing"), \
-                status.HTTP_400_BAD_REQUEST
+        # if existing_pending:
+        #     return err(f"You still have a pending payment existing"), \
+        #         status.HTTP_400_BAD_REQUEST
 
         app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
         app.logger.info("/pay POST JSON_DATA - %s", json_data)
 
         pay_data = payment_schema.load(json_data, session=db.session)
+        pay_data.archived = False
 
         app.logger.debug("AFTER PAYMENT SCHEMA LOAD")
 
@@ -172,6 +173,8 @@ def pay_user():
 
         db.session.add(pay_data)
         db.session.commit()
+
+        app.logger.debug("%s pay_data archived", pay_data.archived)
 
         pay_dump = payment_schema.dump(pay_data)
 

@@ -10,7 +10,7 @@ from sqlalchemy import literal_column
 
 def get(self_, user_id, field, default=None):
     data = getattr(self_, field, None)
-    if not data:
+    if data is None:
         return default
 
     if user_id == self_.left_user_id:
@@ -22,14 +22,19 @@ def get(self_, user_id, field, default=None):
 
 def add(self_, user_id, field, amount):
     data = getattr(self_, field, None)
-    if not data:
+    if data is None:
+        app.logger.debug("   NOT EXIST data %s", data)
         return False
 
+    app.logger.debug("ADD DATA %s", data)
     if user_id == self_.left_user_id:
         setattr(self_, field, data + amount)
+
+        app.logger.debug("ADD SUCCESS %s", getattr(self_, field, None))
         return True
     elif user_id == self_.right_user_id:
         setattr(self_, field, data - amount)
+        app.logger.debug("ADD FAIL %s", getattr(self_, field, None))
         return True
     return False
 
@@ -81,12 +86,14 @@ class Settlement(Base):
         ).subquery()
 
         result = db.session.query(
-            from_balances.c.sum - to_balances.c.sum
-        ).as_scalar()
+            (from_balances.c.sum - to_balances.c.sum).label("result")
+        ).scalar()
 
         app.logger.info("NEW BALANCE AMOUNT %s", result)
 
         self.owed_amount = result
+
+        app.logger.info("NEW BALANCE owed AMOUNT %s", self.owed_amount)
 
         # self.owed_amount = s
         # self.balance_amount = s
@@ -126,7 +133,10 @@ class Settlement(Base):
         return get(self, user_id, "diff_total", Decimal(0.0))
 
     def add_payment(self, payment):
-        return add(self, payment.from_user_id, "paid_amount", payment.amount)
+        result = add(self, payment.from_user_id, "paid_amount", payment.amount)
+        if not result:
+            app.logger.debug("ADD FAIL")
+        return result
 
     def remove_payment(self, payment):
         return add(self, payment.from_user_id, "paid_amount",
@@ -135,6 +145,7 @@ class Settlement(Base):
     def apply_balance(self, balance):
         # return True if paid
         if balance.paid:
+            app.logger.debug("APPLY BALANCE balance already paid")
             return False
 
         paid_amount = self.get_paid_amount(balance.from_user_id)
@@ -142,6 +153,8 @@ class Settlement(Base):
 
         # if paid_amount < balance.amount or owed_amount < balance.amount:
         if paid_amount < balance.amount:
+            app.logger.debug("paid_amount not enough to pay balance %s",
+                             balance.id)
             app.logger.debug("balance id %s", balance.id)
             app.logger.debug("bal_err paid %s, owed %s cur_bal %s",
                              self.paid_amount, self.owed_amount,
@@ -168,9 +181,10 @@ class Settlement(Base):
             return False
 
         # paid balance
-        if not add(self, balance.from_user_id, "paid_amount", balance.amount)\
-            or not add(self, balance.from_user_id, "owed_amount", -1 *
-                       balance.amount):
+        if not add(self, balance.from_user_id, "paid_amount", balance.amount):
+            # \
+            # or not add(self, balance.from_user_id, "owed_amount", -1 *
+            #            balance.amount):
             return False
 
         app.logger.debug("\t bal_ADDED! paid %s, owed %s cur_bal %s",

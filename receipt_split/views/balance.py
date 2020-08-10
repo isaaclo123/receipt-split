@@ -150,163 +150,165 @@ from . import views
 #     return get_balance_list(q)
 
 
-def get_data_list(q):
-    def get_result(acc, cur):
-        user, balance_amount, paid_amount = cur
-        # newbalance = [] if balance is None else [balance]
-        newbalance = []
-        if balance_amount > paid_amount:
-            acc[0][user.id] = {
-                "user": user,
-                "balances": acc[0].get(user.id, {}).get("balances", []) + newbalance,
-                "owed_amount": balance_amount,
-                "paid_amount": paid_amount,
-            }
-        else:
-            acc[1][user.id] = {
-                "user": user,
-                "balances": acc[1].get(user.id, {}).get("balances", []) + newbalance,
-                "owed_amount": balance_amount,
-                "paid_amount": paid_amount,
-            }
-        return acc
-
-    balances = reduce(get_result, q, (
-        OrderedDict(), OrderedDict()
-    ))
-
-    balances_owned_dump = balance_sum_schema.dump(balances[0].values())
-    balances_owed_dump = balance_sum_schema.dump(balances[1].values())
-    return (balances_owned_dump, balances_owed_dump)
-
-
-def join_pad_tables(q1, q2):
-    # q1 and q2 are lists of tuple (id, amount)
-    # sorted by ascending id
-
-    q1_i = 0
-    q2_i = 0
-
-    result = []
-
-    app.logger.debug("JOINPAD START, q1 %s q2 %s", q1, q2)
-
-    while q1_i < len(q1) or q2_i < len(q2):
-        app.logger.debug("    In JOINPAD q1_i %s q2_i %s", q1_i, q2_i)
-        q1_id, q1_amount = q1[q1_i] if q1_i < len(q1) else (math.inf,
-                                                            Decimal(0.0))
-        q2_id, q2_amount = q2[q2_i] if q2_i < len(q2) else (math.inf,
-                                                            Decimal(0.0))
-
-        if q1_id < q2_id:
-            result.append((
-                q1_id, q1_amount, Decimal(0.0)
-            ))
-            q1_i += 1
-        if q1_id > q2_id:
-            result.append((
-                q2_id, Decimal(0.0), q2_amount
-            ))
-            q2_i += 1
-        else:
-            # this happens when q1_id and q2_id are equal
-            result.append((
-                q1_id, q1_amount, q2_amount
-            ))
-            q1_i += 1
-            q2_i += 1
-
-    return result
-
-
-def apply_func(data, func):
-    return [
-        (id, func(a1, a2))
-        for id, a1, a2 in data
-    ]
-
-
-def get_user(data):
-    return [
-        (User.query.get(id), *rest)
-        for id, *rest in data
-    ]
-
-
-def get_data_old(current_identity):
-    app.logger.debug("SETTLMENETS GET DATA %s",
-                     current_identity.settlements.all())
-
-    # balance from cur to other (cur most pay other)
-    balance_from = db.session.query(
-        Balance.to_user_id.label("bal_id"),
-        func.coalesce(func.sum(Balance.amount),
-                      literal_column("0.0")).label("bal_amount")
-    ).filter(
-        Balance.from_user_id == current_identity.id,
-        Balance.to_user_id != current_identity.id,
-        # Balance.paid.is_(False)  # TODO
-    ).group_by("bal_id").order_by("bal_id")
-
-    # balance from other to cur (other must pay cur)
-    balance_to = db.session.query(
-        Balance.from_user_id.label("bal_id"),
-        func.coalesce(func.sum(Balance.amount),
-                      literal_column("0.0")).label("bal_amount")
-    ).filter(
-        Balance.from_user_id != current_identity.id,
-        Balance.to_user_id == current_identity.id,
-        # Balance.paid.is_(False)  # TODO
-    ).group_by("bal_id").order_by("bal_id")
-
-    app.logger.info("BALANCE_FROM %s", balance_from.all())
-    app.logger.info("BALANCE_TO %s", balance_to.all())
-
-    balance_data = apply_func(
-        join_pad_tables(balance_from.all(), balance_to.all()),
-        operator.sub
-    )
-
-    app.logger.info("BALANCE_DATA %s",
-                    join_pad_tables(balance_from.all(), balance_to.all()))
-
-    # payment from cur to other
-    payments_from = db.session.query(
-        Payment.to_user_id.label("pay_id"),
-        func.coalesce(func.sum(Payment.amount),
-                      literal_column("0.0")).label("pay_amount")
-    ).filter(
-        Payment.from_user_id == current_identity.id,
-        Payment.to_user_id != current_identity.id,
-        Payment.accepted.is_(True)
-    ).group_by("pay_id").order_by("pay_id")
-
-    # payment from other to cur
-    payments_to = db.session.query(
-        Payment.from_user_id.label("pay_id"),
-        func.coalesce(func.sum(Payment.amount),
-                      literal_column("0.0")).label("pay_amount")
-    ).filter(
-        Payment.from_user_id != current_identity.id,
-        Payment.to_user_id == current_identity.id,
-        Payment.accepted.is_(True)
-    ).group_by("pay_id").order_by("pay_id")
-
-    app.logger.info("PAYMENT_FROM %s", payments_from.all())
-    app.logger.info("PAYMENT_TO %s", payments_to.all())
-
-    payment_data = apply_func(
-        join_pad_tables(payments_from.all(), payments_to.all()),
-        operator.sub
-    )
-
-    app.logger.info("PAYMENTS_DATA_REAL %s", payment_data)
-
-    result_data = get_user(join_pad_tables(balance_data, payment_data))
-
-    # app.logger.info("RESULT DATA%s", result_data)
-
-    return get_data_list(result_data)
+# def get_data_list(q):
+#     def get_result(acc, cur):
+#         user, balance_amount, paid_amount = cur
+#         # newbalance = [] if balance is None else [balance]
+#         newbalance = []
+#         if balance_amount > paid_amount:
+#             acc[0][user.id] = {
+#                 "user": user,
+#                 "balances": acc[0].get(user.id, {}).get("balances", []) + newbalance,
+#                 "owed_amount": balance_amount,
+#                 "paid_amount": paid_amount,
+#             }
+#         else:
+#             acc[1][user.id] = {
+#                 "user": user,
+#                 "balances": acc[1].get(user.id, {}).get("balances", []) + newbalance,
+#                 "owed_amount": balance_amount,
+#                 "paid_amount": paid_amount,
+#             }
+#         return acc
+#
+#     balances = reduce(get_result, q, (
+#         OrderedDict(), OrderedDict()
+#     ))
+#
+#     balances_owned_dump = balance_sum_schema.dump(balances[0].values())
+#     balances_owed_dump = balance_sum_schema.dump(balances[1].values())
+#     return (balances_owned_dump, balances_owed_dump)
+#
+#
+# def join_pad_tables(q1, q2):
+#     # q1 and q2 are lists of tuple (id, amount)
+#     # sorted by ascending id
+#
+#     q1_i = 0
+#     q2_i = 0
+#
+#     result = []
+#
+#     app.logger.debug("JOINPAD START, q1 %s q2 %s", q1, q2)
+#
+#     while q1_i < len(q1) or q2_i < len(q2):
+#         app.logger.debug("    In JOINPAD q1_i %s q2_i %s", q1_i, q2_i)
+#         q1_id, q1_amount = q1[q1_i] if q1_i < len(q1) else (math.inf,
+#                                                             Decimal(0.0))
+#         q2_id, q2_amount = q2[q2_i] if q2_i < len(q2) else (math.inf,
+#                                                             Decimal(0.0))
+#
+#         if q1_id < q2_id:
+#             result.append((
+#                 q1_id, q1_amount, Decimal(0.0)
+#             ))
+#             q1_i += 1
+#         if q1_id > q2_id:
+#             result.append((
+#                 q2_id, Decimal(0.0), q2_amount
+#             ))
+#             q2_i += 1
+#         else:
+#             # this happens when q1_id and q2_id are equal
+#             result.append((
+#                 q1_id, q1_amount, q2_amount
+#             ))
+#             q1_i += 1
+#             q2_i += 1
+#
+#     return result
+#
+#
+# def apply_func(data, func):
+#     return [
+#         (id, func(a1, a2))
+#         for id, a1, a2 in data
+#     ]
+#
+#
+# def get_user(data):
+#     return [
+#         (User.query.get(id), *rest)
+#         for id, *rest in data
+#     ]
+#
+#
+# def get_data_old(current_identity):
+#     app.logger.debug("SETTLMENETS GET DATA %s",
+#                      current_identity.settlements.all())
+#     app.logger.debug("SETTLMENETS GET DATA %s",
+#                      current_identity.settlements[0].paid_amount)
+#
+#     # balance from cur to other (cur most pay other)
+#     balance_from = db.session.query(
+#         Balance.to_user_id.label("bal_id"),
+#         func.coalesce(func.sum(Balance.amount),
+#                       literal_column("0.0")).label("bal_amount")
+#     ).filter(
+#         Balance.from_user_id == current_identity.id,
+#         Balance.to_user_id != current_identity.id,
+#         # Balance.paid.is_(False)  # TODO
+#     ).group_by("bal_id").order_by("bal_id")
+#
+#     # balance from other to cur (other must pay cur)
+#     balance_to = db.session.query(
+#         Balance.from_user_id.label("bal_id"),
+#         func.coalesce(func.sum(Balance.amount),
+#                       literal_column("0.0")).label("bal_amount")
+#     ).filter(
+#         Balance.from_user_id != current_identity.id,
+#         Balance.to_user_id == current_identity.id,
+#         # Balance.paid.is_(False)  # TODO
+#     ).group_by("bal_id").order_by("bal_id")
+#
+#     app.logger.info("BALANCE_FROM %s", balance_from.all())
+#     app.logger.info("BALANCE_TO %s", balance_to.all())
+#
+#     balance_data = apply_func(
+#         join_pad_tables(balance_from.all(), balance_to.all()),
+#         operator.sub
+#     )
+#
+#     app.logger.info("BALANCE_DATA %s",
+#                     join_pad_tables(balance_from.all(), balance_to.all()))
+#
+#     # payment from cur to other
+#     payments_from = db.session.query(
+#         Payment.to_user_id.label("pay_id"),
+#         func.coalesce(func.sum(Payment.amount),
+#                       literal_column("0.0")).label("pay_amount")
+#     ).filter(
+#         Payment.from_user_id == current_identity.id,
+#         Payment.to_user_id != current_identity.id,
+#         Payment.accepted.is_(True)
+#     ).group_by("pay_id").order_by("pay_id")
+#
+#     # payment from other to cur
+#     payments_to = db.session.query(
+#         Payment.from_user_id.label("pay_id"),
+#         func.coalesce(func.sum(Payment.amount),
+#                       literal_column("0.0")).label("pay_amount")
+#     ).filter(
+#         Payment.from_user_id != current_identity.id,
+#         Payment.to_user_id == current_identity.id,
+#         Payment.accepted.is_(True)
+#     ).group_by("pay_id").order_by("pay_id")
+#
+#     app.logger.info("PAYMENT_FROM %s", payments_from.all())
+#     app.logger.info("PAYMENT_TO %s", payments_to.all())
+#
+#     payment_data = apply_func(
+#         join_pad_tables(payments_from.all(), payments_to.all()),
+#         operator.sub
+#     )
+#
+#     app.logger.info("PAYMENTS_DATA_REAL %s", payment_data)
+#
+#     result_data = get_user(join_pad_tables(balance_data, payment_data))
+#
+#     # app.logger.info("RESULT DATA%s", result_data)
+#
+#     return get_data_list(result_data)
 
 
 def get_data(current_identity):
@@ -314,20 +316,26 @@ def get_data(current_identity):
     balance_owned = []
     balance_owed = []
     for s in current_identity.settlements:
+        owed_amount = s.get_owed_amount(id)
+        paid_amount = s.get_paid_amount(id)
+
+        app.logger.debug("    SETTLE paid %s", paid_amount)
+        app.logger.debug("    SETTLE owed %s", owed_amount)
+
         to_add = {
             "user": User.query.get(s.get_other_user_id(id)),
             "balances": [],
-            "owed_amount": s.get_owed_amount(id),
-            "paid_amount": s.get_paid_amount(id),
+            "owed_amount": owed_amount,
+            "paid_amount": paid_amount,
         }
 
-        if to_add.get("owed_amount") == to_add.get("paid_amount"):
+        if to_add.get("owed_amount") == paid_amount:
             continue
-        elif to_add.get("owed_amount") > to_add.get("paid_amount"):
+        if to_add.get("owed_amount") > paid_amount:
             balance_owned.append(to_add)
         else:
-            to_add["owed_amount"] = -1 * s.get_owed_amount(id)
-            to_add["paid_amount"] = -1 * s.get_paid_amount(id)
+            to_add["owed_amount"] = -1 * owed_amount
+            to_add["paid_amount"] = -1 * paid_amount
 
             balance_owed.append(to_add)
 

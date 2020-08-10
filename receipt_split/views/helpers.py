@@ -337,7 +337,7 @@ def calculate_balances(receipt):
     receipt.balances = new_balances
 
     # TODO dont think i need this
-    # update_settlements(receipt)
+    update_settlements(receipt)
 
     for u in users:
         if u.id != owner.id:
@@ -380,10 +380,13 @@ def pay_balances(user):
 
         if settlement.apply_balance(balance):
             app.logger.debug("Paid!")
-            app.logger.debug("before balance %s , paid %s", balance,
-                             balance.paid)
-            app.logger.debug("after balance %s , paid %s", balance,
-                             balance.paid)
+        else:
+            app.logger.debug("NOT Paid Error!")
+
+        app.logger.debug("before balance %s , paid %s", balance,
+                         balance.paid)
+        app.logger.debug("after balance %s , paid %s", balance,
+                         balance.paid)
 
         if set_fetch is None:
             settlement_dict[key] = settlement

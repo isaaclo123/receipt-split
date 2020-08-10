@@ -105,8 +105,6 @@ class User(Base):
             )
         )
 
-        app.logger.info("%s SETTLEMENTS", result.all())
-
         return result
 
     @property

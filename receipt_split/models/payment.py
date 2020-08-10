@@ -1,3 +1,4 @@
+from flask import current_app as app
 from receipt_split.meta import db
 from . import Settlement, RequestMixin, Base
 
@@ -29,7 +30,9 @@ class Payment(RequestMixin, Base):
     # methods return True if modified, else False
     def accept(self):
         def callback():
+            app.logger.debug("PAYMENT ACCEPT")
             s = Settlement.get(self.from_user_id, self.to_user_id)
+            app.logger.debug("add payment settlement %s", s)
             s.add_payment(self)
 
         return super().accept(callback=callback)
