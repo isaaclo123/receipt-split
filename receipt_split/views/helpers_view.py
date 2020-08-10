@@ -166,7 +166,8 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
                 Balance(
                     from_user_id=payer,
                     to_user_id=payee,
-                    amount=diff_amount
+                    amount=diff_amount,
+                    paid=(payer == payee)
                 )
             ]
 
@@ -180,7 +181,8 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
                 Balance(
                     from_user_id=from_user,
                     to_user_id=owner_id,
-                    amount=amount
+                    amount=amount,
+                    paid=(from_user == owner_id)
                 )
             ]
 
@@ -193,7 +195,8 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
                 Balance(
                     from_user_id=b.to_user_id,
                     to_user_id=b.from_user_id,
-                    amount=b.amount
+                    amount=b.amount,
+                    paid=(b.to_user_id == b.from_user_id)
                 )
             ]
 
@@ -281,7 +284,8 @@ def calculate_balances(receipt):
             Balance(
                 to_user=owner,
                 from_user=owner,
-                amount=receipt_amount
+                amount=receipt_amount,
+                paid=True
             )
         ]
 
@@ -366,7 +370,7 @@ def pay_balances(user):
     for balance in balances:
         # if already got settlement, fetch it from dict,
         # else get it and save it
-        key = f"{user.id}-{balance.to_user_id}"
+        key = f"{user.id} - {balance.to_user_id}"
         set_fetch = settlement_dict.get(key)
 
         settlement = Settlement.get(

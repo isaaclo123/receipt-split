@@ -40,6 +40,7 @@ class Payment(RequestMixin, Base):
     def reject(self):
         def callback():
             s = Settlement.get(self.from_user_id, self.to_user_id)
+            app.logger.debug("remove payment settlement %s", s)
             s.remove_payment(self)
 
         return super().reject(callback=callback)

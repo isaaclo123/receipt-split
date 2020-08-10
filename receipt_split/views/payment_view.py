@@ -16,8 +16,8 @@ def get_payment(id, action=None):
     payment = Payment.query.get(id)
 
     if not payment:
-        return err("requested payment does not exist"),
-    status.HTTP_404_NOT_FOUND
+        return err("requested payment does not exist"), \
+            status.HTTP_404_NOT_FOUND
 
     if payment.to_user != current_identity and \
             payment.from_user != current_identity:
@@ -40,8 +40,7 @@ def get_payment(id, action=None):
         if action == "accept":
             if payment.accept():
                 pay_balances(payment.from_user)
-                pay_balances(payment.to_user)
-
+                # pay_balances(payment.to_user)
                 db.session.commit()
 
         if action == "reject":

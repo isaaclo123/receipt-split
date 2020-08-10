@@ -21,20 +21,25 @@ def get(self_, user_id, field, default=None):
 
 
 def add(self_, user_id, field, amount):
-    data = get(self_, user_id, field, None)
+    data = getattr(self_, field, None)
     if data is None:
         app.logger.debug("   NOT EXIST data %s", data)
         return False
 
     app.logger.debug("ADD DATA %s", data)
-    if user_id == self_.left_user_id:
-        setattr(self_, field, data + amount)
+    app.logger.debug("ADD DATA amount %s", amount)
 
-        app.logger.debug("ADD SUCCESS %s", getattr(self_, field, None))
+    if user_id == self_.left_user_id:
+        result = data + amount
+
+        setattr(self_, field, result)
+        app.logger.debug("ADD DATA result %s", result)
         return True
     elif user_id == self_.right_user_id:
-        setattr(self_, field, data - amount)
-        app.logger.debug("ADD SUCCESS %s", getattr(self_, field, None))
+        result = data - amount
+
+        setattr(self_, field, result)
+        app.logger.debug("ADD DATA result %s", result)
         return True
     return False
 
@@ -139,8 +144,9 @@ class Settlement(Base):
         return result
 
     def remove_payment(self, payment):
-        return add(self, payment.from_user_id, "paid_amount",
-                   -1 * payment.amount)
+        return add(
+            self, payment.from_user_id, "paid_amount", -1 * payment.amount
+        )
 
     def apply_balance(self, balance):
         # return True if paid
@@ -149,10 +155,16 @@ class Settlement(Base):
             return False
 
         paid_amount = self.get_paid_amount(balance.from_user_id)
-        # owed_amount = self.get_owed_amount(balance.from_user_id)
+        balance_amount = balance.amount if\
+            balance.from_user_id == self.left_user_id else -1 * balance.amount
+
+        # balance from -> to
+
+        app.logger.debug("APPLY BALANCE paid %s bal %s", paid_amount,
+                         balance_amount)
 
         # if paid_amount < balance.amount or owed_amount < balance.amount:
-        if paid_amount < balance.amount:
+        if paid_amount < balance_amount:
             app.logger.debug("paid_amount not enough to pay balance %s",
                              balance.id)
             app.logger.debug("balance id %s", balance.id)
@@ -161,9 +173,9 @@ class Settlement(Base):
                              balance.amount)
             return False
 
-        if add(self, balance.from_user_id, "paid_amount", -1 * balance.amount):
-            # and add(self, balance.from_user_id, "owed_amount",
-            #         balance.amount):
+        add(self, balance.from_user_id, "owed_amount", balance_amount)
+
+        if add(self, balance.from_user_id, "paid_amount", -1 * balance_amount):
             balance.paid = True
         else:
             return False
