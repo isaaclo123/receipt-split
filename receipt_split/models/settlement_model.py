@@ -173,9 +173,10 @@ class Settlement(Base):
                              balance.amount)
             return False
 
-        add(self, balance.from_user_id, "owed_amount", balance_amount)
-
-        if add(self, balance.from_user_id, "paid_amount", -1 * balance_amount):
+        if add(self, balance.from_user_id, "owed_amount",
+               -1 * balance_amount) and add(
+                   self, balance.from_user_id, "paid_amount",
+                   -1 * balance_amount):
             balance.paid = True
         else:
             return False
