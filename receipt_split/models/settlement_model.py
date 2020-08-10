@@ -21,7 +21,7 @@ def get(self_, user_id, field, default=None):
 
 
 def add(self_, user_id, field, amount):
-    data = getattr(self_, field, None)
+    data = get(self_, user_id, field, None)
     if data is None:
         app.logger.debug("   NOT EXIST data %s", data)
         return False
@@ -34,7 +34,7 @@ def add(self_, user_id, field, amount):
         return True
     elif user_id == self_.right_user_id:
         setattr(self_, field, data - amount)
-        app.logger.debug("ADD FAIL %s", getattr(self_, field, None))
+        app.logger.debug("ADD SUCCESS %s", getattr(self_, field, None))
         return True
     return False
 
@@ -161,9 +161,9 @@ class Settlement(Base):
                              balance.amount)
             return False
 
-        if add(self, balance.from_user_id, "paid_amount", -1 * balance.amount)\
-            and add(self, balance.from_user_id, "owed_amount",
-                    balance.amount):
+        if add(self, balance.from_user_id, "paid_amount", -1 * balance.amount):
+            # and add(self, balance.from_user_id, "owed_amount",
+            #         balance.amount):
             balance.paid = True
         else:
             return False
@@ -175,13 +175,17 @@ class Settlement(Base):
 
     def add_balance_back(self, balance):
         app.logger.debug("Balance AddedBack bal %s settlement %s, %s->%s",
-                         balance.id, self.from_user_id, self.to_user_id)
+                         balance.id, balance.from_user_id, balance.to_user_id)
+        if balance.from_user_id == balance.to_user_id:
+            app.logger.debug("\tDid not add back, as balance is to self")
+            return False
         if not balance.paid:
             app.logger.debug("\tDid not add back, as balance unpaid")
             return False
 
         # paid balance
         if not add(self, balance.from_user_id, "paid_amount", balance.amount):
+            app.logger.debug("\tAdding failed for add_balance_back")
             # \
             # or not add(self, balance.from_user_id, "owed_amount", -1 *
             #            balance.amount):

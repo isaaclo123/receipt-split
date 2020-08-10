@@ -240,7 +240,7 @@ def reapply_balances(receipt, delete=True):
 
     for b in balances:
         # ignore self-addressed balances
-        if not b.is_to_and_from_owner:
+        if not b.is_to_and_from_owner and b.from_user_id != owner.id:
             s = Settlement.get(b.from_user_id, owner.id)
             # this is the settlement paying the owner of receipt
 
@@ -255,6 +255,8 @@ def reapply_balances(receipt, delete=True):
 
         if delete:
             db.session.delete(b)
+
+    update_settlements(receipt)
 
 
 def calculate_balances(receipt):

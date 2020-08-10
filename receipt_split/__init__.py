@@ -21,7 +21,7 @@ from .helpers import err
 def create_app():
     app = FlaskAPI(__name__)
 
-    if (os.environ.get('DEBUG') == "True"):
+    if (os.environ.get('FLASK_ENV') == "development"):
         app.config.from_object(DevelopmentConfig)
     else:
         app.config.from_object(ProductionConfig)

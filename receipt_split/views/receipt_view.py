@@ -7,6 +7,7 @@ from receipt_split.models import Receipt
 from receipt_split.schemas import receipt_schema, receipts_schema,\
     receipt_create_schema
 from receipt_split.forms import ReceiptForm
+from receipt_split.views import reapply_balances
 from . import views, calculate_balances, ok, err
 
 
@@ -80,6 +81,7 @@ def receipt_by_id(id):
     receipt = Receipt.query.get(id)
 
     app.logger.info("receipt/%s %s", id, receipt)
+    app.logger.info("receipt/%s request %s", id, request.method)
 
     if not receipt:
         app.logger.info("receipt/%s does not exist", id)
@@ -95,23 +97,17 @@ def receipt_by_id(id):
         return receipt_dump, status.HTTP_200_OK
 
     # TODO
-    if receipt.user != current_identity:
+    if receipt.user.id != current_identity.id:
         app.logger.info("receipt/%s unauthorized for %s", id,
                         current_identity)
         return err("Your do not own this receipt"),\
             status.HTTP_401_UNAUTHORIZED
-    # if receipt.user != current_identity and\
-    #         current_identity not in receipt.users:
-    #     app.logger.info("receipt/%s unauthorized for %s", id,
-    #                     current_identity)
-    #     return err("Your do not own this receipt"),\
-    #         status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
         app.logger.info("Deleting receipt/%s", id)
 
         # TODO reapply balance bad?
-        # reapply_balances(receipt, delete=True)
+        reapply_balances(receipt, delete=True)
         db.session.delete(receipt)
         db.session.commit()
 

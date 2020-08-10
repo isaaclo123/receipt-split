@@ -5,8 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    DEBUG = False
-    FLASK_ENV = "production"
+    # DEBUG = False
+    # ENV = "production"
 
     TESTING = False
     SECRET_KEY = os.environ.get('SECRET_KEY', '99DEBUG_KEY_CHANGE_IN_PROD99')
@@ -29,18 +29,18 @@ class Config(object):
 
     @property
     def IS_DEVELOPMENT(self):
-        return self.FLASK_ENV == "development"
+        return self.ENV == "development"
 
 
 class ProductionConfig(Config):
-    FLASK_ENV = "production"
+    # ENV = "production"
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URI')
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
-    FLASK_ENV = "development"
+    # DEBUG = True
+    # ENV = "development"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
                                                           'app.db.sqlite3')
