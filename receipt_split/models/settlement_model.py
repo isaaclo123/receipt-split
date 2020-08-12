@@ -233,9 +233,6 @@ class Settlement(Base):
             app.logger.debug("\tbalance paid, so add back to paid_amount")
             add(self, balance.from_user_id, "paid_amount", balance.amount)
 
-            db.session.delete(balance)
-            return True
-
         # if paid balance, apply back to settlement.
         add(self, balance.from_user_id, "owed_amount", -1 * balance.amount)
 
@@ -284,7 +281,7 @@ class Settlement(Base):
 
             if self.get_paid_amount(check_user_id) >= balance.amount:
                 add(self, check_user_id, "paid_amount", -1 * balance.amount)
-                add(self, check_user_id, "balance_amount", -1 * balance.amount)
+                add(self, check_user_id, "owed_amount", -1 * balance.amount)
                 balance.paid = True
 
         app.logger.debug("\t(final) paid_amount=%s balance_amount=%s",
