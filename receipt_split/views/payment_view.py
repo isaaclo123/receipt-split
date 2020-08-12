@@ -6,7 +6,7 @@ from receipt_split.forms import PaymentForm
 from receipt_split.models import Payment, Settlement
 from receipt_split.meta import db
 from receipt_split.schemas import payments_schema, payment_schema, user_schema
-from . import views, err, pay_balances, round_decimals_down
+from . import views, err, round_decimals_down
 
 
 @views.route('/payments/<int:id>')
@@ -39,8 +39,6 @@ def get_payment(id, action=None):
 
         if action == "accept":
             if payment.accept():
-                pay_balances(payment.from_user)
-                # pay_balances(payment.to_user)
                 db.session.commit()
 
         if action == "reject":

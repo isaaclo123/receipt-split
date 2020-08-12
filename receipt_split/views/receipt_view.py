@@ -106,8 +106,7 @@ def receipt_by_id(id):
     if request.method == 'DELETE':
         app.logger.info("Deleting receipt/%s", id)
 
-        # TODO reapply balance bad?
-        reapply_balances(receipt, delete=True)
+        reapply_balances(receipt)
         db.session.delete(receipt)
         db.session.commit()
 

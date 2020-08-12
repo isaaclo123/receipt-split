@@ -7,7 +7,6 @@ from functools import reduce
 from dataclasses import dataclass, field
 from typing import Any, List, Dict, Callable
 import math
-from sqlalchemy import and_
 
 from receipt_split.meta import db
 from receipt_split.models import Balance, Settlement
@@ -60,7 +59,7 @@ def split_cost(subitem_amount, subitem_users, owner, balance_dict):
                                    split_remainder)
 
 
-def get_new_balances(old_balances, new_balance_dict, owner_id):
+def old_get_new_balances(old_balances, new_balance_dict, owner_id):
     paid_balances = {}
     paid_balance_list = []
     new_balances = []
@@ -71,20 +70,6 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
     app.logger.debug("new_balance_dict %s", new_balance_dict)
     app.logger.debug("owner_id %s", owner_id)
     app.logger.debug("old-------")
-
-    # def set_dict(b):
-    #     val = paid_balances.get(b.from_user_id, {}).get(b.to_user_id)
-    #     opp_val = paid_balances.get(b.to_user_id, {}).get(b.from_user_id)
-
-    #     if val is None and opp_val is None:
-    #         paid_balances.setdefault(
-    #             b.from_user_id, {
-    #                 b.to_user_id: b.amount
-    #             })
-    #     elif val is not None:
-    #         paid_balances[b.from_user_id][b.to_user_id] += b.amount
-    #     else:  # opp_val is None
-    #         paid_balances[b.to_user_id][b.from_user_id] -= b.amount
 
     # get old paid balances to consider
     for b in old_balances:
@@ -97,10 +82,6 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
                 # deleted_users[b.to_user_id] = True
                 deleted_list += [b]
 
-            # if b.from_user_id not in new_balance_dict or b.to_user_id not in\
-            #         new_balance_dict:
-            #     app.logger.debug("User has been removed")
-            #     continue
             val = paid_balances.get(b.from_user_id, {}).get(b.to_user_id)
             opp_val = paid_balances.get(b.to_user_id, {}).get(b.from_user_id)
 
@@ -205,41 +186,43 @@ def get_new_balances(old_balances, new_balance_dict, owner_id):
     app.logger.debug("paid balances dict %s", paid_balances)
     app.logger.debug("paid balances %s", paid_balance_list)
 
-    new_balances = paid_balance_list + new_balances + new_deleted_list
+    # new_balances = paid_balance_list + new_balances + new_deleted_list
 
-    return new_balances
-
-
-def update_settlements(receipt):
-    owner = get(receipt.user)
-    users = get(receipt.users)
-
-    # error check
-    if owner is None:
-        raise TypeError("owner user is null!")
-    if users is None:
-        raise TypeError("receipt users is null!")
-
-    # update all settlements
-    # TODO
-    for u in users:
-        s = Settlement.get(
-            owner.id,
-            u.id
-        )
-        if s is not None:
-            s.update_settlement()
-
-        app.logger.debug("\tsettlement uid %s", u.id)
-        app.logger.debug("\tsettlement %s", s)
+    return (paid_balance_list, new_balances + new_deleted_list)
 
 
-def reapply_balances(receipt, delete=True):
+# def update_settlements(receipt):
+#     owner = get(receipt.user)
+#     users = get(receipt.users)
+#
+#     # error check
+#     if owner is None:
+#         raise TypeError("owner user is null!")
+#     if users is None:
+#         raise TypeError("receipt users is null!")
+#
+#     # update all settlements
+#     # TODO
+#     for u in users:
+#         s = Settlement.get(
+#             owner.id,
+#             u.id
+#         )
+#         if s is not None:
+#             s.update_settlement()
+#
+#         app.logger.debug("\tsettlement uid %s", u.id)
+#         app.logger.debug("\tsettlement %s", s)
+
+
+def reapply_balances(receipt):
     """
     reapply balances before receipt delete
     """
     owner = get(receipt.user)
     balances = get(receipt.balances, [])
+
+    app.logger.debug("REAPPLY_BALANCES")
 
     for b in balances:
         # ignore self-addressed balances
@@ -249,17 +232,30 @@ def reapply_balances(receipt, delete=True):
 
             # if paid, add balance back to original user
             # add back balance before delete receipt if paid
-            if s.add_balance_back(b):
+            if s is not None and s.add_balance_back(b):
                 app.logger.debug("\treapply balances %s from %s to %s", b,
                                  b.from_user, b.to_user)
+                s.pay_balances()
+
+
+def apply_balances(balances):
+    """
+    apply balances in receipt
+    """
+    balances = get(balances, [])
 
     for b in balances:
-        pay_balances(b.from_user)
+        # ignore self-addressed balances
+        if not b.is_to_and_from_owner:
+            s = Settlement.get(b.from_user_id, b.to_user_id)
+            # this is the settlement paying the owner of receipt
 
-        if delete:
-            db.session.delete(b)
-
-    update_settlements(receipt)
+            # if paid, add balance back to original user
+            # add back balance before delete receipt if paid
+            if s is not None and s.apply_balance(b):
+                app.logger.debug("\treapply balances %s from %s to %s", b,
+                                 b.from_user, b.to_user)
+                s.pay_balances()
 
 
 def calculate_balances(receipt):
@@ -279,17 +275,18 @@ def calculate_balances(receipt):
     if receipt_amount is None:
         raise TypeError("receipt amount is null!")
 
+    reapply_balances(receipt)
+
     if (len(users) <= 0):
         receipt.balances = [
             Balance(
-                to_user=owner,
-                from_user=owner,
+                to_user_id=owner.id,
+                from_user_id=owner.id,
                 amount=receipt_amount,
                 paid=True
             )
         ]
 
-    # subtotals = sum([i.get("amount", 0.0) for i in receipt_items])
     subitem_total = Decimal(0)
 
     balance_dict = {
@@ -319,9 +316,6 @@ def calculate_balances(receipt):
 
     split_cost(non_subitem_amount, users, owner, balance_dict)
 
-    # Delete old balances
-    # Balance.query.filter_by(receipt_id=receipt.id).delete()
-
     def is_owner(u_id, owner_id):
         global owner_in_users
         if u_id == owner_id:
@@ -329,73 +323,64 @@ def calculate_balances(receipt):
             return True
         return False
 
-    # new_balances = [
-    #     Balance(
-    #         to_user=owner,
-    #         from_user=u,
-    #         amount=balance_dict.get(get_userkey(u), Decimal(0)),
-    #         paid=is_owner(u.id, owner.id)  # set paid if owner is paying
-    # owner
-    #     ) for u in users]
+    new_balances = [
+        Balance(
+            from_user_id=user_id,
+            to_user_id=owner.id,
+            amount=amount,
+            paid=(user_id == owner.id)
+        )
+        for user_id, amount in balance_dict.items()
+    ]
 
-    new_balances = get_new_balances(receipt.balances, balance_dict, owner.id)
+    apply_balances(new_balances)
 
     receipt.balances = new_balances
-
-    # TODO dont think i need this
-    update_settlements(receipt)
-
-    for u in users:
-        if u.id != owner.id:
-            # we will pay owner always, so skip owner
-            pay_balances(u)
-
-    pay_balances(owner)
 
     return receipt
 
 
-def pay_balances(user):
-    # balances user must pay, older dates first
-    balances = Balance.query.filter(
-        Balance.to_user_id != user.id,  # no self addressed
-        Balance.from_user_id == user.id,  # balances user must pay
-        Balance.paid.is_(False)  # only get unpaid balances
-    ).order_by(Balance.created_on).all()
-
-    app.logger.debug("Balances pay_balances %s", balances)
-
-    settlement_dict = {}
-
-    for balance in balances:
-        # if already got settlement, fetch it from dict,
-        # else get it and save it
-        key = f"{user.id} - {balance.to_user_id}"
-        set_fetch = settlement_dict.get(key)
-
-        settlement = Settlement.get(
-                        user.id,
-                        balance.to_user_id,
-                     ) if set_fetch is None else set_fetch
-
-        app.logger.debug("pay_balances key %s", key)
-        app.logger.debug("pay_balances diffamount %s",
-                         settlement.diff_amount)
-        app.logger.debug("pay_balances balanceamount %s",
-                         balance.amount)
-
-        if settlement.apply_balance(balance):
-            app.logger.debug("Paid!")
-        else:
-            app.logger.debug("NOT Paid Error!")
-
-        app.logger.debug("before balance %s , paid %s", balance,
-                         balance.paid)
-        app.logger.debug("after balance %s , paid %s", balance,
-                         balance.paid)
-
-        if set_fetch is None:
-            settlement_dict[key] = settlement
+# def pay_balances(user):
+#     # balances user must pay, older dates first
+#     balances = Balance.query.filter(
+#         Balance.to_user_id != user.id,  # no self addressed
+#         Balance.from_user_id == user.id,  # balances user must pay
+#         Balance.paid.is_(False)  # only get unpaid balances
+#     ).order_by(Balance.created_on).all()
+#
+#     app.logger.debug("Balances pay_balances %s", balances)
+#
+#     settlement_dict = {}
+#
+#     for balance in balances:
+#         # if already got settlement, fetch it from dict,
+#         # else get it and save it
+#         key = f"{user.id} - {balance.to_user_id}"
+#         set_fetch = settlement_dict.get(key)
+#
+#         settlement = Settlement.get(
+#                         user.id,
+#                         balance.to_user_id,
+#                      ) if set_fetch is None else set_fetch
+#
+#         app.logger.debug("pay_balances key %s", key)
+#         app.logger.debug("pay_balances diffamount %s",
+#                          settlement.diff_amount)
+#         app.logger.debug("pay_balances balanceamount %s",
+#                          balance.amount)
+#
+#         if settlement.apply_balance(balance):
+#             app.logger.debug("Paid!")
+#         else:
+#             app.logger.debug("NOT Paid Error!")
+#
+#         app.logger.debug("before balance %s , paid %s", balance,
+#                          balance.paid)
+#         app.logger.debug("after balance %s , paid %s", balance,
+#                          balance.paid)
+#
+#         if set_fetch is None:
+#             settlement_dict[key] = settlement
 
 
 def get_model_view(obj=None, schema=None):
