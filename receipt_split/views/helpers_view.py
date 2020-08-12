@@ -235,7 +235,7 @@ def reapply_balances(receipt):
             if s is not None and s.add_balance_back(b):
                 app.logger.debug("\treapply balances %s from %s to %s", b,
                                  b.from_user, b.to_user)
-                s.pay_balances()
+                # s.pay_balances()
 
 
 def apply_balances(balances):
