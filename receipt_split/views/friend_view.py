@@ -28,21 +28,16 @@ def friend_add(username):
     if friend in current_identity.friends:
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
 
-    app.logger.debug("existing friend request %s", db.session.query(Friend).filter_by(
-        from_user_id=current_identity.id,
-        to_user_id=friend.id
-    ).all())
-
     if db.session.query(expression.literal(True)).filter(
         db.session.query(Friend)
-        .filter_by(
-            from_user_id=current_identity.id,
-            to_user_id=friend.id
+        .filter(
+            Friend.from_user_id == current_identity.id,
+            Friend.to_user_id == friend.id,
+            Friend.accepted.is_(None)
         )
         .exists()
     ).scalar():
         return err("Friend request already sent"), status.HTTP_404_NOT_FOUND
-
 
     friend_request = Friend(from_user=current_identity, to_user=friend)
 

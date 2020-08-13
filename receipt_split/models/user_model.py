@@ -182,16 +182,15 @@ class User(Base):
     @property
     def receipts_resolved(self):
         # TODO
-        result = Receipt.query.filter_by(
-            resolved=True
-        ).join(
+        result = Receipt.query.join(
             receipt_association_table,
         ).filter(
             or_(
                 receipt_association_table.c.left_id == self.id,
-                receipt_association_table.c.right_id == self.id
+                receipt_association_table.c.right_id == self.id,
             ),
-            # Receipt.resolved == expression.literal(True)
+            # Receipt.user_id != self.id,
+            Receipt.resolved.is_(True)
         )
 
         return result
