@@ -122,6 +122,6 @@ export const setPaymentConfirm = (
     // afterSuccess: ({ paymentState })
 
     afterSuccess: () => {
-      return getBalanceSumList()
+      return getPaymentListAndBalances();
     }
   });
