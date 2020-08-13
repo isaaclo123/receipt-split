@@ -14,16 +14,13 @@ import {
   applyDataReducers,
   editDataReducer,
   setDataReducer,
+  initState
 } from "./index";
 
-const initialState: PaymentListState = {
-  error: false,
-  data: {
-    payments_received: [],
-    payments_sent: [],
-  },
-  errors: {}
-};
+const initialState: PaymentListState = initState({
+  payments_received: [],
+  payments_sent: [],
+});
 
 const deleteReducers = createDeleteReducers(PAYMENT_INDEX_DELETE_MAP);
 

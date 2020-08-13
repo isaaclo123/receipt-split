@@ -6,13 +6,9 @@ import {
   RECEIPT_ID_FAIL
 } from "../types/index";
 
-import { setDataReducer, applyDataReducers } from "./index";
+import { setDataReducer, applyDataReducers, initState } from "./index";
 
-const initialState: ReceiptDictState = {
-  error: false,
-  data: {},
-  errors: {}
-};
+const initialState: ReceiptDictState = initState({});
 
 const assignToData = (data: Dict, payload: any) => {
   Object.assign({}, data, {

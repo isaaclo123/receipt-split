@@ -9,18 +9,15 @@ import {
 import {
   createDeleteReducers,
   setDataReducer,
-  applyDataReducers
+  applyDataReducers,
+  initState
 } from "./index";
 
-const initialState: ReceiptListState = {
-  error: false,
-  data: {
-    receipts_owned: [],
-    receipts_owed: [],
-    receipts_resolved: [],
-  },
-  errors: {}
-};
+const initialState: ReceiptListState = initState({
+  receipts_owned: [],
+  receipts_owed: [],
+  receipts_resolved: [],
+});
 
 const deleteReducers = createDeleteReducers(RECEIPT_INDEX_DELETE_MAP);
 

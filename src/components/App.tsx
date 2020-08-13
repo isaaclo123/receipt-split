@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
 import { Switch, RouteComponentProps, Redirect } from "react-router-dom";
+
+import {
+  getPaymentListAndBalances,
+  getReceiptList,
+  getUserAndFriends,
+} from "../actions/index";
 
 import {
   PrivateRoute,
@@ -15,16 +21,49 @@ import {
 
 import "./App.css";
 
+import { API_FETCH_INTERVAL } from "../api/index";
+
 const connector = connect(
   null,
-  {}
+  {
+    getPaymentListAndBalances,
+    getReceiptList,
+    getUserAndFriends,
+  }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & RouteComponentProps<{}>;
 
 const AppComponent = (props: Props) => {
-  const { match } = props;
+  const [apiFetcher, setApiFetcher] = useState(-1);
+  const [run, setRun] = useState(true);
+
+  const {
+    match,
+
+    getPaymentListAndBalances,
+    getReceiptList,
+    getUserAndFriends,
+  } = props;
+
+  const startApiFetcher = () => {
+    // TODO not sure if id is possibly negative
+    if (!run) {
+      return
+    }
+
+    const interval = setInterval(() => {
+      console.log("interval fetch")
+
+      getPaymentListAndBalances();
+      getReceiptList();
+      getUserAndFriends();
+    }, API_FETCH_INTERVAL);
+
+    setApiFetcher(interval as any);
+    setRun(false);
+  }
 
   return (
     <>
@@ -34,14 +73,17 @@ const AppComponent = (props: Props) => {
           <PrivateRoute
             path={`${match.path}/balance`}
             component={BalancePage}
+            onSuccess={startApiFetcher}
           />
           <PrivateRoute
             path={`${match.path}/receipts/edit/:id`}
             component={ReceiptEditPage}
+            onSuccess={startApiFetcher}
           />
           <PrivateRoute
             path={`${match.path}/receipts`}
             component={ReceiptPage}
+            onSuccess={startApiFetcher}
           />
 
           <PrivateRoute path={`${match.path}/people`} component={PeoplePage} />
@@ -52,34 +94,5 @@ const AppComponent = (props: Props) => {
     </>
   );
 };
-//         <Switch>
-//           <PrivateRoute path={`${match.path}/balance`} component={BalancePage} />
-//
-//           <PrivateRoute path={`${match.path}/receipts/edit/:id`} component={ReceiptEditPage} />
-//
-//           <PrivateRoute path={`${match.path}/receipts`} component={ReceiptPage} />
-//
-//           <PrivateRoute path={`${match.path}/people`} component={PeoplePage} />
-//
-//           <Redirect to={`${match.url}/balance`} />
-//         </Switch>
-
-// <PrivateRoute path={`${match.path}/receipts/edit/:id`} component={ReceiptEditPage} />
-// <PrivateRoute path={`${match.path}/receipts/edit/:id`}
-//   render={props => <ReceiptEditPage {...props}/>} />
-
-// <PrivateRoute
-//   path={`${match.path}/receipts/edit/:id`}
-//   render={(props) => {
-//     getReceipt({id: props.match.params.id})
-//     return <Redirect to={`${match.path}/receipts/edit`}/>
-//   }} />
-// <PrivateRoute
-//   path={`${match.path}/receipts/list`}
-
-//   render={() => {
-//     getReceiptList()
-//     return <Redirect to={`${match.path}/receipts`}/>
-//   }} />
 
 export const App = connector(AppComponent);

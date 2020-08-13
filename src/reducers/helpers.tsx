@@ -20,6 +20,14 @@ export const getCurrentDate = () => {
   return date;
 }
 
+export const initState = (data: any) => {
+  return {
+    error: false,
+    data,
+    errors: {}
+  }
+}
+
 export const setDataReducer = (
   initialState: any,
   {

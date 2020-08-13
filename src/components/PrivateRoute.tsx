@@ -21,18 +21,29 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux &
   RouteProps & {
     loginState: LoginState;
+
+    onSuccess?: () => void;
+    onFail?: () => void;
   };
 
 const PrivateRouteComponent = (props: Props) => {
   console.log(props);
 
+  const {
+    onSuccess = () => {},
+    onFail = () => {}
+  } = props;
+
   const { login } = props.loginState.data;
 
   if (!login) {
+    onFail()
     return <Redirect to="/login" />;
   }
 
   const { loginState, ...rest } = props;
+
+  onSuccess()
 
   return <Route {...rest} />;
 };

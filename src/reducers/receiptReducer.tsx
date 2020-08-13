@@ -18,7 +18,7 @@ import {
   UserType,
 } from "../types/index";
 
-import { setDataReducer, editDataReducer, applyDataReducers } from "./index";
+import { initState, setDataReducer, editDataReducer, applyDataReducers } from "./index";
 import { getCurrentDate } from "./helpers";
 
 const initialState = (
@@ -26,23 +26,17 @@ const initialState = (
     id: -1,
     fullname: "",
     username: ""
-  }): ReceiptState => {
-  return {
-    error: false,
-    data: {
-      id: -1,
-      name: "",
-      amount: 0,
-      date: getCurrentDate(),
-      resolved: false,
-      user: user,
-      users: [],
-      balances: [],
-      receipt_items: []
-    },
-    errors: {}
-  };
-};
+  }): ReceiptState => initState({
+  id: -1,
+  name: "",
+  amount: 0,
+  date: getCurrentDate(),
+  resolved: false,
+  user: user,
+  users: [],
+  balances: [],
+  receipt_items: []
+});
 
 export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
   initialState(undefined),

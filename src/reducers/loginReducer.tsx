@@ -5,16 +5,14 @@ import {
   LOGIN_FAIL
 } from "../types/index";
 
-const initialState: LoginState = {
-  error: false,
-  data: {
-    username: "",
-    password: "",
-    token: "",
-    login: false
-  },
-  errors: {}
-};
+import { initState } from "./index"
+
+const initialState: LoginState = initState({
+  username: "",
+  password: "",
+  token: "",
+  login: false
+});
 
 export const loginReducer = (
   state: LoginState = initialState,

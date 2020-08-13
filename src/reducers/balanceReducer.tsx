@@ -5,16 +5,12 @@ import {
   BALANCE_SUM_LIST_SUCCESS
 } from "../types/index";
 
-import { setDataReducer, applyDataReducers } from "./index";
+import { initState, setDataReducer, applyDataReducers } from "./index";
 
-const initialState: BalanceSumListState = {
-  error: false,
-  data: {
-    balances_owned: [],
-    balances_owed: []
-  },
-  errors: {}
-};
+const initialState: BalanceSumListState = initState({
+  balances_owned: [],
+  balances_owed: []
+});
 
 export const balanceSumListReducer = applyDataReducers<BalanceSumListState, BalanceSumAction>(
   initialState,

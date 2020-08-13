@@ -5,17 +5,13 @@ import {
   USER_INFO_FAIL
 } from "../types/index";
 
-import { setDataReducer, applyDataReducers } from "./index";
+import { initState, setDataReducer, applyDataReducers } from "./index";
 
-const initialState: UserState = {
-  error: false,
-  data: {
-    id: -1,
-    username: "",
-    fullname: ""
-  },
-  errors: {}
-};
+const initialState: UserState = initState({
+  id: -1,
+  username: "",
+  fullname: ""
+});
 
 export const userReducer = applyDataReducers<UserState, UserAction>(
   initialState,

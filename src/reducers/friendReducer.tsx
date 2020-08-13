@@ -9,17 +9,13 @@ import {
   FRIEND_LIST_SET_ACCEPTED_FAIL
 } from "../types/index";
 
-import { setDataReducer, applyDataReducers } from "./index";
+import { initState, setDataReducer, applyDataReducers } from "./index";
 
-const initialState: FriendState = {
-  error: false,
-  data: {
-    friends: [],
-    friends_received: [],
-    friends_sent: []
-  },
-  errors: {}
-};
+const initialState: FriendState = initState({
+  friends: [],
+  friends_received: [],
+  friends_sent: []
+});
 
 export const friendReducer = applyDataReducers<FriendState, FriendAction>(
   initialState,

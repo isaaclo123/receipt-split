@@ -9,28 +9,24 @@ import {
   PAYMENT_SET_USER,
 } from "../types/index";
 
-import { editDataReducer, setDataReducer, applyDataReducers } from "./index";
+import { initState, editDataReducer, setDataReducer, applyDataReducers } from "./index";
 
-const initialState: PaymentState = {
-  error: false,
-  data: {
-    date: "",
-    accepted: null,
-    to_user: {
-      id: -1,
-      username: "",
-      fullname: ""
-    },
-    from_user: {
-      id: -1,
-      username: "",
-      fullname: ""
-    },
-    amount: 0.0,
-    message: ""
+const initialState: PaymentState = initState({
+  date: "",
+  accepted: null,
+  to_user: {
+    id: -1,
+    username: "",
+    fullname: ""
   },
-  errors: {}
-};
+  from_user: {
+    id: -1,
+    username: "",
+    fullname: ""
+  },
+  amount: 0.0,
+  message: ""
+});
 
 export const paymentReducer = applyDataReducers<PaymentState, PaymentAction>(
   initialState,
