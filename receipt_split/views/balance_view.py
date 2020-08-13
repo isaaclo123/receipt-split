@@ -34,8 +34,8 @@ def get_data(current_identity):
             "paid_amount": paid_amount,
         }
 
-        # if to_add.get("owed_amount") == paid_amount:
-        #     continue
+        if to_add.get("owed_amount") == paid_amount:
+            continue
 
         if to_add.get("owed_amount") > paid_amount:
             balance_owned.append(to_add)

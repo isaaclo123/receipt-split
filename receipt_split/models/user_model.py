@@ -181,6 +181,7 @@ class User(Base):
 
     @property
     def receipts_resolved(self):
+        # TODO
         result = Receipt.query.filter_by(
             resolved=True
         ).join(
