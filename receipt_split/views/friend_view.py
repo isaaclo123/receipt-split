@@ -52,7 +52,7 @@ def friend_add(username):
     return friend_dump, status.HTTP_200_OK
 
 
-@views.route('/friends', methods=['GET'])
+@views.route('/friends', methods=['GET', 'PUT'])
 @jwt_required()
 def friend_list():
     friends = users_schema.dump(current_identity.friends)
@@ -71,7 +71,8 @@ def friend_list():
         "friends": friends
     }
 
-    Friend.archive_sent(current_identity)
+    if request.method == 'PUT':
+        Friend.archive_sent(current_identity)
 
     return friend_result, status.HTTP_200_OK
 

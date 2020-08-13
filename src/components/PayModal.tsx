@@ -74,20 +74,6 @@ const PayModalComponent = ({
     message = "",
   } = paymentState.data;
 
-
-      // <UserSelectModal
-      //   show={userShow}
-      //   title="Choose Payment Recipient"
-      //   onHide={() => {
-      //     setUserShow(false);
-      //   }}
-      //   users={[]}
-      //   allUsers={friends}
-      //   onSelect={(user: UserType) => {
-      //     setPaymentUser(user)
-      //   }}
-      // />
-
   return (
     <>
 

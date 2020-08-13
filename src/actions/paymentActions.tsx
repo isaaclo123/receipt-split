@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
 import { batch } from "react-redux";
-import { savePayment, fetchPaymentList, confirmPayment } from "../api/index";
+import { savePayment, fetchPaymentList, confirmPayment, fetchPaymentListArchive } from "../api/index";
 import {
   PaymentType,
   UserType,
@@ -35,6 +35,11 @@ import { setValueAction } from "./helpers";
 export const addNewPayment = (payment: PaymentType) =>
   setValueAction<PaymentType>({
     successType: PAYMENT_LIST_ADD_PAYMENT
+    // onSuccess: (payment: PaymentType, state: RootState, dispatch: Dispatch) => {
+    //   getPaymentListAndBalances()(dispatch);
+
+    //   return payment
+    // }
   })(
     payment,
     [EDIT_DATA_PREPEND]
@@ -70,19 +75,19 @@ export const setPaymentUser = setValueAction<UserType>({
 
 // Payment list
 
-export const getPaymentList = (): ApiMiddlewareAction =>
+export const getPaymentList = (archive = true): ApiMiddlewareAction =>
   apiCallAction({
     successType: PAYMENT_LIST_SUCCESS,
     failType: PAYMENT_LIST_FAIL,
     withToken: true,
-    apiCall: fetchPaymentList,
+    apiCall: archive ? fetchPaymentListArchive : fetchPaymentList,
   });
 
 
-export const getPaymentListAndBalances = () => (dispatch: Dispatch) => {
+export const getPaymentListAndBalances = (archive = true) => (dispatch: Dispatch) => {
   batch(() => {
     dispatch(getBalanceSumList());
-    dispatch(getPaymentList());
+    dispatch(getPaymentList(archive));
   });
 };
 
@@ -113,6 +118,10 @@ export const setPaymentConfirm = (
         ]
       });
 
-    }
+    },
     // afterSuccess: ({ paymentState })
+
+    afterSuccess: () => {
+      return getBalanceSumList()
+    }
   });

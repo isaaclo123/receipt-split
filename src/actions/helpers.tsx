@@ -92,7 +92,7 @@ export const setValueAction = <T extends {}>({
       type: successType,
       payload: {
         ids,
-        data: onSuccess(payload, getState()),
+        data: onSuccess(payload, getState(), dispatch),
       }
     });
   } else if (failType != null) {
@@ -100,7 +100,7 @@ export const setValueAction = <T extends {}>({
       type: failType,
       payload: {
         ids,
-        data: onFail(payload, getState()),
+        data: onFail(payload, getState(), dispatch),
       }
     });
   }

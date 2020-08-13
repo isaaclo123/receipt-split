@@ -2,7 +2,7 @@ import { LoginPayload, SignupPayload, ReceiptType, PaymentEditType } from "../ty
 import { fetchData } from "./helpers";
 
 // every 30 seconds
-export const API_FETCH_INTERVAL = 30000;
+export const API_FETCH_INTERVAL = 60000;
 
 export const SERVER_URL = (process.env.NODE_ENV !== 'production') ?
   (
@@ -56,6 +56,9 @@ export const fetchUser = (token: string) =>
 export const fetchFriends = (token: string) =>
   fetchData("friends", "GET", null, token);
 
+export const fetchFriendsArchive = (token: string) =>
+  fetchData("friends", "PUT", null, token);
+
 export const fetchAddFriend = (username: string, token: string) =>
   fetchData(`friend/${username}`, "POST", null, token);
 
@@ -73,6 +76,9 @@ export const savePayment = (payload: PaymentEditType, token: string) =>
 
 export const fetchPaymentList = (token: string) =>
   fetchData(`payments`, "GET", null, token);
+
+export const fetchPaymentListArchive = (token: string) =>
+  fetchData(`payments`, "PUT", null, token);
 
 export const confirmPayment = (id: number, action: "accept" | "reject", token: string) =>
   fetchData(`payments/${id}/${action}`, "POST", null, token);

@@ -48,17 +48,20 @@ const AppComponent = (props: Props) => {
   } = props;
 
   const startApiFetcher = () => {
+    console.log("start api");
+
     // TODO not sure if id is possibly negative
     if (!run) {
-      return
+      return;
+      // clearInterval(apiFetcher)
     }
 
     const interval = setInterval(() => {
       console.log("interval fetch")
 
-      getPaymentListAndBalances();
+      getPaymentListAndBalances(false);
       getReceiptList();
-      getUserAndFriends();
+      getUserAndFriends(false);
     }, API_FETCH_INTERVAL);
 
     setApiFetcher(interval as any);

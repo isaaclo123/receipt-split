@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
 import { batch } from "react-redux";
-import { fetchFriends, fetchAddFriend, confirmFriend } from "../api/index";
+import { fetchFriendsArchive, fetchFriends, fetchAddFriend, confirmFriend } from "../api/index";
 import {
   FRIEND_ADD_SUCCESS,
   FRIEND_ADD_FAIL,
@@ -15,12 +15,12 @@ import {
 import { ApiMiddlewareAction } from "../types/index";
 import { getUser, apiCallAction } from "./index";
 
-export const getFriends = (): ApiMiddlewareAction =>
+export const getFriends = (archive = true): ApiMiddlewareAction =>
   apiCallAction({
     successType: FRIEND_LIST_SUCCESS,
     failType: FRIEND_LIST_FAIL,
     withToken: true,
-    apiCall: fetchFriends
+    apiCall: archive ? fetchFriendsArchive : fetchFriends
   });
 
 export const addFriend = (username: string): ApiMiddlewareAction =>
@@ -32,10 +32,10 @@ export const addFriend = (username: string): ApiMiddlewareAction =>
     apiCallArgs: [username]
   });
 
-export const getUserAndFriends = () => (dispatch: Dispatch) => {
+export const getUserAndFriends = (archive = true) => (dispatch: Dispatch) => {
   batch(() => {
     dispatch(getUser());
-    dispatch(getFriends());
+    dispatch(getFriends(archive));
   });
 };
 

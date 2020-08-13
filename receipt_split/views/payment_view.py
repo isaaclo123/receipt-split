@@ -52,7 +52,7 @@ def get_payment(id, action=None):
     return err("Should not get here"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
-@views.route('/payments', methods=['GET'])
+@views.route('/payments', methods=['GET', 'PUT'])
 @jwt_required()
 def get_payments():
     app.logger.debug("GET PAYMENTS/")
@@ -66,7 +66,9 @@ def get_payments():
         )
     }
 
-    Payment.archive_sent(current_identity)
+    if request.method == 'PUT':
+        Payment.archive_sent(current_identity)
+
     app.logger.debug("/payments result - %s", payments_result)
     return payments_result
 
