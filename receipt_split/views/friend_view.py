@@ -1,7 +1,7 @@
 from flask import request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
-from sqlalchemy.sql import exists
+from sqlalchemy.sql import exists, and_, expression
 
 from receipt_split.models import Friend, User
 from receipt_split.schemas import friend_schema, friends_schema, users_schema
@@ -27,6 +27,22 @@ def friend_add(username):
 
     if friend in current_identity.friends:
         return err("friend already added"), status.HTTP_400_BAD_REQUEST
+
+    app.logger.debug("existing friend request %s", db.session.query(Friend).filter_by(
+        from_user_id=current_identity.id,
+        to_user_id=friend.id
+    ).all())
+
+    if db.session.query(expression.literal(True)).filter(
+        db.session.query(Friend)
+        .filter_by(
+            from_user_id=current_identity.id,
+            to_user_id=friend.id
+        )
+        .exists()
+    ).scalar():
+        return err("Friend request already sent"), status.HTTP_404_NOT_FOUND
+
 
     friend_request = Friend(from_user=current_identity, to_user=friend)
 

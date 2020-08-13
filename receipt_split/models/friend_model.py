@@ -24,14 +24,4 @@ class Friend(RequestMixin, Base):
                     )
                 )
 
-            if Settlement.get(self.to_user_id, self.from_user_id) is None:
-                db.session.add(
-                    Settlement(
-                        left_user_id=self.to_user_id,
-                        right_user_id=self.from_user_id,
-                        paid_amount=0.0,
-                        owed_amount=0.0,
-                    )
-                )
-
         return super().accept(callback=callback)
