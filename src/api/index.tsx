@@ -1,8 +1,8 @@
 import { LoginPayload, SignupPayload, ReceiptType, PaymentEditType } from "../types/index";
 import { fetchData } from "./helpers";
 
-// every 30 seconds
-export const API_FETCH_INTERVAL = 60000;
+// every 5 min
+export const API_FETCH_INTERVAL = 300000;
 
 export const SERVER_URL = (process.env.NODE_ENV !== 'production') ?
   (

@@ -42,7 +42,7 @@ export const setDataReducer = (
       return {
         error: false,
         data: onSuccess(state.data, action.payload), // TODO assign maybe
-        errors: initialState.errors
+        errors: {}
       };
     case failType:
       return Object.assign({}, state, {
@@ -132,7 +132,7 @@ export const editDataReducer = (
       return {
         error: state.data.error,
         data: assign(data, state.data, field, ids),
-        errors: state.data.errors
+        errors: state.errors
       };
     default:
       return state;
