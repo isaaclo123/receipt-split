@@ -53,16 +53,13 @@ const AppComponent = (props: Props) => {
       clearInterval(window.apiFetcher);
     }
 
-    const interval = setInterval(() => {
+    window.apiFetcher = setInterval(() => {
       console.log("interval fetch")
 
       getPaymentListAndBalances(false);
       getReceiptList();
       getUserAndFriends(false);
-    }, API_FETCH_INTERVAL);
-
-    // setApiFetcher(interval as any);
-    window.apiFetcher = interval as any;
+    }, API_FETCH_INTERVAL * 1000) as any;
   }
 
   return (
