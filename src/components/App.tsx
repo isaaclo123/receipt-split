@@ -36,8 +36,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & RouteComponentProps<{}>;
 
 const AppComponent = (props: Props) => {
-  const [apiFetcher, setApiFetcher] = useState(-1);
-  const [run, setRun] = useState(true);
+  let apiFetcher: number | null = null;
 
   const {
     match,
@@ -51,9 +50,8 @@ const AppComponent = (props: Props) => {
     console.log("start api");
 
     // TODO not sure if id is possibly negative
-    if (!run) {
-      return;
-      // clearInterval(apiFetcher)
+    if (apiFetcher != null) {
+      clearInterval(apiFetcher);
     }
 
     const interval = setInterval(() => {
@@ -64,8 +62,8 @@ const AppComponent = (props: Props) => {
       getUserAndFriends(false);
     }, API_FETCH_INTERVAL);
 
-    setApiFetcher(interval as any);
-    setRun(false);
+    // setApiFetcher(interval as any);
+    apiFetcher = interval as any;
   }
 
   return (
