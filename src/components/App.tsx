@@ -36,8 +36,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & RouteComponentProps<{}>;
 
 const AppComponent = (props: Props) => {
-  let apiFetcher: number | null = null;
-
   const {
     match,
 
@@ -50,8 +48,9 @@ const AppComponent = (props: Props) => {
     console.log("start api");
 
     // TODO not sure if id is possibly negative
-    if (apiFetcher != null) {
-      clearInterval(apiFetcher);
+    if (window.apiFetcher != null) {
+      console.log("interval cleared")
+      clearInterval(window.apiFetcher);
     }
 
     const interval = setInterval(() => {
@@ -63,7 +62,7 @@ const AppComponent = (props: Props) => {
     }, API_FETCH_INTERVAL);
 
     // setApiFetcher(interval as any);
-    apiFetcher = interval as any;
+    window.apiFetcher = interval as any;
   }
 
   return (

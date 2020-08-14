@@ -24,6 +24,8 @@ export const Index = () => (
   </Provider>
 );
 
+window.apiFetcher = null;
+
 ReactDOM.render(
   <Index />,
   document.getElementById("root") || document.createElement('div')
