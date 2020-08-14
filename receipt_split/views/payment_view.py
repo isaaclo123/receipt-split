@@ -40,8 +40,7 @@ def get_payment(id, action=None):
         if action == "accept":
             if payment.accept():
                 db.session.commit()
-
-        if action == "reject":
+        elif action == "reject":
             if payment.reject():
                 db.session.commit()
 
@@ -55,7 +54,7 @@ def get_payment(id, action=None):
 @views.route('/payments', methods=['GET', 'PUT'])
 @jwt_required()
 def get_payments():
-    app.logger.debug("GET PAYMENTS/")
+    app.logger.debug("GET PAYMENTS/ %s", request.method)
 
     payments_result = {
         "payments_received": payments_schema.dump(

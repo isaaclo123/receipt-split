@@ -42,7 +42,7 @@ class RequestMixin(OwnedMixin, object):
     @classmethod
     def get_received(cls, user):
         return cls.query.filter_by(
-            accepted=None,
+            # accepted=None,
             to_user_id=user.id,
             archived=False
         )

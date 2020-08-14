@@ -228,6 +228,8 @@ const BalancePageComponent = ({
 
             return (
               <AcceptRejectComponent
+                acceptText={"ACCEPTED"}
+                rejectText={"REJECTED"}
                 accepted={accepted}
                 buttons={buttonType}
                 messageComponent={(
