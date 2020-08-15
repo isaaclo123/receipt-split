@@ -5,12 +5,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { Switch, RouteComponentProps, Redirect } from "react-router-dom";
 
 import {
-  getPaymentListAndBalances,
-  getReceiptList,
-  getUserAndFriends,
-} from "../actions/index";
-
-import {
   PrivateRoute,
   NavComponent,
   BalancePage,
@@ -21,15 +15,11 @@ import {
 
 import "./App.css";
 
-import { API_FETCH_INTERVAL } from "../api/index";
+import { startApiFetcher } from "../api/index";
 
 const connector = connect(
   null,
-  {
-    getPaymentListAndBalances,
-    getReceiptList,
-    getUserAndFriends,
-  }
+  {}
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -38,29 +28,7 @@ type Props = PropsFromRedux & RouteComponentProps<{}>;
 const AppComponent = (props: Props) => {
   const {
     match,
-
-    getPaymentListAndBalances,
-    getReceiptList,
-    getUserAndFriends,
   } = props;
-
-  const startApiFetcher = () => {
-    console.log("start api");
-
-    // TODO not sure if id is possibly negative
-    if (window.apiFetcher != null) {
-      console.log("interval cleared")
-      clearInterval(window.apiFetcher);
-    }
-
-    window.apiFetcher = setInterval(() => {
-      console.log("interval fetch")
-
-      getPaymentListAndBalances(false);
-      getReceiptList();
-      getUserAndFriends(false);
-    }, API_FETCH_INTERVAL * 1000) as any;
-  }
 
   return (
     <>

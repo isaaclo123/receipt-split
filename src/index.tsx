@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { HashRouter, Redirect, Route } from "react-router-dom";
 
-import configureStore from "./store";
+import store from "./store";
 import "./index.css";
 
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,7 +14,7 @@ import * as serviceWorker from "./serviceWorker";
 import { App, Login, Signup, PrivateRoute } from "./components/index";
 
 export const Index = () => (
-  <Provider store={configureStore()}>
+  <Provider store={store}>
     <HashRouter>
       <PrivateRoute exact path="/" component={Login} />
       <Route path="/login" component={Login} />
@@ -24,7 +24,7 @@ export const Index = () => (
   </Provider>
 );
 
-window.apiFetcher = null;
+// window.apiFetcher = null;
 
 ReactDOM.render(
   <Index />,
