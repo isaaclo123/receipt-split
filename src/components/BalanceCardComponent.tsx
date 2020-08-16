@@ -51,7 +51,12 @@ export const BalanceCardComponent = ({
           }}
           className={`text-${amountColor} align-middle`}
         >
-          <span>${owed_amount.toFixed(2)}&nbsp;-&nbsp;${paid_amount.toFixed(2)}</span>
+          <span>
+            {(owed_amount < 0) ? "-" : null}${Math.abs(owed_amount).toFixed(2)}
+            &nbsp;
+            {(paid_amount < 0) ? "+" : "-"}
+            &nbsp;${Math.abs(paid_amount).toFixed(2)}
+          </span>
           <br />
           $<u>{(owed_amount - paid_amount).toFixed(2)}</u>
         </h2>
