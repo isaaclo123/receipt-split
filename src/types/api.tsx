@@ -31,3 +31,14 @@ export type ApiMiddlewarePayload = {
 export type ApiMiddlewareAction = any;
 
 export type ApiFetchType = Failable<Dict, Dict>;
+
+// apiFetcher
+
+declare global {
+  interface Window {
+    // add you custom properties and methods
+    apiFetcher: null | number;
+    apiInterval: number;
+    apiActivity: boolean;
+  }
+}

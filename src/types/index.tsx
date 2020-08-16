@@ -12,13 +12,6 @@ export * from "./payment";
 export * from "./receipt";
 export * from "./user";
 
-declare global {
-  interface Window {
-    // add you custom properties and methods
-    apiFetcher: null | number;
-  }
-}
-
 export type RootState = ReturnType<typeof rootReducer>;
 
 export interface ButtonProps {
