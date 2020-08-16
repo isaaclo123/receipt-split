@@ -63,10 +63,10 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
     }
   } else {
     if (failType != null) {
-      await dispatch({
+      console.log(await dispatch({
         type: failType,
         payload: shouldCall != null ? errors : onFail(errors, getState())
-      });
+      }));
     }
 
     const nextResult = afterFail(getState());

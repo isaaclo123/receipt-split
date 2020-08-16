@@ -83,13 +83,18 @@ export const saveReceipt = (
     apiCallArgs: [id, payload]
   });
 
-export const deleteReceiptInList = (successType: string, index: number) =>
+export const deleteReceiptInList = (
+  successType: string,
+  index: number,
+) =>
   setValueAction<{}>({
-    successType
+    successType,
   })({}, [index]);
 
 export const deleteReceipt = (
   id: number,
+  onSuccess = () => {},
+  onFail = () => {}
 ): ApiMiddlewareAction =>
   apiCallAction({
     successType: RECEIPT_DELETE_SUCCESS,
@@ -98,6 +103,7 @@ export const deleteReceipt = (
     apiCall: deleteReceiptById,
     apiCallArgs: [id],
     afterSuccess: (state: any) => {
+      onSuccess();
       const data = state.receiptListState.data;
 
       for (const [listName, receipt] of Object.entries(data)) {
@@ -119,6 +125,14 @@ export const deleteReceipt = (
       }
 
       return null;
+    },
+    onFail: (errors: any, state: any) => {
+      console.log("afterfail state")
+      console.log(state)
+      console.log("afterfail errors")
+      console.log(errors)
+      onFail();
+      return errors;
     }
   });
 

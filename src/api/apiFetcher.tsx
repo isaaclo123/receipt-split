@@ -37,11 +37,11 @@ const onApiActivity = () => {
     startApiFetcher(true);
   }
 
-  console.log("---ON API ACTIVITY---")
-  console.log(`apiInterval ${window.apiInterval}`);
-  console.log(`apiActivity ${window.apiActivity}`);
-  console.log(`apiFetcher ${window.apiFetcher != null}`);
-  console.log("---ON API ACTIVITY---")
+  // console.log("---ON API ACTIVITY---")
+  // console.log(`apiInterval ${window.apiInterval}`);
+  // console.log(`apiActivity ${window.apiActivity}`);
+  // console.log(`apiFetcher ${window.apiFetcher != null}`);
+  // console.log("---ON API ACTIVITY---")
 }
 
 window.apiFetcher = null;
@@ -57,11 +57,11 @@ events.forEach((name) => {
 });
 
 const runInTimeout = () => {
-  console.log("---INTERVAL BEFORE---")
-  console.log(`apiInterval ${window.apiInterval}`);
-  console.log(`apiActivity ${window.apiActivity}`);
-  console.log(`apiFetcher ${window.apiFetcher != null}`);
-  console.log("---INTERVAL BEFORE---")
+  // console.log("---INTERVAL BEFORE---")
+  // console.log(`apiInterval ${window.apiInterval}`);
+  // console.log(`apiActivity ${window.apiActivity}`);
+  // console.log(`apiFetcher ${window.apiFetcher != null}`);
+  // console.log("---INTERVAL BEFORE---")
 
   apiFetchAll();
 
@@ -80,11 +80,11 @@ const runInTimeout = () => {
   // reset apiActivity
   window.apiActivity = false;
 
-  console.log("---INTERVAL FETCH AFTER---")
-  console.log(`apiInterval ${window.apiInterval}`);
-  console.log(`apiActivity ${window.apiActivity}`);
-  console.log(`apiFetcher ${window.apiFetcher != null}`);
-  console.log("---INTERVAL FETCH--- AFTER")
+  // console.log("---INTERVAL FETCH AFTER---")
+  // console.log(`apiInterval ${window.apiInterval}`);
+  // console.log(`apiActivity ${window.apiActivity}`);
+  // console.log(`apiFetcher ${window.apiFetcher != null}`);
+  // console.log("---INTERVAL FETCH--- AFTER")
 
   window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;
 }

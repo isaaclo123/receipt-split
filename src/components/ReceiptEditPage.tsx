@@ -174,9 +174,15 @@ Props) => {
   }
 
   const onDelete = () => {
-    deleteReceipt(id);
-    setDeleteShow(false);
-    history.goBack();
+    deleteReceipt(id, () => {
+      // success
+      console.log("success onDelete")
+      setDeleteShow(false);
+      history.goBack();
+    }, () => {
+      console.log("fail onDelete")
+      setDeleteShow(false);
+    });
   }
 
   const noneComponent = (

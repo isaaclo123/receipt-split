@@ -16,6 +16,7 @@ import {
   RECEIPT_ITEM_DELETE_USER,
   RECEIPT_EDIT_RESET,
   UserType,
+  RECEIPT_DELETE_FAIL,
 } from "../types/index";
 
 import { initState, setDataReducer, editDataReducer, applyDataReducers } from "./index";
@@ -59,6 +60,15 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
         {
           successType: RECEIPT_ID_SUCCESS,
           failType: RECEIPT_ID_FAIL
+        }
+      ]
+    },
+    {
+      reducerCreator: setDataReducer,
+      args: [
+        {
+          // successType: RECEIPT_DELETE_SUCCESS,
+          failType: RECEIPT_DELETE_FAIL
         }
       ]
     },

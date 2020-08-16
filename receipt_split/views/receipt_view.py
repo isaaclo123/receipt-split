@@ -100,7 +100,8 @@ def receipt_by_id(id):
     if receipt.user.id != current_identity.id:
         app.logger.info("receipt/%s unauthorized for %s", id,
                         current_identity)
-        return err("Your do not own this receipt"),\
+        app.logger.debug("you do not own this receipt")
+        return err("You do not own this receipt"),\
             status.HTTP_401_UNAUTHORIZED
 
     if request.method == 'DELETE':
