@@ -13,6 +13,7 @@ import store from "../store";
 // in seconds
 export const API_FETCH_INTERVAL_START = 120;
 export const API_FETCH_INTERVAL_MAX = 60000;
+export const API_FETCH_INTERVAL_INC_FACTOR = 2;
 
 const apiFetchAll = () => {
   console.log("apiFetchAll running!")
@@ -67,7 +68,7 @@ const runInTimeout = () => {
   // if no movement occoured
   if (!window.apiActivity) {
     // double interval between polling, up to max
-    window.apiInterval *= 2;
+    window.apiInterval *= API_FETCH_INTERVAL_INC_FACTOR;
     if (window.apiInterval > API_FETCH_INTERVAL_MAX) {
       window.apiInterval = API_FETCH_INTERVAL_MAX;
     }

@@ -358,17 +358,19 @@ Props) => {
                 <Card.Title>
                   <span className="float-left">
                     <span className="text-primary">{from_user.fullname}</span>
-                    &nbsp;
-                    {paid ? "has paid" : "must pay"}
-                    &nbsp;
+                    &nbsp;pays&nbsp;
                     <span className="text-primary">{to_user.fullname}</span>
                   </span>
-                  <span className={`
-                    ${
-                      paid ? "text-success": "text-danger"
-                    }
-                    float-right`}>
-                    ${amount.toFixed(2)}
+                  <span className="float-right">
+                    <span className={`
+                      ${
+                        paid ? "text-success": "text-danger"
+                      }`}>
+                      {
+                        paid ? "(PAID)" : null
+                      }&nbsp;
+                      ${amount.toFixed(2)}
+                    </span>
                   </span>
                 </Card.Title>
               </Card.Body>
