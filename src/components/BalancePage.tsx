@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 
 import Alert from "react-bootstrap/Alert";
+import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
 import Col from "react-bootstrap/Col";
 
@@ -33,6 +34,7 @@ import { ListGroup } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+import { ListOrNoneComponent } from "./ListOrNoneComponent";
 
 const mapStateToProps = (state: RootState) => {
   const {
@@ -104,33 +106,51 @@ const BalancePageComponent = ({
   console.log(payments_sent)
   console.log("paymentListState")
 
+  const noneCard = (
+    <Card style={{
+        borderBottom: 0
+      }}>
+      <Card.Header
+        className="text-secondary"
+        style={{
+          lineHeight: "2rem"
+        }}
+      >
+        None
+      </Card.Header>
+    </Card>
+  );
+
   const getBalanceList = (balances_list: BalanceSumType[], props: Dict) => (
     <CardColumns>
-      {balances_list.map((balanceSum : BalanceSumType) => {
+      <ListOrNoneComponent<BalanceSumType>
+        list={balances_list}
+        listComponent={(balanceSum: BalanceSumType) => {
+          const {
+            owed_amount,
+            paid_amount,
+            user
+          } = balanceSum;
 
-        const {
-          owed_amount,
-          paid_amount,
-          user
-        } = balanceSum;
+          const {
+            id = -1
+          } = user;
 
-        const {
-          id = -1
-        } = user;
+          return (
+            <BalanceCardComponent
+              key={id}
+              onPay={() => {
+                setPaymentAmount(owed_amount - paid_amount);
+                setPaymentUser(user);
+                // TODO dont know if message should be reset
+                setPaymentMessage("");
+                setPayShow(true);
+              }}
+              {...balanceSum} {...props}/>
+          );
+        }}
 
-        return (
-          <BalanceCardComponent
-            key={id}
-            onPay={() => {
-              setPaymentAmount(owed_amount - paid_amount);
-              setPaymentUser(user);
-              // TODO dont know if message should be reset
-              setPaymentMessage("");
-              setPayShow(true);
-            }}
-            {...balanceSum} {...props}/>
-        );
-      })}
+        noneComponent={noneCard} />
     </CardColumns>
     )
 
