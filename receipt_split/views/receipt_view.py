@@ -17,17 +17,24 @@ def receipt_list():
     receipts_owned = receipts_schema.dump(
         current_identity.receipts_owned_unresolved
     )
+
     receipts_owed = receipts_schema.dump(
         current_identity.receipts_owed_unresolved
     )
-    receipts_resolved = receipts_schema.dump(
-        current_identity.receipts_resolved
+
+    receipts_owned_resolved = receipts_schema.dump(
+        current_identity.receipts_owned_resolved
+    )
+
+    receipts_owed_resolved = receipts_schema.dump(
+        current_identity.receipts_owed_resolved
     )
 
     receipt_result = {
         "receipts_owned": receipts_owned,
         "receipts_owed": receipts_owed,
-        "receipts_resolved": receipts_resolved
+        "receipts_owned_resolved": receipts_owned_resolved,
+        "receipts_owed_resolved": receipts_owed_resolved
     }
 
     app.logger.info("/receipt GET receipts_owed - %s", receipts_owed)

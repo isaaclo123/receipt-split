@@ -16,7 +16,8 @@ import {
 const initialState: ReceiptListState = initState({
   receipts_owned: [],
   receipts_owed: [],
-  receipts_resolved: [],
+  receipts_owned_resolved: [],
+  receipts_owed_resolved: [],
 });
 
 const deleteReducers = createDeleteReducers(RECEIPT_INDEX_DELETE_MAP);

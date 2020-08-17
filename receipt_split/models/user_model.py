@@ -153,6 +153,14 @@ class User(Base):
         return result
 
     @property
+    def receipts_owned_resolved(self):
+        result = Receipt.query.filter(
+            Receipt.user_id == self.id,
+            Receipt.resolved.is_(True)
+        )
+        return result
+
+    @property
     def receipts_owed_unresolved(self):
         result = Receipt.query.join(
             receipt_association_table,
@@ -160,6 +168,20 @@ class User(Base):
             receipt_association_table.c.left_id == self.id,
             Receipt.user_id != self.id,
             Receipt.resolved.is_(False)
+        )
+
+        app.logger.info("receipts_owed expression running - %s", result)
+
+        return result
+
+    @property
+    def receipts_owed_resolved(self):
+        result = Receipt.query.join(
+            receipt_association_table,
+        ).filter(
+            receipt_association_table.c.left_id == self.id,
+            Receipt.user_id != self.id,
+            Receipt.resolved.is_(True)
         )
 
         app.logger.info("receipts_owed expression running - %s", result)

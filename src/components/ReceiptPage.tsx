@@ -20,7 +20,6 @@ import {
 import {
   RootState,
   ReceiptSummaryType,
-  ReceiptListState,
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -125,11 +124,18 @@ const ReceiptPageComponent = ({
       { receiptListOrNoneComponent(receiptListState.data.receipts_owed) }
 
       <div className="align-middle">
-        <h5 className="float-left">Receipts Resolved</h5>
+        <h5 className="float-left">My Resolved Receipts</h5>
       </div>
       <br />
       <h5 />
-      { receiptListOrNoneComponent(receiptListState.data.receipts_resolved) }
+      { receiptListOrNoneComponent(receiptListState.data.receipts_owned_resolved) }
+
+      <div className="align-middle">
+        <h5 className="float-left">Receipts In Resolved</h5>
+      </div>
+      <br />
+      <h5 />
+      { receiptListOrNoneComponent(receiptListState.data.receipts_owed_resolved) }
     </>
   );
 };
