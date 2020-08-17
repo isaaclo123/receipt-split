@@ -16,7 +16,7 @@ import store from "../store";
 import { Dispatch } from "react";
 
 // in seconds
-const API_FETCH_INTERVAL_START = 120;
+const API_FETCH_INTERVAL_START = 10;
 const API_FETCH_INTERVAL_MAX = 60000;
 const API_FETCH_INTERVAL_INC_FACTOR = 2;
 
@@ -59,7 +59,7 @@ const onApiActivity = () => {
   if (window.apiInterval > API_FETCH_INTERVAL_START) {
     // reset api fetcher, run apifetchall() as well
     console.log("api Activity run API fetcher")
-    startApiFetcher(true);
+    startApiFetcher(true, true);
   }
 
   // console.log("---ON API ACTIVITY---")
@@ -120,11 +120,14 @@ const runInTimeout = () => {
   window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;
 }
 
-export const startApiFetcher = (start = false) => {
+export const startApiFetcher = (start = false, reset = false) => {
   // reset api Activity
   window.apiActivity = true;
   // reset interval to original
   // window.apiInterval = API_FETCH_INTERVAL_START;
+  if (reset) {
+    initApiFetcher();
+  }
 
   // if apiFetcher already exists
   if (window.apiFetcher != null) {
