@@ -16,7 +16,7 @@ import store from "../store";
 import { Dispatch } from "react";
 
 // in seconds
-const API_FETCH_INTERVAL_START = 10;
+const API_FETCH_INTERVAL_START = 120;
 const API_FETCH_INTERVAL_MAX = 60000;
 const API_FETCH_INTERVAL_INC_FACTOR = 2;
 
