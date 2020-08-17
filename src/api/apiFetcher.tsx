@@ -70,6 +70,10 @@ const onApiActivity = () => {
 }
 
 export const initApiFetcher = () => {
+  if (window.apiFetcher != null) {
+    clearTimeout(window.apiFetcher);
+  }
+
   window.apiFetcher = null;
   window.apiActivity = false;
   window.apiInterval = API_FETCH_INTERVAL_START;
