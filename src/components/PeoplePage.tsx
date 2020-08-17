@@ -40,13 +40,13 @@ const PeoplePageComponent = ({
 }: Props) => {
   const [hide, setHide] = useState(true);
 
-  // gets user info once
-  const [run, setRun] = useState(true);
+  // // gets user info once
+  // const [run, setRun] = useState(true);
 
-  if (run) {
-    getUserAndFriends();
-    setRun(false);
-  }
+  // if (run) {
+  //   getUserAndFriends();
+  //   setRun(false);
+  // }
 
   const { username, fullname } = userState.data;
 

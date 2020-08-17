@@ -1,4 +1,4 @@
-import { fetchUser, fetchLogin, fetchSignup } from "../api/index";
+import { fetchUser, fetchLogin, fetchSignup, initApiFetcher } from "../api/index";
 import { TOKEN_LOCALSTORAGE } from "../types/index";
 import { batch } from "react-redux";
 import {
@@ -15,6 +15,7 @@ import { apiCallAction } from "./index";
 
 export const deleteToken = () => (dispatch: any) => {
   localStorage.removeItem(TOKEN_LOCALSTORAGE);
+  initApiFetcher();
   console.log("Remove Token")
 
   return dispatch({

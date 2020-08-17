@@ -78,17 +78,17 @@ const BalancePageComponent = ({
   setPaymentMessage,
   setPaymentConfirm,
 }: Props) => {
-  const [run, setRun] = useState(true);
+  // const [run, setRun] = useState(true);
   const [payShow, setPayShow] = useState(false);
 
   const balanceErrors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
   const paymentErrors = (paymentListState.errors != null) ? paymentListState.errors : {};
 
   // gets user info once
-  if (run) {
-    setRun(false);
-    getPaymentListAndBalances()
-  }
+  // if (run) {
+  //   setRun(false);
+  //   getPaymentListAndBalances()
+  // }
 
   const {
     balances_owed,

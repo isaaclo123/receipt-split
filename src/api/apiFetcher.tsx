@@ -1,31 +1,55 @@
 import {
-  getPaymentListAndBalances,
+  getPaymentList,
+  getBalanceSumList,
   getReceiptList,
-  getUserAndFriends,
+  getUser,
+  getFriends,
 } from "../actions/index";
 
 import {
   Action
 } from "../types/index";
 
+import { batch } from "react-redux";
+
 import store from "../store";
+import { Dispatch } from "react";
 
 // in seconds
-export const API_FETCH_INTERVAL_START = 120;
-export const API_FETCH_INTERVAL_MAX = 60000;
-export const API_FETCH_INTERVAL_INC_FACTOR = 2;
+const API_FETCH_INTERVAL_START = 120;
+const API_FETCH_INTERVAL_MAX = 60000;
+const API_FETCH_INTERVAL_INC_FACTOR = 2;
 
-const apiFetchAll = () => {
-  console.log("apiFetchAll running!")
+const apiFetchAll = (archive = false) => {
+  console.log('apifetchall')
   const API_ACTIONS = [
-    getPaymentListAndBalances(false),
+    // getUser(),
+    getUser(),
+    getPaymentList(archive),
+    getBalanceSumList(),
     getReceiptList(),
-    getUserAndFriends(false)
+    getFriends(archive)
   ];
 
-  API_ACTIONS.forEach((action: Action<any, any>) => {
-    store.dispatch(action);
-  });
+  const batchActions = (dispatch: Dispatch<any>) => {
+    console.log("apiFetchAll running batch!")
+
+    batch(() => {
+      API_ACTIONS.forEach((action: Action<any, any>) => {
+        store.dispatch(action);
+      });
+    });
+  };
+
+
+  // store.dispatch(getUser(() => {
+  //   alert("afterSuccess getUser")
+  //   // afterSuccess
+  //   batchActions(store.dispatch);
+
+  //   return null;
+  // }));
+  batchActions(store.dispatch);
 }
 
 const onApiActivity = () => {
@@ -34,6 +58,7 @@ const onApiActivity = () => {
   // if api interval was increased before
   if (window.apiInterval > API_FETCH_INTERVAL_START) {
     // reset api fetcher, run apifetchall() as well
+    console.log("api Activity run API fetcher")
     startApiFetcher(true);
   }
 
@@ -44,9 +69,11 @@ const onApiActivity = () => {
   // console.log("---ON API ACTIVITY---")
 }
 
-window.apiFetcher = null;
-window.apiActivity = false;
-window.apiInterval = API_FETCH_INTERVAL_START;
+export const initApiFetcher = () => {
+  window.apiFetcher = null;
+  window.apiActivity = false;
+  window.apiInterval = API_FETCH_INTERVAL_START;
+}
 
 // window.addEventListener('load', () => {startApiFetcher(true)}, true);
 
@@ -57,11 +84,11 @@ events.forEach((name) => {
 });
 
 const runInTimeout = () => {
-  // console.log("---INTERVAL BEFORE---")
-  // console.log(`apiInterval ${window.apiInterval}`);
-  // console.log(`apiActivity ${window.apiActivity}`);
-  // console.log(`apiFetcher ${window.apiFetcher != null}`);
-  // console.log("---INTERVAL BEFORE---")
+  console.log("---INTERVAL BEFORE---")
+  console.log(`apiInterval ${window.apiInterval}`);
+  console.log(`apiActivity ${window.apiActivity}`);
+  console.log(`apiFetcher ${window.apiFetcher != null}`);
+  console.log("---INTERVAL BEFORE---")
 
   apiFetchAll();
 
@@ -80,35 +107,34 @@ const runInTimeout = () => {
   // reset apiActivity
   window.apiActivity = false;
 
-  // console.log("---INTERVAL FETCH AFTER---")
-  // console.log(`apiInterval ${window.apiInterval}`);
-  // console.log(`apiActivity ${window.apiActivity}`);
-  // console.log(`apiFetcher ${window.apiFetcher != null}`);
-  // console.log("---INTERVAL FETCH--- AFTER")
+  console.log("---INTERVAL FETCH AFTER---")
+  console.log(`apiInterval ${window.apiInterval}`);
+  console.log(`apiActivity ${window.apiActivity}`);
+  console.log(`apiFetcher ${window.apiFetcher != null}`);
+  console.log("---INTERVAL FETCH--- AFTER")
 
   window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;
 }
 
 export const startApiFetcher = (start = false) => {
-  console.log("start api");
-
   // reset api Activity
-  window.apiActivity = false;
+  window.apiActivity = true;
   // reset interval to original
-  window.apiInterval = API_FETCH_INTERVAL_START;
+  // window.apiInterval = API_FETCH_INTERVAL_START;
 
   // if apiFetcher already exists
   if (window.apiFetcher != null) {
-    // clear it
-    console.log(`interval cleared ${window.apiFetcher}`)
+    // don't run it, let interval continue running
+    // jconsole.log(`interval cleared ${window.apiFetcher}`)
 
-    clearTimeout(window.apiFetcher);
+    return;
+    // clearTimeout(window.apiFetcher);
   } else {
     console.log(`interval not cleared`)
   }
 
   if (start) {
-    apiFetchAll();
+    apiFetchAll(start);
   }
 
   window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;

@@ -45,15 +45,15 @@ const ReceiptPageComponent = ({
   receiptListState,
   getReceiptList
 }: Props) => {
-  const [run, setRun] = useState(true);
+  // const [run, setRun] = useState(true);
 
   const errors = (receiptListState.errors != null) ? receiptListState.errors : {};
 
   // gets user info once
-  if (run) {
-    setRun(false);
-    getReceiptList();
-  }
+  // if (run) {
+  //   setRun(false);
+  //   getReceiptList();
+  // }
 
   console.log(receiptListState);
 

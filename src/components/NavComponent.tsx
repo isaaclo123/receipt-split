@@ -13,8 +13,17 @@ import { deleteToken, getUser } from "../actions/index";
 import { RootState } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
-  const { userState } = state;
-  return { userState };
+  const {
+    userState,
+    friendState,
+    paymentListState,
+  } = state;
+
+  return {
+    userState,
+    friendState,
+    paymentListState,
+  };
 };
 
 const connector = connect(
@@ -26,7 +35,32 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & RouteComponentProps<{}>;
 
-const NavComponentPage = ({ match, deleteToken, getUser, userState }: Props) => {
+const getLengthBadge = (lists: Array<Array<any>>) => {
+  const total = lists.reduce((acc: number, cur: Array<any>) => {
+    return acc + cur.length;
+  }, 0);
+
+  if (total === 0) {
+    return null;
+  }
+
+  return (
+    <span>
+      <sup>
+        &nbsp;({total})
+      </sup>
+    </span>
+  );
+}
+
+const NavComponentPage = ({
+  match,
+  deleteToken,
+  getUser,
+  userState,
+  friendState,
+  paymentListState,
+}: Props) => {
   const [run, setRun] = useState(true);
 
   if (run) {
@@ -45,7 +79,10 @@ const NavComponentPage = ({ match, deleteToken, getUser, userState }: Props) => 
 
         <Nav>
           <LinkContainer to={`${match.url}/balances`}>
-            <Nav.Link>Balances</Nav.Link>
+            <Nav.Link>
+              Balances
+              {getLengthBadge([paymentListState.data.payments_received])}
+            </Nav.Link>
           </LinkContainer>
 
           <LinkContainer to={`${match.url}/receipts`}>
@@ -53,7 +90,10 @@ const NavComponentPage = ({ match, deleteToken, getUser, userState }: Props) => 
           </LinkContainer>
 
           <LinkContainer to={`${match.url}/people`}>
-            <Nav.Link>People</Nav.Link>
+            <Nav.Link>
+              People
+              {getLengthBadge([friendState.data.friends_received])}
+            </Nav.Link>
           </LinkContainer>
 
         <NavDropdown title={fullname} alignRight id="basic-nav-dropdown">
