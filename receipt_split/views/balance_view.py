@@ -38,10 +38,18 @@ def get_data(current_identity):
             continue
 
         if to_add.get("owed_amount") > paid_amount:
+            to_add["balances"] = s.get_balances_to_pay(
+                current_identity.id
+            )
+
             balance_owned.append(to_add)
         else:
             to_add["owed_amount"] = -1 * owed_amount
             to_add["paid_amount"] = -1 * paid_amount
+
+            to_add["balances"] = s.get_balances_owed(
+                current_identity.id
+            )
 
             balance_owed.append(to_add)
 
@@ -60,8 +68,12 @@ def balance_sums():
 
     get_data(current_identity)
 
-    return {
+    result = {
         "balances_owned": data[0],
         # "balances_owed": balances_owed,
         "balances_owed": data[1],
     }
+
+    app.logger.debug("balancesums result %s", result)
+
+    return result

@@ -70,43 +70,78 @@ class Settlement(Base):
 
     diff_amount = column_property(owed_amount - paid_amount)
 
+    def get_balances_to_pay(self, user_id):
+        if not is_valid_user(self, user_id):
+            # if from or to balance user is invalid, then return false
+            return []
+
+        other_user_id = self.get_other_user_id(user_id)
+
+        app.logger.debug("Balances get_balances_to_pay other_user_id %s",
+                         other_user_id)
+
+        balances = Balance.query.filter_by(
+            from_user_id=user_id,
+            to_user_id=other_user_id,
+            paid=False
+        ).all()
+
+        app.logger.debug("Balances get_balances_to_pay %s", balances)
+
+        return balances
+
+    def get_balances_owed(self, user_id):
+        if not is_valid_user(self, user_id):
+            # if from or to balance user is invalid, then return false
+            return []
+
+        other_user_id = self.get_other_user_id(user_id)
+
+        balances = Balance.query.filter_by(
+            from_user_id=other_user_id,
+            to_user_id=user_id,
+            paid=False
+        ).all()
+
+        return balances
+
 # TODO
 # https://stackoverflow.com/questions/34057756/how-to-combine-sqlalchemys-hybrid-property-decorator-with-werkzeugs-cached-pr
-    def update_settlement(self):
-        """should be legacy"""
-        # get balance from adding up unpaid balances
-        from_balances = db.session.query(
-            func.coalesce(
-                func.sum(Balance.amount), literal_column("0.0")
-            ).label("sum")
-        ).filter_by(
-            from_user_id=self.left_user_id,
-            to_user_id=self.right_user_id,
-            paid=False
-        ).subquery()
+    # def update_settlement(self):
+    #     """should be legacy"""
+    #     # get balance from adding up unpaid balances
+    #     from_balances = db.session.query(
+    #         func.coalesce(
+    #             func.sum(Balance.amount), literal_column("0.0")
+    #         ).label("sum")
+    #     ).filter_by(
+    #         from_user_id=self.left_user_id,
+    #         to_user_id=self.right_user_id,
+    #         paid=False
+    #     ).subquery()
 
-        to_balances = db.session.query(
-            func.coalesce(
-                func.sum(Balance.amount), literal_column("0.0")
-            ).label("sum")
-        ).filter_by(
-            from_user_id=self.right_user_id,
-            to_user_id=self.left_user_id,
-            paid=False
-        ).subquery()
+    #     to_balances = db.session.query(
+    #         func.coalesce(
+    #             func.sum(Balance.amount), literal_column("0.0")
+    #         ).label("sum")
+    #     ).filter_by(
+    #         from_user_id=self.right_user_id,
+    #         to_user_id=self.left_user_id,
+    #         paid=False
+    #     ).subquery()
 
-        result = db.session.query(
-            (from_balances.c.sum - to_balances.c.sum).label("result")
-        ).scalar()
+    #     result = db.session.query(
+    #         (from_balances.c.sum - to_balances.c.sum).label("result")
+    #     ).scalar()
 
-        app.logger.info("NEW BALANCE AMOUNT %s", result)
+    #     app.logger.info("NEW BALANCE AMOUNT %s", result)
 
-        self.owed_amount = result
+    #     self.owed_amount = result
 
-        app.logger.info("NEW BALANCE owed AMOUNT %s", self.owed_amount)
+    #     app.logger.info("NEW BALANCE owed AMOUNT %s", self.owed_amount)
 
-        # self.owed_amount = s
-        # self.balance_amount = s
+    #     # self.owed_amount = s
+    #     # self.balance_amount = s
 
     def get(from_user_id, to_user_id):
         app.logger.debug("GET SETTLEMENT %s %s", from_user_id, to_user_id)
