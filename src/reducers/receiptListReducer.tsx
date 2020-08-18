@@ -32,7 +32,7 @@ export const receiptListReducer = applyDataReducers<
     args: [
       {
         successType: RECEIPT_LIST_SUCCESS,
-        failType: RECEIPT_LIST_FAIL
+        failType: RECEIPT_LIST_FAIL,
       }
     ]
   },

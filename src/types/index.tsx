@@ -25,6 +25,7 @@ export interface ErrorData {
 };
 
 export type Failable<T, E> = {
+  modified: boolean;
   error: boolean;
   data: T;
   errors: E;
@@ -44,9 +45,11 @@ export type SetDataReducerType = {
   failType: string;
   onSuccess?: (acc: any, cur: any) => any;
   onFail?: (acc: any, cur: any) => any;
+  modified ?: boolean;
 };
 
 export type EditDataReducerType = {
+  modified ?: boolean;
   successType: string;
   // failType: string;
   // onSuccess?: (acc: any, cur: any) => any;

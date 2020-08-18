@@ -22,6 +22,7 @@ export const getCurrentDate = () => {
 
 export const initState = (data: any) => {
   return {
+    modified: false,
     error: false,
     data,
     errors: {}
@@ -31,6 +32,7 @@ export const initState = (data: any) => {
 export const setDataReducer = (
   initialState: any,
   {
+    modified = true,
     successType,
     failType,
     onSuccess = (data: Dict, payload: any) => payload,
@@ -40,12 +42,14 @@ export const setDataReducer = (
   switch (action.type) {
     case successType:
       return {
+      modified: modified,
         error: false,
         data: onSuccess(state.data, action.payload), // TODO assign maybe
         errors: {}
       };
     case failType:
       return Object.assign({}, state, {
+        modified: state.modified,
         error: true,
         errors: onFail(state.errors, action.payload)
       });
@@ -56,7 +60,7 @@ export const setDataReducer = (
 
 export const editDataReducer = (
   initialState: any,
-  { successType, field, isDelete = false }: EditDataReducerType
+  { modified = true, successType, field, isDelete = false }: EditDataReducerType
 ) => (state: Failable<any, any>, action: Action<string, any>) => {
   const assign = (
     payload: any,
@@ -130,6 +134,7 @@ export const editDataReducer = (
     case successType:
       const { ids, data } = action.payload;
       return {
+        modified: modified,
         error: state.data.error,
         data: assign(data, state.data, field, ids),
         errors: state.errors

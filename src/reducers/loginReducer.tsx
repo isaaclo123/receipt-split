@@ -23,6 +23,7 @@ export const loginReducer = (
       const { token } = action.payload;
 
       return {
+        modified: true,
         error: false,
         data: Object.assign({}, state.data, {
           token,
@@ -32,6 +33,7 @@ export const loginReducer = (
       };
     case LOGIN_FAIL:
       return {
+        modified: true,
         error: true,
         data: Object.assign({}, state.data, {
           token: "",

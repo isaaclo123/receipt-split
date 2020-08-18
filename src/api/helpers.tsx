@@ -40,6 +40,7 @@ export const fetchData = async (
 
     if (!response.ok) {
       return {
+        modified: true,
         error: true,
         data: {},
         errors: json
@@ -47,6 +48,7 @@ export const fetchData = async (
     }
 
     return {
+      modified: false,
       error: false,
       data: json,
       errors: {}
@@ -56,6 +58,7 @@ export const fetchData = async (
     console.log(e)
     console.log("----ERROR END----")
     return {
+      modified: true,
       error: true,
       data: {},
       errors: { error: e.message }

@@ -36,6 +36,7 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
   const callData =
     shouldCall != null
       ? {
+          modified: false, // TODO
           error: false,
           errors: {
             error: "No Proper SuccessType Given, Speak with developer"

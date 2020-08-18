@@ -144,6 +144,8 @@ Props) => {
   }: ReceiptType = receiptState.data;
 
   // const error = receiptState.error;
+  const modified = receiptState.modified;
+
   const errors = (receiptState.errors != null) ? receiptState.errors : {};
 
   const allUsers = users;
@@ -232,8 +234,9 @@ Props) => {
           onClick={() => {
             onSave();
           }}
+          disabled={!modified}
         >
-          SAVE
+          { modified ? "SAVE" : "SAVED" }
         </Button>
       </div>
       <br />

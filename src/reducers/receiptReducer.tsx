@@ -59,7 +59,8 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
       args: [
         {
           successType: RECEIPT_ID_SUCCESS,
-          failType: RECEIPT_ID_FAIL
+          failType: RECEIPT_ID_FAIL,
+          modified: false
         }
       ]
     },
