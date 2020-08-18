@@ -40,5 +40,6 @@ declare global {
     apiFetcher: null | number;
     apiInterval: number;
     apiActivity: boolean;
+    apiVisited: Dict<boolean>;
   }
 }

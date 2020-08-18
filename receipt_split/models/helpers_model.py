@@ -37,21 +37,22 @@ class OwnedMixin(object):
 
 class RequestMixin(OwnedMixin, object):
     accepted = db.Column(db.Boolean)
-    archived = db.Column(db.Boolean, default=False, nullable=False)
+    archived_from = db.Column(db.Boolean, default=False, nullable=False)
+    archived_to = db.Column(db.Boolean, default=False, nullable=False)
 
     @classmethod
     def get_received(cls, user):
         return cls.query.filter_by(
             # accepted=None,
             to_user_id=user.id,
-            archived=False
+            archived_to=False
         )
 
     @classmethod
     def get_sent(cls, user):
         return cls.query.filter_by(
             from_user_id=user.id,
-            archived=False
+            archived_from=False
         )
 
     @classmethod
@@ -60,9 +61,15 @@ class RequestMixin(OwnedMixin, object):
         # (null)
         cls.query.filter(
             cls.from_user_id == user.id,
-            cls.archived.is_(False),
+            cls.archived_from.is_(False),
             cls.accepted.isnot(None)
-        ).update({"archived": True})
+        ).update({"archived_from": True})
+
+        cls.query.filter(
+            cls.to_user_id == user.id,
+            cls.archived_to.is_(False),
+            cls.accepted.isnot(None)
+        ).update({"archived_to": True})
 
         db.session.commit()
 
@@ -80,7 +87,8 @@ class RequestMixin(OwnedMixin, object):
             callback()
 
             # unarchive
-            self.archived = False
+            self.archived_from = False
+            self.archived_to = False
             self.accepted = True
 
             return True
@@ -101,7 +109,8 @@ class RequestMixin(OwnedMixin, object):
             callback()
 
             # unarchive
-            self.archived = False
+            self.archived_from = False
+            self.archived_to = False
             self.accepted = False
 
             return True

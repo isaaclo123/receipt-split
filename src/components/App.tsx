@@ -30,8 +30,6 @@ const AppComponent = (props: Props) => {
     match,
   } = props;
 
-  initApiFetcher();
-
   return (
     <>
       <NavComponent {...props} />
@@ -40,7 +38,9 @@ const AppComponent = (props: Props) => {
           <PrivateRoute
             path={`${match.path}/balance`}
             component={BalancePage}
-            onSuccess={() => {startApiFetcher(true)}}
+            onSuccess={() => {
+              startApiFetcher("balance");
+            }}
           />
           <PrivateRoute
             path={`${match.path}/receipts/edit/:id`}
@@ -49,12 +49,16 @@ const AppComponent = (props: Props) => {
           <PrivateRoute
             path={`${match.path}/receipts`}
             component={ReceiptPage}
-            onSuccess={() => {startApiFetcher(true)}}
+            onSuccess={() => {
+              startApiFetcher("receipts");
+            }}
           />
 
           <PrivateRoute path={`${match.path}/people`}
             component={PeoplePage}
-            onSuccess={() => {startApiFetcher(true)}}
+            onSuccess={() => {
+              startApiFetcher("people");
+            }}
           />
 
           <Redirect to={`${match.url}/balance`} />

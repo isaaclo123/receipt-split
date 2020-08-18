@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ac2a0b049869
+Revision ID: 289d7babb5c7
 Revises: 
-Create Date: 2020-08-06 17:40:11.403786
+Create Date: 2020-08-18 15:45:43.378418
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ac2a0b049869'
+revision = '289d7babb5c7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,7 +32,8 @@ def upgrade():
     sa.Column('created_on', sa.DateTime(), nullable=True),
     sa.Column('updated_on', sa.DateTime(), nullable=True),
     sa.Column('accepted', sa.Boolean(), nullable=True),
-    sa.Column('archived', sa.Boolean(), nullable=False),
+    sa.Column('archived_from', sa.Boolean(), nullable=False),
+    sa.Column('archived_to', sa.Boolean(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('from_user_id', sa.Integer(), nullable=True),
     sa.Column('to_user_id', sa.Integer(), nullable=True),
@@ -44,7 +45,8 @@ def upgrade():
     sa.Column('created_on', sa.DateTime(), nullable=True),
     sa.Column('updated_on', sa.DateTime(), nullable=True),
     sa.Column('accepted', sa.Boolean(), nullable=True),
-    sa.Column('archived', sa.Boolean(), nullable=False),
+    sa.Column('archived_from', sa.Boolean(), nullable=False),
+    sa.Column('archived_to', sa.Boolean(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('message', sa.String(length=300), nullable=True),
