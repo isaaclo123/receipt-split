@@ -29,6 +29,7 @@ import {
   Dict,
   PaymentType,
   BALANCE_PAGE,
+  CURRENCY_FORMAT,
 } from "../types/index";
 import { ListGroup } from "react-bootstrap";
 
@@ -38,6 +39,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { ListOrNoneComponent } from "./ListOrNoneComponent";
 
 import { apiArchive } from "../api/index";
+import NumberFormat from "react-number-format";
 
 const mapStateToProps = (state: RootState) => {
   const {
@@ -214,7 +216,12 @@ const BalancePageComponent = ({
                 }}
                 messageComponent={(
                   <>
-                    <span className="text-success">${amount.toFixed(2)}</span>
+                    <NumberFormat
+                      className="text-success"
+                      displayType="text"
+                      value={amount}
+                      prefix="$"
+                      {...CURRENCY_FORMAT}/>
                     &nbsp;from&nbsp;
                     <span className="text-primary">{from_user.fullname}</span>
                     :&nbsp;
@@ -259,7 +266,13 @@ const BalancePageComponent = ({
                 buttons={buttonType}
                 messageComponent={(
                   <>
-                    <span className="text-danger">${amount.toFixed(2)}</span>
+                    <NumberFormat
+                      {...CURRENCY_FORMAT}
+                      className="text-danger"
+                      displayType="text"
+                      value={amount}
+                      prefix="$"
+                      />
                     &nbsp;to&nbsp;
                     <span className="text-primary">{to_user.fullname}</span>
                     :&nbsp;

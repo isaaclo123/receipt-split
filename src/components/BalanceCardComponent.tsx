@@ -5,8 +5,10 @@ import Button from "react-bootstrap/Button";
 
 import ListGroup from "react-bootstrap/ListGroup";
 
-import { BalanceSumType, BalanceSummaryType } from "../types/index";
+import { BalanceSumType, BalanceSummaryType, CURRENCY_FORMAT } from "../types/index";
 import { LinkContainer } from "react-router-bootstrap";
+
+import NumberFormat from 'react-number-format';
 
 export interface BalanceCardProps extends BalanceSumType {
   onPay?: () => void,
@@ -52,13 +54,26 @@ export const BalanceCardComponent = ({
           className={`text-${amountColor} align-middle`}
         >
           <span>
-            {(owed_amount < 0) ? "-" : null}${Math.abs(owed_amount).toFixed(2)}
+            <NumberFormat
+              displayType="text"
+              value={Math.abs(owed_amount)}
+              prefix={`${(owed_amount < 0) ? "-" : ""}$`}
+              {...CURRENCY_FORMAT}/>
             &nbsp;
-            {(paid_amount < 0) ? "+" : "-"}
-            &nbsp;${Math.abs(paid_amount).toFixed(2)}
+            <NumberFormat
+              displayType="text"
+              value={Math.abs(paid_amount)}
+              prefix={`${(paid_amount < 0) ? "+" : "-"} $`}
+              {...CURRENCY_FORMAT}/>
           </span>
           <br />
-          $<u>{(owed_amount - paid_amount).toFixed(2)}</u>
+          $
+          <u>
+            <NumberFormat
+              displayType="text"
+              value={owed_amount - paid_amount}
+              {...CURRENCY_FORMAT}/>
+          </u>
         </h2>
       </Card.Body>
 
@@ -85,7 +100,12 @@ export const BalanceCardComponent = ({
           return (
             <LinkContainer to={`receipts/edit/${receipt_id}`}>
               <ListGroup.Item key={id} className="d-inline-block text-truncate">
-                <span className="text-info">${amount.toFixed(2)}</span>
+                <NumberFormat
+                  className="text-info"
+                  displayType="text"
+                  value={amount}
+                  prefix="$"
+                  {...CURRENCY_FORMAT}/>
                 &nbsp;for&nbsp;
                 <span className="text-primary">{receipt_name}</span>
               </ListGroup.Item>

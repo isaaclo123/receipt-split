@@ -12,6 +12,15 @@ export * from "./payment";
 export * from "./receipt";
 export * from "./user";
 
+export const CURRENCY_FORMAT = {
+  allowNegative: false,
+  allowLeadingZeros: false,
+  thousandSeparator: true,
+  decimalSeparator: ".",
+  decimalScale: 2,
+  fixedDecimalScale: true
+};
+
 export type RootState = ReturnType<typeof rootReducer>;
 
 export interface ButtonProps {

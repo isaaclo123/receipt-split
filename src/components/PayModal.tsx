@@ -21,7 +21,8 @@ import {
 
 import {
   RootState,
-  UserType
+  UserType,
+  CURRENCY_FORMAT
 } from "../types/index";
 
 import {
@@ -106,17 +107,13 @@ const PayModalComponent = ({
                   <InputGroup.Text>$</InputGroup.Text>
                 </InputGroup.Prepend>
                 <NumberFormat
-                  allowLeadingZeros={false}
                   value={amount}
-                  decimalSeparator="."
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                  allowNegative={false}
                   onValueChange={({floatValue = 0.0}: NumberFormatValues) => {
                       setPaymentAmount(floatValue);
                   }}
                   isInvalid={"amount" in errors}
-                  customInput={Form.Control} />
+                  customInput={Form.Control}
+                  {...CURRENCY_FORMAT}/>
 
               <Form.Control.Feedback type="invalid">
                 {errors.amount}

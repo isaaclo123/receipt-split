@@ -13,6 +13,8 @@ import { getReceiptList } from "../actions/index";
 
 import { apiArchive } from "../api/index";
 
+import NumberFormat from 'react-number-format';
+
 import Alert from "react-bootstrap/Alert";
 
 import {
@@ -23,6 +25,7 @@ import {
   RootState,
   ReceiptSummaryType,
   RECEIPT_PAGE,
+  CURRENCY_FORMAT,
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -77,7 +80,12 @@ const ReceiptPageComponent = ({
           return (
             <LinkContainer to={`${match.url}/edit/${id}`}>
               <ListGroup.Item className="d-inline-block text-truncate">
-                <span className="text-info">${amount.toFixed(2)}</span>
+                <NumberFormat
+                  className="text-info"
+                  displayType="text"
+                  value={amount}
+                  prefix="$"
+                  {...CURRENCY_FORMAT}/>
                 &nbsp;for&nbsp;
                 <span className="text-primary">{name}</span>
                 &nbsp;by&nbsp;

@@ -8,7 +8,7 @@ import Col from 'react-bootstrap/Col'
 import NumberFormat, { NumberFormatValues } from 'react-number-format';
 
 import { BadgeListComponent } from './BadgeListComponent'
-import { UserType } from '../types/index'
+import { UserType, CURRENCY_FORMAT } from '../types/index'
 
 export interface ExpenseCardParams {
   variant?: string;
@@ -94,22 +94,18 @@ export const ExpenseCardComponent = ({
               }}>
 
               <NumberFormat
-                allowLeadingZeros={false}
                 style={Object.assign({}, inputStyle, { textAlign: "right" })}
                 plaintext
                 className={`text-${variant} form-control-lg`}
                 value={amount}
-                decimalSeparator="."
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={false}
                 prefix={`${prefix}$`}
                 onValueChange={({floatValue = 0}: NumberFormatValues) => {
                   console.log(Math.abs(floatValue))
                   handleAmountChange(Math.abs(floatValue));
                 }}
                 isInvalid={amountError != null}
-                customInput={Form.Control} />
+                customInput={Form.Control}
+                {...CURRENCY_FORMAT}/>
 
               <Form.Control.Feedback
                 className="text-right"

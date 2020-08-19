@@ -41,7 +41,8 @@ import {
   UserType,
   BalanceType,
   RootState,
-  Dict
+  Dict,
+  CURRENCY_FORMAT
 } from "../types/index";
 
 import {
@@ -381,7 +382,12 @@ Props) => {
                       }`}>
                       {
                         paid ? "(PAID)" : null
-                      } ${amount.toFixed(2)}
+                      }&nbsp;
+                      <NumberFormat
+                        displayType="text"
+                        value={amount}
+                        prefix="$"
+                        {...CURRENCY_FORMAT}/>
                     </span>
                   </span>
                 </Card.Title>
