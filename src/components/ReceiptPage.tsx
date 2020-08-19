@@ -75,17 +75,15 @@ const ReceiptPageComponent = ({
           user
         }: ReceiptSummaryType) => {
           return (
-            <>
+            <LinkContainer to={`${match.url}/edit/${id}`}>
               <ListGroup.Item className="d-inline-block text-truncate">
                 <span className="text-info">${amount.toFixed(2)}</span>
                 &nbsp;for&nbsp;
-                <LinkContainer to={`${match.url}/edit/${id}`}>
-                  <span className="text-primary">{name}</span>
-                </LinkContainer>
+                <span className="text-primary">{name}</span>
                 &nbsp;by&nbsp;
                 <span className="text-primary">{user.fullname}</span>
               </ListGroup.Item>
-            </>
+            </LinkContainer>
           );
         }}
         noneComponent={(

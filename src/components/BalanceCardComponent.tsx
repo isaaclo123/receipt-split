@@ -83,15 +83,13 @@ export const BalanceCardComponent = ({
           } = balance;
 
           return (
-            <ListGroup.Item key={id} className="d-inline-block text-truncate">
-              <span className="text-info">
-              ${amount.toFixed(2)}
-              </span>
-              &nbsp;for&nbsp;
-              <LinkContainer to={`receipts/edit/${receipt_id}`}>
+            <LinkContainer to={`receipts/edit/${receipt_id}`}>
+              <ListGroup.Item key={id} className="d-inline-block text-truncate">
+                <span className="text-info">${amount.toFixed(2)}</span>
+                &nbsp;for&nbsp;
                 <span className="text-primary">{receipt_name}</span>
-              </LinkContainer>
-            </ListGroup.Item>
+              </ListGroup.Item>
+            </LinkContainer>
           );
         })}
       </ListGroup>

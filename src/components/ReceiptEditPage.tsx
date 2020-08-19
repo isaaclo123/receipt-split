@@ -50,6 +50,8 @@ import {
   ExpenseCardComponent,
 } from "./index";
 
+import NumberFormat, { NumberFormatValues } from 'react-number-format';
+
 type MatchParams = {
   id: string;
 };
@@ -259,15 +261,17 @@ Props) => {
                 </span>{" "}
                 on&nbsp; </Form.Label>
               <Form.Group className="mb-0">
-                <Form.Control
+                <NumberFormat
                   className="pb-0"
-                  isInvalid={errors.date != null}
-                  plaintext
                   value={date}
-                  type="text"
-                  onChange={event => {
-                    setReceiptDate(event.currentTarget.value);
-                  }} />
+                  format="####-##-##"
+                  onValueChange={({formattedValue = ""}: NumberFormatValues) => {
+                      setReceiptDate(formattedValue);
+                  }}
+                  plaintext
+                  isInvalid={errors.date != null}
+
+                  customInput={Form.Control} />
                   <Form.Control.Feedback type="invalid">{errors.date}</Form.Control.Feedback>
                 </Form.Group>
               </InputGroup>
@@ -377,8 +381,7 @@ Props) => {
                       }`}>
                       {
                         paid ? "(PAID)" : null
-                      }&nbsp;
-                      ${amount.toFixed(2)}
+                      } ${amount.toFixed(2)}
                     </span>
                   </span>
                 </Card.Title>

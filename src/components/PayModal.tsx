@@ -4,10 +4,11 @@ import { connect, ConnectedProps } from "react-redux";
 
 import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
-import FormControl from "react-bootstrap/FormControl";
 import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+
+import NumberFormat, { NumberFormatValues } from 'react-number-format';
 
 import {
   setPaymentName,
@@ -104,17 +105,18 @@ const PayModalComponent = ({
                 <InputGroup.Prepend>
                   <InputGroup.Text>$</InputGroup.Text>
                 </InputGroup.Prepend>
-                <Form.Control
-                  type="number"
-                  step={0.01}
-                  min={0}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = Number(Number(event.currentTarget.value).toFixed(2));
-                    setPaymentAmount(value);
+                <NumberFormat
+                  allowLeadingZeros={false}
+                  value={amount}
+                  decimalSeparator="."
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  allowNegative={false}
+                  onValueChange={({floatValue = 0.0}: NumberFormatValues) => {
+                      setPaymentAmount(floatValue);
                   }}
                   isInvalid={"amount" in errors}
-                  value={amount.toFixed(2)}
-                />
+                  customInput={Form.Control} />
 
               <Form.Control.Feedback type="invalid">
                 {errors.amount}

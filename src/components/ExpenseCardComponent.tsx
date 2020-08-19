@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 
+import NumberFormat, { NumberFormatValues } from 'react-number-format';
+
 import { BadgeListComponent } from './BadgeListComponent'
 import { UserType } from '../types/index'
 
@@ -55,8 +57,6 @@ export const ExpenseCardComponent = ({
   handleDeleteClick
 }: ExpenseCardParams) => {
 
-  const [editing, setEditing] = useState(false);
-
   const inputStyle: React.CSSProperties = {
     height: "1.5em",
     border: 0,
@@ -92,36 +92,24 @@ export const ExpenseCardComponent = ({
             <Form.Group as={Col} xs="4" sm="3" className="mb-0 pl-0" style={{
               minWidth: 0,
               }}>
-              {(!editing) ?
-                (<Form.Control
-                    style={Object.assign({}, inputStyle, { textAlign: "right" })}
-                    plaintext
-                    className={`text-${variant} form-control-lg`}
-                    readOnly
-                    value={`${prefix}$` + ((amount != null) ? amount.toFixed(2): "0.00")}
-                    isInvalid={amountError != null}
-                    onFocus = {() => {
-                      setEditing(true);
-                    }} />) :
-                  (<Form.Control
-                      style={Object.assign({}, inputStyle, { textAlign: "right" })}
-                      plaintext
-                      className={`text-${variant} form-control-lg`}
-                      type="number"
-                      step={0.01}
-                      min={0}
-                      readOnly={!editing}
-                      isInvalid={amountError != null}
-                      value={(amount != null) ? amount.toFixed(2): "0.00"}
-                      onChange={event => {
-                        // to decimal number
-                        const value = Number(Number(event.currentTarget.value).toFixed(2))
-                        handleAmountChange(value)
-                      }}
-                      onBlur = {() => {
-                        setEditing(false);
-                      }} />)
-              }
+
+              <NumberFormat
+                allowLeadingZeros={false}
+                style={Object.assign({}, inputStyle, { textAlign: "right" })}
+                plaintext
+                className={`text-${variant} form-control-lg`}
+                value={amount}
+                decimalSeparator="."
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                prefix={`${prefix}$`}
+                onValueChange={({floatValue = 0}: NumberFormatValues) => {
+                  console.log(Math.abs(floatValue))
+                  handleAmountChange(Math.abs(floatValue));
+                }}
+                isInvalid={amountError != null}
+                customInput={Form.Control} />
 
               <Form.Control.Feedback
                 className="text-right"
