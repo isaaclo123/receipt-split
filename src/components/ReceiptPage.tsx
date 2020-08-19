@@ -11,6 +11,8 @@ import { LinkContainer } from "react-router-bootstrap";
 
 import { getReceiptList } from "../actions/index";
 
+import { apiArchive } from "../api/index";
+
 import Alert from "react-bootstrap/Alert";
 
 import {
@@ -20,6 +22,7 @@ import {
 import {
   RootState,
   ReceiptSummaryType,
+  RECEIPT_PAGE,
 } from "../types/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -46,6 +49,8 @@ const ReceiptPageComponent = ({
   getReceiptList
 }: Props) => {
   // const [run, setRun] = useState(true);
+
+  apiArchive(RECEIPT_PAGE);
 
   const errors = (receiptListState.errors != null) ? receiptListState.errors : {};
 

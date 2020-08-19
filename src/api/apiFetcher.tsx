@@ -7,7 +7,7 @@ import {
 } from "../actions/index";
 
 import {
-  Action, Dict
+  Action, Dict, BALANCE_PAGE, RECEIPT_PAGE, PEOPLE_PAGE
 } from "../types/index";
 
 import { batch } from "react-redux";
@@ -16,29 +16,29 @@ import store from "../store";
 import { Dispatch } from "react";
 
 // in seconds
-const API_FETCH_INTERVAL_START = 10;
+const API_FETCH_INTERVAL_START = 30;
 const API_FETCH_INTERVAL_MAX = 60000;
 const API_FETCH_INTERVAL_INC_FACTOR = 2;
+
+const API_ACTIONS: ApiActionDict = {
+  [BALANCE_PAGE] : (archive: boolean) => [
+    getBalanceSumList(),
+    getPaymentList(archive),
+  ],
+  [RECEIPT_PAGE] : (archive: boolean) => [
+    getReceiptList(),
+  ],
+  [PEOPLE_PAGE] : (archive: boolean) => [
+    getUser(),
+    getFriends(archive)
+  ]
+};
 
 type ApiActionDict = Dict<(a: boolean) => Array<Action<any, any>>>;
 
 const apiFetchAll = () => {
   console.log(`--apiFetchAll--`)
   console.log(window.apiVisited)
-
-  const API_ACTIONS: ApiActionDict = {
-    "balance" : (archive: boolean) => [
-      getBalanceSumList(),
-      getPaymentList(archive),
-    ],
-    "receipts" : (archive: boolean) => [
-      getReceiptList(),
-    ],
-    "people" : (archive: boolean) => [
-      getUser(),
-      getFriends(archive)
-    ]
-  };
 
   const batchActions = (dict: ApiActionDict, archive: boolean, dispatch: Dispatch<any>) => {
     for (let path in dict) {
@@ -80,18 +80,6 @@ const onApiActivity = () => {
   // console.log("---ON API ACTIVITY---")
 }
 
-export const initApiFetcher = () => {
-  console.log("initApiFetcher")
-  if (window.apiFetcher != null) {
-    clearTimeout(window.apiFetcher);
-  }
-
-  window.apiVisited = {};
-  window.apiFetcher = null;
-  window.apiActivity = false;
-  window.apiInterval = API_FETCH_INTERVAL_START;
-}
-
 // window.addEventListener('load', () => {startApiFetcher(true)}, true);
 
 const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
@@ -123,6 +111,7 @@ const runInTimeout = () => {
 
   // reset apiActivity
   window.apiActivity = false;
+  // reset apiVisited
   window.apiVisited = {};
 
   console.log("---INTERVAL FETCH AFTER---")
@@ -133,10 +122,23 @@ const runInTimeout = () => {
   console.log(window.apiVisited)
   console.log("---INTERVAL FETCH--- AFTER")
 
+  // create api fetcher again
   window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;
 }
 
-export const startApiFetcher = (visited: string | null = null) => {
+export const initApiFetcher = () => {
+  console.log("initApiFetcher")
+  if (window.apiFetcher != null) {
+    clearTimeout(window.apiFetcher);
+  }
+
+  window.apiVisited = {};
+  window.apiFetcher = null;
+  window.apiActivity = false;
+  window.apiInterval = API_FETCH_INTERVAL_START;
+}
+
+export const startApiFetcher = () => {
   // reset api Activity
   window.apiActivity = true;
   // window.apiVisited = {};
@@ -144,25 +146,18 @@ export const startApiFetcher = (visited: string | null = null) => {
   // window.apiInterval = API_FETCH_INTERVAL_START;
 
   if (window.apiFetcher == null) {
-      console.log("apiFetcher is null")
-    // if apiFetcher does not exist yet
+    // run apiFetchAll if this is first run
+
     // fetch all without archiving
-      apiFetchAll();
-  } else {
-    // if apiFetcher already exists
-    // don't fetch, but mark for archiving
-    if (visited != null) {
-      window.apiVisited[visited] = true;
-      console.log("apiVisited")
-      console.log(window.apiVisited)
-    }
-    return;
+    apiFetchAll();
+    window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;
   }
-
-  window.apiFetcher = setTimeout(runInTimeout, window.apiInterval * 1000) as any;
-
-  console.log(`apiFetcher ${window.apiFetcher}`)
 }
 
-// run initApiFetcher once
+
+export const apiArchive = (visited: string) => {
+  window.apiVisited[visited] = true;
+}
+
+/* -- run initApiFetcher once at start -- */
 initApiFetcher();

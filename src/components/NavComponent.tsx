@@ -81,7 +81,10 @@ const NavComponentPage = ({
           <LinkContainer to={`${match.url}/balances`}>
             <Nav.Link>
               Balances
-              {getLengthBadge([paymentListState.data.payments_received])}
+              {getLengthBadge([
+                paymentListState.data.payments_received,
+                paymentListState.data.payments_sent
+              ])}
             </Nav.Link>
           </LinkContainer>
 
@@ -92,7 +95,10 @@ const NavComponentPage = ({
           <LinkContainer to={`${match.url}/people`}>
             <Nav.Link>
               People
-              {getLengthBadge([friendState.data.friends_received])}
+              {getLengthBadge([
+                friendState.data.friends_received,
+                friendState.data.friends_sent
+              ])}
             </Nav.Link>
           </LinkContainer>
 

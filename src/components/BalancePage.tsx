@@ -28,6 +28,7 @@ import {
   BalanceSumType,
   Dict,
   PaymentType,
+  BALANCE_PAGE,
 } from "../types/index";
 import { ListGroup } from "react-bootstrap";
 
@@ -35,6 +36,8 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { ListOrNoneComponent } from "./ListOrNoneComponent";
+
+import { apiArchive } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
   const {
@@ -80,6 +83,8 @@ const BalancePageComponent = ({
 }: Props) => {
   // const [run, setRun] = useState(true);
   const [payShow, setPayShow] = useState(false);
+
+  apiArchive(BALANCE_PAGE);
 
   const balanceErrors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
   const paymentErrors = (paymentListState.errors != null) ? paymentListState.errors : {};

@@ -12,7 +12,9 @@ import {
   AcceptRejectComponent,
   AcceptRejectButtonsType
 } from "./index";
-import { RootState, UserType, FriendType } from "../types/index";
+import { RootState, UserType, FriendType, PEOPLE_PAGE } from "../types/index";
+
+import { apiArchive } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
   const { userState, friendState } = state;
@@ -39,6 +41,8 @@ const PeoplePageComponent = ({
   getUserAndFriends
 }: Props) => {
   const [hide, setHide] = useState(true);
+
+  apiArchive(PEOPLE_PAGE);
 
   // // gets user info once
   // const [run, setRun] = useState(true);
