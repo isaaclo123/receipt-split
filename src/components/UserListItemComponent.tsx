@@ -2,6 +2,7 @@ import React from "react";
 
 import { ListGroupItemProps } from "react-bootstrap";
 import ListGroup from "react-bootstrap/ListGroup";
+import Button from "react-bootstrap/Button";
 
 import { UserType } from "../types/index";
 
@@ -29,7 +30,7 @@ export const UserListItemComponent = (props: UserListItemProps) => {
   return (
     <ListGroup.Item {...rest}>
       <span className="float-left">
-        <span className="text-primary">{fullname}</span>
+        <Button variant="link" className="m-0 p-0 stretched-link">{fullname}</Button>
       </span>
       <span className="float-right">({username})</span>
     </ListGroup.Item>

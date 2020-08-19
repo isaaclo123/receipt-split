@@ -107,7 +107,7 @@ export const BalanceCardComponent = ({
                   prefix="$"
                   {...CURRENCY_FORMAT}/>
                 &nbsp;for&nbsp;
-                <span className="text-primary">{receipt_name}</span>
+                <Button variant="link" className="m-0 p-0 stretched-link">{receipt_name}</Button>
               </ListGroup.Item>
             </LinkContainer>
           );

@@ -306,13 +306,14 @@ Props) => {
       />
       <div>
         <h5 className="float-left">Sub-expenses</h5>
-        <span
-          className="float-right text-primary"
+        <Button
+          variant="link"
+          className="m-0 p-0 float-right"
           onClick={() => {
             addReceiptItem();
           }}>
           + Add Item
-        </span>
+        </Button>
       </div>
       <br />
       <h5 />

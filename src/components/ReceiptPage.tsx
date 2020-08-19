@@ -16,6 +16,7 @@ import { apiArchive } from "../api/index";
 import NumberFormat from 'react-number-format';
 
 import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 
 import {
   ListOrNoneComponent,
@@ -87,7 +88,7 @@ const ReceiptPageComponent = ({
                   prefix="$"
                   {...CURRENCY_FORMAT}/>
                 &nbsp;for&nbsp;
-                <span className="text-primary">{name}</span>
+                <Button variant="link" className="m-0 p-0 stretched-link">{name}</Button>
                 &nbsp;by&nbsp;
                 <span className="text-primary">{user.fullname}</span>
               </ListGroup.Item>
@@ -118,9 +119,7 @@ const ReceiptPageComponent = ({
         <h5 className="float-left">My Receipts</h5>
 
         <LinkContainer to={`${match.url}/edit/-1`}>
-          <span className="float-right text-primary">
-            + New
-          </span>
+          <Button variant="link" className="m-0 p-0 float-right">+ New</Button>
         </LinkContainer>
       </div>
       <br />

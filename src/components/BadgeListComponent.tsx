@@ -20,20 +20,28 @@ export const BadgeListComponent = (props: BadgeListProps) => {
         {items.map((item, index: number) => {
           return (
             <>
-              <Badge className="item-badge" variant="primary" pill>
+              <Badge
+                className="item-badge border-0"
+                variant="primary"
+                pill
+                onClick={() => {
+                  handleDeleteClick(index);
+                }}
+                as="button">
                 <span onClick={() => handleItemClick(index)}>{item}</span>
                 &nbsp;
-                <span
-                  onClick={() => handleDeleteClick(index)}
-                  className="item-badge-delete"
-                >
+                <span className="item-badge-delete">
                   &times;
                 </span>
               </Badge>
             </>
           );
         })}
-        <Badge onClick={() => handleAddClick()} variant="primary" pill>
+        <Badge onClick={() => handleAddClick()}
+          variant="primary"
+          className="border-0"
+          pill
+          as="button">
           +
         </Badge>
       </>
@@ -42,10 +50,17 @@ export const BadgeListComponent = (props: BadgeListProps) => {
 
   return (
     <>
-      <Badge variant="secondary" pill>
+      <Badge
+        className="item-badge"
+        variant="secondary"
+        pill>
         Nobody
       </Badge>
-      <Badge onClick={() => handleAddClick()} variant="secondary" pill>
+        <Badge onClick={() => handleAddClick()}
+          variant="secondary"
+          className="border-0"
+          pill
+          as="button">
         +
       </Badge>
     </>
