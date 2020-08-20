@@ -17,7 +17,7 @@ export type LoginAction = LoginSuccessAction | LoginFailAction;
 
 export interface LoginData {
   login: boolean;
-  token: string;
+  // token: string;
 
   username: string;
   password: string;

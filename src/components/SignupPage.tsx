@@ -50,7 +50,6 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
 
   const errors = (loginState.errors != null) ? loginState.errors : {};
 
-
   const handleSignupClick = () => {
     console.log("signupData");
     console.log(signupData);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
-import { Switch, RouteComponentProps, Redirect } from "react-router-dom";
+import { Route, Switch, RouteComponentProps, Redirect } from "react-router-dom";
 
 import {
   PrivateRoute,
@@ -38,19 +38,19 @@ const AppComponent = (props: Props) => {
       <div className="container pt-3 h-100">
         <Switch>
           <PrivateRoute
-            path={`${match.path}/balance`}
+            path={`${match.url}/balance`}
             component={BalancePage}
           />
           <PrivateRoute
-            path={`${match.path}/receipts/edit/:id`}
+            path={`${match.url}/receipts/edit/:id`}
             component={ReceiptEditPage}
           />
           <PrivateRoute
-            path={`${match.path}/receipts`}
+            path={`${match.url}/receipts`}
             component={ReceiptPage}
           />
 
-          <PrivateRoute path={`${match.path}/people`}
+          <PrivateRoute path={`${match.url}/people`}
             component={PeoplePage}
           />
 

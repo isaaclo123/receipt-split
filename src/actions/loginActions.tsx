@@ -10,56 +10,55 @@ import {
   SignupPayload,
   RootState
 } from "../types/index";
+import {
+  removeToken,
+  getToken,
+  storeToken
+} from "../api/index";
 import { apiCallAction } from "./index";
 // import { disconnect } from "cluster";
 
-export const deleteToken = () => (dispatch: any) => {
-  localStorage.removeItem(TOKEN_LOCALSTORAGE);
-  initApiFetcher();
-  console.log("Remove Token")
-
+export const logOut = () => (dispatch: any) => {
   return dispatch({
     type: LOGIN_FAIL,
-    payload: {
-      token: ""
-    }
+    payload: {}
   })
 }
-
-export const setToken = () => async (dispatch: any, getState: () => RootState) => {
-  // TODO deleteToken on api fail??
-  if (getState().loginState.error) {
-    localStorage.removeItem(TOKEN_LOCALSTORAGE);
-    return;
-  }
-
-  const token = localStorage.getItem(TOKEN_LOCALSTORAGE);
-
-  if (token == null || token === ""){
-    return deleteToken()(dispatch);
-  }
-
-  const userData = await fetchUser(token);
-
-  if (userData.error) {
-    console.log("Error with UserData setToken");
-    console.log(userData.error);
-    return deleteToken()(dispatch);
-  }
-
-  batch(() => {
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: {
-        token
-      }
-    });
-    dispatch({
-      type: USER_INFO_SUCCESS,
-      payload: userData
-    });
-  });
-}
+//
+// export const setToken = () => async (dispatch: any, getState: () => RootState) => {
+//   // TODO deleteToken on api fail??
+//   if (getState().loginState.error) {
+//     removeToken();
+//     return;
+//   }
+//
+//   const token = getToken();
+//
+//   if (token == null) {
+//     return deleteToken()(dispatch);
+//   }
+//
+//   const userData = await fetchUser(token);
+//
+//   if (userData.error) {
+//     console.log("Error with UserData setToken");
+//     console.log(userData.error);
+//     return deleteToken()(dispatch);
+//   }
+//
+//   batch(() => {
+//     dispatch({
+//       type: LOGIN_SUCCESS,
+//       payload: {
+//         token
+//       }
+//     });
+//     dispatch({
+//       type: USER_INFO_SUCCESS,
+//       payload: userData
+//     });
+//   });
+// }
 
 export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
   apiCallAction({
@@ -70,7 +69,6 @@ export const setLogin = (payload: LoginPayload): ApiMiddlewareAction =>
     apiCallArgs: [payload],
     onSuccess: ({ access_token = "" }: any) => {
       // set token in localStorage
-      localStorage.setItem(TOKEN_LOCALSTORAGE, access_token)
       return {
         token: access_token
       };

@@ -5,9 +5,11 @@ import {
   setValuePayload
 } from "../types/index";
 
-export const getToken = (getState: () => RootState) => {
-  return getState().loginState.data.token;
-};
+import { getToken } from "../api/token";
+
+// export const getToken = (getState: () => RootState) => {
+//   return getState().loginState.data.token;
+// };
 
 export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
   dispatch: Dispatch,
@@ -44,7 +46,7 @@ export const apiCallAction = (payload: ApiMiddlewarePayload) => async (
           data: shouldCall
         }
       : await apiCall(
-          ...(withToken ? [...apiCallArgs, getToken(getState)] : apiCallArgs)
+          ...(withToken ? [...apiCallArgs, getToken()] : apiCallArgs)
         );
 
   const { error, errors, data } = callData;

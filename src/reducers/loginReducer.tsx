@@ -6,11 +6,11 @@ import {
 } from "../types/index";
 
 import { initState } from "./index"
+import { storeToken, removeToken, initApiFetcher } from "../api";
 
 const initialState: LoginState = initState({
   username: "",
   password: "",
-  token: "",
   login: false
 });
 
@@ -22,21 +22,25 @@ export const loginReducer = (
     case LOGIN_SUCCESS:
       const { token } = action.payload;
 
+      storeToken(token);
+
       return {
         modified: true,
         error: false,
         data: Object.assign({}, state.data, {
-          token,
+          password: "",
           login: true
         }),
         errors: {}
       };
     case LOGIN_FAIL:
+      initApiFetcher();
+      removeToken();
+
       return {
         modified: true,
         error: true,
         data: Object.assign({}, state.data, {
-          token: "",
           login: false
         }),
         errors: action.payload

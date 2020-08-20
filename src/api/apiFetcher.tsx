@@ -14,6 +14,7 @@ import { batch } from "react-redux";
 
 import store from "../store";
 import { Dispatch } from "react";
+import { getToken } from "./token";
 
 // in seconds
 const API_FETCH_INTERVAL_START = 30;
@@ -139,6 +140,12 @@ export const initApiFetcher = () => {
 }
 
 export const startApiFetcher = () => {
+  // if not authenticated, don't start
+  const token = getToken();
+  if (token == null) {
+    return;
+  }
+
   // reset api Activity
   window.apiActivity = true;
   // window.apiVisited = {};

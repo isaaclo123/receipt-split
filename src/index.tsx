@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { HashRouter, Redirect, Route } from "react-router-dom";
+import { useLocation, BrowserRouter, HashRouter, Redirect, Route } from "react-router-dom";
+
+import { createBrowserHistory } from "history";
 
 import store from "./store";
 import "./index.css";
@@ -16,10 +18,10 @@ import { App, Login, Signup, PrivateRoute } from "./components/index";
 export const Index = () => (
   <Provider store={store}>
     <HashRouter>
-      <PrivateRoute exact path="/" component={Login} />
-      <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
-      <PrivateRoute path="/app" component={App} />
+      <Route path="/login" component={Login} />
+      <Route exact path="/" component={App} />
+      <Route path="/app" component={App} />
     </HashRouter>
   </Provider>
 );

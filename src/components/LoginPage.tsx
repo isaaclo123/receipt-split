@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useHistory } from "react-router-dom";
 import { connect, ConnectedProps } from "react-redux";
-import { LoginData, LoginState } from "../types/index";
+import { LoginData, LoginState, Dict } from "../types/index";
 
 import { LinkContainer } from "react-router-bootstrap";
 
 import "./Login.css";
 
-import { Redirect } from "react-router-dom";
+import { Redirect, RouteProps } from "react-router-dom";
 
-import { setLogin, setToken } from "../actions/index";
+import { setLogin } from "../actions/index";
 
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -16,7 +17,9 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/Form";
 
-import { RootState } from "../types/index";
+import { LocationState, RootState } from "../types/index";
+
+import { initApiFetcher, getToken } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
   const { loginState } = state;
@@ -27,33 +30,29 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { setLogin, setToken }
+  { setLogin }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {
+type Props = PropsFromRedux & RouteProps & {
   loginState: LoginState;
 };
 
-const LoginPage = ({ loginState, setLogin, setToken }: Props) => {
+const LoginPage = (props: Props) => {
   const [loginData, setLoginData] = useState({
     username: "",
     password: ""
   });
-  // const [run, setRun] = useState(true);
 
-  // Set token if already in localstorage
-  // if (run) {
-  setToken();
-    //setRun(false);
-  // }
+  const location  = useLocation<LocationState>();
 
-  const { login }: LoginData = loginState.data;
+  const { referrer } = location.state || { referrer: "/app" };
 
-  console.log("LOGIN");
-  if (login) {
-    return <Redirect to={"/app"} />;
+  const { loginState, setLogin } = props;
+
+  if (loginState.data.login) {
+    return <Redirect to={referrer} />;
   }
 
   const errors = (loginState.errors != null) ? loginState.errors : {};

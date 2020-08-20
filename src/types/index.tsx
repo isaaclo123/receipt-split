@@ -21,13 +21,17 @@ export const CURRENCY_FORMAT = {
   fixedDecimalScale: true
 };
 
+export interface LocationState {
+  referrer: string;
+}
+
 export type RootState = ReturnType<typeof rootReducer>;
 
 export interface ButtonProps {
   variant: string;
   text: string;
   handleClick: () => void;
-}
+};
 
 export interface ErrorData {
   error?: string;

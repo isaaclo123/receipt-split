@@ -9,8 +9,10 @@ import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Navbar from "react-bootstrap/Navbar";
 
-import { deleteToken, getUser } from "../actions/index";
+import { logOut, getUser } from "../actions/index";
 import { RootState } from "../types/index";
+
+import { removeToken } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
   const {
@@ -28,7 +30,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(
   mapStateToProps,
-  { deleteToken, getUser }
+  { getUser, logOut }
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -55,7 +57,7 @@ const getLengthBadge = (lists: Array<Array<any>>) => {
 
 const NavComponentPage = ({
   match,
-  deleteToken,
+  logOut,
   getUser,
   userState,
   friendState,
@@ -103,7 +105,9 @@ const NavComponentPage = ({
           </LinkContainer>
 
         <NavDropdown title={fullname} alignRight id="basic-nav-dropdown">
-          <NavDropdown.Item onClick={deleteToken}>Log Out</NavDropdown.Item>
+          <LinkContainer to={"/login"}>
+            <NavDropdown.Item onClick={logOut}>Log Out</NavDropdown.Item>
+          </LinkContainer>
         </NavDropdown>
         </Nav>
       </Navbar.Collapse>

@@ -14,6 +14,8 @@ import {
 } from "./index";
 import { RootState, UserType, FriendType, PEOPLE_PAGE } from "../types/index";
 
+import Button from "react-bootstrap/Button";
+
 import { apiArchive } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
@@ -156,12 +158,13 @@ const PeoplePageComponent = ({
       </ListGroup>
       <div className="align-middle">
         <h5 className="float-left">Friends</h5>
-        <span
-          className="text-primary float-right"
+        <Button
+          variant="link"
+          className="m-0 p-0 float-right"
           onClick={() => setHide(false)}
-        >
+          >
           + Add Friends
-        </span>
+        </Button>
       </div>
       <br />
       <h5 />

@@ -2,6 +2,7 @@ import { LoginPayload, SignupPayload, ReceiptType, PaymentEditType } from "../ty
 import { fetchData } from "./helpers";
 
 export * from "./apiFetcher";
+export * from "./token";
 
 export const SERVER_URL = (process.env.NODE_ENV !== 'production') ?
   (
