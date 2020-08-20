@@ -15,7 +15,7 @@ import {
 
 import "./App.css";
 
-import { initApiFetcher, startApiFetcher } from "../api/index";
+import { startApiFetcher } from "../api/index";
 
 const connector = connect(
   null,
@@ -37,20 +37,20 @@ const AppComponent = (props: Props) => {
       <NavComponent {...props} />
       <div className="container pt-3 h-100">
         <Switch>
-          <PrivateRoute
+          <Route
             path={`${match.url}/balance`}
             component={BalancePage}
           />
-          <PrivateRoute
+          <Route
             path={`${match.url}/receipts/edit/:id`}
             component={ReceiptEditPage}
           />
-          <PrivateRoute
+          <Route
             path={`${match.url}/receipts`}
             component={ReceiptPage}
           />
 
-          <PrivateRoute path={`${match.url}/people`}
+          <Route path={`${match.url}/people`}
             component={PeoplePage}
           />
 

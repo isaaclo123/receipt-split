@@ -142,6 +142,7 @@ export const initApiFetcher = () => {
 export const startApiFetcher = () => {
   // if not authenticated, don't start
   const token = getToken();
+
   if (token == null) {
     return;
   }
