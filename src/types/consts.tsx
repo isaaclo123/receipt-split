@@ -1,5 +1,7 @@
 import { Dict } from "./index"
 
+export const RECEIPT_LIST_ADD = "RECEIPT_LIST_ADD";
+
 export const BALANCE_PAGE = "BALANCE_PAGE";
 export const RECEIPT_PAGE = "RECEIPT_PAGE";
 export const PEOPLE_PAGE = "PEOPLE_PAGE";

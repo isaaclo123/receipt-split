@@ -71,6 +71,18 @@ export const getReceipt = (id: number): ApiMiddlewareAction => {
     });
 }
 
+export const addReceipt = () =>
+  setValueAction<ReceiptItemType>({
+    successType: RECEIPT_ADD_RECEIPT_ITEM
+  })(
+    {
+      name: "",
+      amount: 0,
+      users: []
+    },
+    [EDIT_DATA_PREPEND]
+  );
+
 export const saveReceipt = (
   id: number,
   payload: ReceiptType
@@ -80,7 +92,10 @@ export const saveReceipt = (
     failType: RECEIPT_ID_FAIL,
     withToken: true,
     apiCall: saveReceiptById,
-    apiCallArgs: [id, payload]
+    apiCallArgs: [id, payload],
+    afterSuccess: (state: any) => {
+      return getReceiptList();
+    },
   });
 
 export const deleteReceiptInList = (
