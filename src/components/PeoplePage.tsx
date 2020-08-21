@@ -14,6 +14,7 @@ import {
 } from "./index";
 import { RootState, UserType, FriendType, PEOPLE_PAGE } from "../types/index";
 
+import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 
 import { apiArchive } from "../api/index";
@@ -54,6 +55,8 @@ const PeoplePageComponent = ({
   //   setRun(false);
   // }
 
+  const errors = (friendState.errors != null) ? friendState.errors : {};
+
   const { username, fullname } = userState.data;
 
   const {
@@ -74,6 +77,11 @@ const PeoplePageComponent = ({
           setHide(true);
         }}
       />
+
+      {("error" in errors) &&
+        <Alert variant="danger">
+          {errors.error}
+        </Alert>}
 
       {((friends_received).length > 0) &&
       <>

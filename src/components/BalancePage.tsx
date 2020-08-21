@@ -174,19 +174,15 @@ const BalancePageComponent = ({
         }}
       />
 
-      { ("error" in balanceErrors) &&
-        <>
-          <Alert variant="danger">
-            {balanceErrors.error}
-          </Alert>
-        </>}
+      {("error" in balanceErrors) &&
+        <Alert variant="danger">
+          {balanceErrors.error}
+        </Alert>}
 
-      { ("error" in paymentErrors) &&
-        <>
-          <Alert variant="danger">
-            {paymentErrors.error}
-          </Alert>
-        </>}
+      {("error" in paymentErrors) &&
+        <Alert variant="danger">
+          {paymentErrors.error}
+        </Alert>}
 
       {(payments_received.length > 0) &&
       <>
