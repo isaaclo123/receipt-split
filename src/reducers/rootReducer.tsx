@@ -6,7 +6,6 @@ import {
   paymentReducer,
   receiptReducer,
   receiptListReducer,
-  receiptDictReducer,
   loginReducer,
   userReducer,
   friendReducer
@@ -15,7 +14,6 @@ import {
 export const rootReducer = combineReducers({
   loginState: loginReducer,
   receiptListState: receiptListReducer,
-  receiptDictState: receiptDictReducer,
   receiptState: receiptReducer,
   userState: userReducer,
   friendState: friendReducer,

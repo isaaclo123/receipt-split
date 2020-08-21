@@ -94,20 +94,20 @@ export type ReceiptItemType = {
   // receipt?: ReceiptType;
 };
 
-export type ReceiptDictState = Failable<Dict<ReceiptType>, Dict<any>>;
+// export type ReceiptDictState = Failable<Dict<ReceiptType>, Dict<any>>;
+//
+// export type ReceiptCacheSuccessAction = Action<
+//   typeof RECEIPT_CACHE_SUCCESS,
+//   ReceiptType
+// >;
+// export type ReceiptCacheFailAction = Action<
+//   typeof RECEIPT_CACHE_FAIL,
+//   Dict
+// >;
 
-export type ReceiptCacheSuccessAction = Action<
-  typeof RECEIPT_CACHE_SUCCESS,
-  ReceiptType
->;
-export type ReceiptCacheFailAction = Action<
-  typeof RECEIPT_CACHE_FAIL,
-  Dict
->;
-
-export type ReceiptCacheAction =
-  | ReceiptCacheSuccessAction
-  | ReceiptCacheFailAction;
+// export type ReceiptCacheAction =
+//   | ReceiptCacheSuccessAction
+//   | ReceiptCacheFailAction;
 
 export type ReceiptIdSuccessAction = Action<
   typeof RECEIPT_ID_SUCCESS,

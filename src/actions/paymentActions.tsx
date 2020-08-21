@@ -7,8 +7,12 @@ import {
   PAYMENT_SAVE_FAIL,
   PAYMENT_SAVE_SUCCESS,
   PaymentEditType,
+
+  PAYMENT_STATE_SET,
+
   PAYMENT_SET_NAME,
   PAYMENT_SET_AMOUNT,
+  PAYMENT_SET_MAX_AMOUNT,
   PAYMENT_SET_USER,
   PAYMENT_SET_MESSAGE,
 
@@ -21,6 +25,7 @@ import {
 
   EDIT_DATA_PREPEND,
   RootState,
+  Dict,
 } from "../types/index";
 
 import { ApiMiddlewareAction } from "../types/index";
@@ -45,17 +50,36 @@ export const addNewPayment = (payment: PaymentType) =>
     [EDIT_DATA_PREPEND]
   );
 
-export const setNewPayment = (payload: PaymentEditType): ApiMiddlewareAction =>
+export const setNewPayment = ({max_amount, ...payload}: PaymentEditType): ApiMiddlewareAction =>
   apiCallAction({
     successType: PAYMENT_SAVE_SUCCESS,
     failType: PAYMENT_SAVE_FAIL,
     withToken: true,
     apiCall: savePayment,
-    apiCallArgs: [payload],
+    apiCallArgs: [{...payload}],
     afterSuccess: ({ paymentState }: RootState) => {
       return addNewPayment(paymentState.data as PaymentType);
     }
   });
+
+export const setPayment = ({
+  amount = 0.0,
+  message = "",
+  to_user = "",
+}: Dict) => (dispatch: Dispatch, getState: () => RootState) => {
+  batch(() => {
+    const actions = [
+      setPaymentAmount(amount),
+      setPaymentMaxAmount(amount),
+      setPaymentMessage(message),
+      setPaymentUser(to_user)
+    ]
+
+    actions.forEach((action) => {
+      action(dispatch, getState)
+    })
+  });
+};
 
 export const setPaymentName = setValueAction<string>({
   successType: PAYMENT_SET_NAME
@@ -63,6 +87,10 @@ export const setPaymentName = setValueAction<string>({
 
 export const setPaymentAmount = setValueAction<number>({
   successType: PAYMENT_SET_AMOUNT
+})
+
+export const setPaymentMaxAmount = setValueAction<number>({
+  successType: PAYMENT_SET_MAX_AMOUNT
 })
 
 export const setPaymentMessage = setValueAction<string>({

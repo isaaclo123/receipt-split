@@ -1,5 +1,7 @@
 import { Dict } from "./index"
 
+export const PAYMENT_STATE_SET = "PAYMENT_STATE_SET";
+
 export const RECEIPT_LIST_ADD = "RECEIPT_LIST_ADD";
 
 export const BALANCE_PAGE = "BALANCE_PAGE";
@@ -24,6 +26,7 @@ export const PAYMENT_SAVE_FAIL = "PAYMENT_SAVE_FAIL";
 
 export const PAYMENT_SET_NAME = "PAYMENT_SET_NAME"
 export const PAYMENT_SET_AMOUNT = "PAYMENT_SET_AMOUNT"
+export const PAYMENT_SET_MAX_AMOUNT = "PAYMENT_SET_MAX_AMOUNT"
 export const PAYMENT_SET_MESSAGE = "PAYMENT_SET_MESSAGE"
 export const PAYMENT_SET_USER = "PAYMENT_SET_USER"
 

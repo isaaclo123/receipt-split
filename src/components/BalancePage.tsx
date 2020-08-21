@@ -17,6 +17,7 @@ import {
 import {
   getPaymentListAndBalances,
   getBalanceSumList,
+  setPayment,
   setPaymentAmount,
   setPaymentUser,
   setPaymentMessage,
@@ -57,6 +58,7 @@ const connector = connect(
   {
     getPaymentListAndBalances,
     getBalanceSumList,
+    setPayment,
     setPaymentAmount,
     setPaymentUser,
     setPaymentMessage,
@@ -78,6 +80,7 @@ const BalancePageComponent = ({
 
   getPaymentListAndBalances,
   getBalanceSumList,
+  setPayment,
   setPaymentAmount,
   setPaymentUser,
   setPaymentMessage,
@@ -147,10 +150,11 @@ const BalancePageComponent = ({
             <BalanceCardComponent
               key={id}
               onPay={() => {
-                setPaymentAmount(owed_amount - paid_amount);
-                setPaymentUser(user);
-                // TODO dont know if message should be reset
-                setPaymentMessage("");
+                setPayment({
+                  amount: owed_amount - paid_amount,
+                  message: "",
+                  to_user: user,
+                })
                 setPayShow(true);
               }}
               {...balanceSum} {...props}/>
@@ -175,7 +179,6 @@ const BalancePageComponent = ({
           <Alert variant="danger">
             {balanceErrors.error}
           </Alert>
-          <br />
         </>}
 
       { ("error" in paymentErrors) &&
@@ -183,7 +186,6 @@ const BalancePageComponent = ({
           <Alert variant="danger">
             {paymentErrors.error}
           </Alert>
-          <br />
         </>}
 
       {(payments_received.length > 0) &&

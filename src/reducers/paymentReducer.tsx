@@ -7,6 +7,7 @@ import {
   PAYMENT_SET_NAME,
   PAYMENT_SET_MESSAGE,
   PAYMENT_SET_USER,
+  PAYMENT_SET_MAX_AMOUNT,
 } from "../types/index";
 
 import { initState, editDataReducer, setDataReducer, applyDataReducers } from "./index";
@@ -73,6 +74,15 @@ export const paymentReducer = applyDataReducers<PaymentState, PaymentAction>(
         {
           successType: PAYMENT_SET_AMOUNT,
           field: [["amount", false]]
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: PAYMENT_SET_MAX_AMOUNT,
+          field: [["max_amount", false]]
         }
       ]
     },

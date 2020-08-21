@@ -67,6 +67,7 @@ const PayModalComponent = ({
   const errors = (paymentState.errors != null) ? paymentState.errors : {};
 
   const {
+    max_amount = 0.0,
     amount = 0.0,
     to_user = {
       id: -1,
@@ -96,6 +97,12 @@ const PayModalComponent = ({
           { ("error" in errors) &&
             <Alert variant="danger">
               {errors.error}
+            </Alert>
+          }
+
+          { (amount > max_amount) &&
+            <Alert variant="warning">
+              The payment amount you have entered is over the amount you owe. Are you sure?
             </Alert>
           }
 

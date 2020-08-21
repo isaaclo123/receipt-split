@@ -24,6 +24,8 @@ export interface PaymentType extends AcceptRejectRequest {
 
   amount: number;
 
+  max_amount?: number;
+
   // to_user: UserType;
   // from_user: UserType;
 };

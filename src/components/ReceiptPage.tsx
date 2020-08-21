@@ -107,12 +107,9 @@ const ReceiptPageComponent = ({
   return (
     <>
       { ("error" in errors) ?
-        <>
-          <Alert variant="danger">
-            {errors.error}
-          </Alert>
-          <br />
-        </>
+        <Alert variant="danger">
+          {errors.error}
+        </Alert>
       : <></>}
 
       <div className="align-middle">
