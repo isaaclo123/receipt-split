@@ -69,7 +69,7 @@ export const ExpenseCardComponent = ({
       <Card.Body>
         <Form>
           <Form.Row className="mb-0">
-            <Form.Group as={Col} xs="8" sm="9" className="mb-0 pr-0" style={{
+            <Form.Group as={Col} className="mb-0 pr-0" style={{
               minWidth: 0
               }}>
               <Form.Control
@@ -89,7 +89,7 @@ export const ExpenseCardComponent = ({
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} xs="4" sm="3" className="mb-0 pl-0" style={{
+            <Form.Group as={Col} xs="auto" className="mb-0 pl-0" style={{
               minWidth: 0,
               }}>
 

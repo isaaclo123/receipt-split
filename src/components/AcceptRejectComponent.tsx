@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Col from "react-bootstrap/Col";
 
@@ -11,7 +11,9 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 export type AcceptRejectButtonsType = Array<"accept" | "reject" | "pending">;
 
 export type AcceptRejectComponentProps = {
+  message?: string;
   messageComponent ?: React.ReactNode;
+  hiddenMessageComponent ?: React.ReactNode | null;
   accepted?: boolean | null;
 
   onAccept?: () => void;
@@ -29,66 +31,93 @@ export const AcceptRejectComponent = ({
   onAccept = () => {},
   onReject = () => {},
   onPending = () => {},
-  messageComponent = null,
+  message = "",
+  messageComponent = <></>,
+  hiddenMessageComponent = null,
   accepted = null,
   acceptText = "ACCEPT",
   rejectText = "REJECT",
   pendingText = "PENDING",
   buttons
 }: AcceptRejectComponentProps) => {
+  const [hide, setHide] = useState(true);
+
   return (
-    <ListGroup.Item variant={(() => {
-      if (accepted === true) {
-        return "success";
-      }
-      if (accepted === false) {
-        return "danger";
-      }
-    })()}>
-      <Row>
-        <Col className="mt-1 d-inline-block text-truncate pr-0">
-          <span>
-            {messageComponent}
-          </span>
-        </Col>
-        <Col md="auto">
-          <ButtonGroup>
-            {buttons.map((button) => {
-              switch(button) {
-                case "accept":
-                  return (
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={onAccept}>
-                      {acceptText}
-                    </Button>
-                  );
-                case "reject":
-                  return (
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={onReject}>
-                      {rejectText}
-                    </Button>
-                  );
-                case "pending":
-                  return (
-                    <Button
-                      size="sm"
-                      variant="warning"
-                      onClick={onPending}>
-                      {pendingText}
-                    </Button>
-                );
-                default:
-                  return null;
+    <>
+      <ListGroup.Item variant={(() => {
+        if (accepted === true) {
+          return "success";
+        }
+        if (accepted === false) {
+          return "danger";
+        }
+      })()}>
+        <Row>
+          <Col className="mt-1 d-inline-block text-truncate pr-0"
+            onClick={() => {
+              setHide(!hide);
+              }}>
+            <span>
+              {
+                (hiddenMessageComponent == null) ?
+                messageComponent :
+                (hide ? messageComponent : hiddenMessageComponent)
               }
-            })}
-          </ButtonGroup>
-        </Col>
-      </Row>
-    </ListGroup.Item>
+            </span>
+          </Col>
+          <Col xs="auto" className="float-right">
+            <ButtonGroup>
+              {buttons.map((button) => {
+                switch(button) {
+                  case "accept":
+                    return (
+                      <Button
+                        size="sm"
+                        variant="success"
+                        onClick={onAccept}>
+                        {acceptText}
+                      </Button>
+                    );
+                  case "reject":
+                    return (
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={onReject}>
+                        {rejectText}
+                      </Button>
+                    );
+                  case "pending":
+                    return (
+                      <Button
+                        size="sm"
+                        variant="warning"
+                        onClick={onPending}>
+                        {pendingText}
+                      </Button>
+                  );
+                  default:
+                    return null;
+                }
+              })}
+            </ButtonGroup>
+          </Col>
+        </Row>
+        {(hiddenMessageComponent != null && !hide) &&
+        <Row className="mt-2">
+          <Col
+            style={{
+              display: "block",
+              overflowWrap: "break-word",
+            }}
+            onClick={() => {
+              setHide(!hide);
+            }}>
+              {message}
+          </Col>
+        </Row>
+          }
+      </ListGroup.Item>
+    </>
   );
 };

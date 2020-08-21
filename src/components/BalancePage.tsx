@@ -86,19 +86,12 @@ const BalancePageComponent = ({
   setPaymentMessage,
   setPaymentConfirm,
 }: Props) => {
-  // const [run, setRun] = useState(true);
   const [payShow, setPayShow] = useState(false);
 
   apiArchive(BALANCE_PAGE);
 
   const balanceErrors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
   const paymentErrors = (paymentListState.errors != null) ? paymentListState.errors : {};
-
-  // gets user info once
-  // if (run) {
-  //   setRun(false);
-  //   getPaymentListAndBalances()
-  // }
 
   const {
     balances_owed,
@@ -193,7 +186,7 @@ const BalancePageComponent = ({
             id = -1,
             date,
             accepted,
-            message,
+            message = "",
             from_user = {
               id: -1,
               username: "",
@@ -204,6 +197,7 @@ const BalancePageComponent = ({
           index: number) => {
             return (
               <AcceptRejectComponent
+                message={message}
                 accepted={accepted}
                 buttons={["accept", "reject"]}
                 onAccept={() => {
@@ -212,7 +206,7 @@ const BalancePageComponent = ({
                 onReject={() => {
                   setPaymentConfirm(id, "reject", index)
                 }}
-                messageComponent={(
+                messageComponent={
                   <>
                     <NumberFormat
                       className="text-success"
@@ -225,7 +219,19 @@ const BalancePageComponent = ({
                     :&nbsp;
                     {message}
                   </>
-                  )}
+                  }
+                hiddenMessageComponent={
+                  <>
+                    <NumberFormat
+                      className="text-success"
+                      displayType="text"
+                      value={amount}
+                      prefix="$"
+                      {...CURRENCY_FORMAT}/>
+                    &nbsp;from&nbsp;
+                    <span className="text-primary">{from_user.fullname}</span>:
+                  </>
+                  }
               / >
             );
         })}
@@ -242,7 +248,7 @@ const BalancePageComponent = ({
             id = -1,
             date,
             accepted,
-            message,
+            message = "",
             to_user = {
               id: -1,
               username: "",
@@ -262,7 +268,9 @@ const BalancePageComponent = ({
                 rejectText={"REJECTED"}
                 accepted={accepted}
                 buttons={buttonType}
-                messageComponent={(
+
+                message={message}
+                messageComponent={
                   <>
                     <NumberFormat
                       {...CURRENCY_FORMAT}
@@ -276,7 +284,20 @@ const BalancePageComponent = ({
                     :&nbsp;
                     {message}
                   </>
-                  )}
+                  }
+                hiddenMessageComponent={
+                  <>
+                    <NumberFormat
+                      {...CURRENCY_FORMAT}
+                      className="text-danger"
+                      displayType="text"
+                      value={amount}
+                      prefix="$"
+                      />
+                    &nbsp;to&nbsp;
+                    <span className="text-primary">{to_user.fullname}</span>:
+                  </>
+                  }
               / >
             );
           })}

@@ -108,9 +108,10 @@ const PeoplePageComponent = ({
                 onReject={() => {
                   setFriendConfirm(id, "reject", index);
                 }}
-                messageComponent={(
+                message={from_user.fullname}
+                messageComponent={(name: string) => (
                   <>
-                    <span className="text-primary">{from_user.fullname}</span>
+                    <span className="text-primary">{name}</span>
                   </>
                   )}
               / >
