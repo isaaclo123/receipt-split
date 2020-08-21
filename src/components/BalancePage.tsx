@@ -217,7 +217,7 @@ const BalancePageComponent = ({
                     &nbsp;from&nbsp;
                     <span className="text-primary">{from_user.fullname}</span>
                     :&nbsp;
-                    {message}
+                    <a href="javascript:void(0);" className="stretched-link text-dark">{message}</a>
                   </>
                   }
                 hiddenMessageComponent={
@@ -282,7 +282,7 @@ const BalancePageComponent = ({
                     &nbsp;to&nbsp;
                     <span className="text-primary">{to_user.fullname}</span>
                     :&nbsp;
-                    {message}
+                    <a href="javascript:void(0);" className="stretched-link text-dark">{message}</a>
                   </>
                   }
                 hiddenMessageComponent={
