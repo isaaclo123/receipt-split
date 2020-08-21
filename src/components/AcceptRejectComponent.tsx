@@ -113,7 +113,8 @@ export const AcceptRejectComponent = ({
             onClick={() => {
               setHide(!hide);
             }}>
-              {message}
+
+            <a href="javascript:void(0);" className="stretched-link text-dark">{message}</a>
           </Col>
         </Row>
           }
