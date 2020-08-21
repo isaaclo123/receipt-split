@@ -1,5 +1,7 @@
 import { TOKEN_LOCALSTORAGE } from "../types/index";
 
+// const jwt = require('jsonwebtoken');
+
 export const removeToken = () => {
   localStorage.removeItem(TOKEN_LOCALSTORAGE);
 }
@@ -12,6 +14,14 @@ export const getToken = () => {
   }
 
   return token;
+
+  // try {
+  //   jwt.verify(token, 'wrong-secret');
+  //   return token;
+  // } catch(err) {
+  //   removeToken();
+  //   return null
+  // }
 }
 
 export const storeToken = (token: string) => {

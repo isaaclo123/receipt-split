@@ -20,8 +20,10 @@ export const Index = () => (
     <HashRouter>
       <Route path="/signup" component={Signup} />
       <Route path="/login" component={Login} />
-      <Route exact path="/" component={App} />
-      <Route path="/app" component={App} />
+      <PrivateRoute path="/app" component={App} />
+      <Route exact path="/">
+        <Redirect to="/app" />
+      </Route>
     </HashRouter>
   </Provider>
 );
