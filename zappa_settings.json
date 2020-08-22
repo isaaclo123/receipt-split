@@ -1,6 +1,6 @@
 {
     "production": {
-        "app_function": "receipt_split:create_app()",
+        "app_function": "receipt_split:app",
         "profile_name": "default",
         "project_name": "receipt-split",
         "runtime": "python3.7",
