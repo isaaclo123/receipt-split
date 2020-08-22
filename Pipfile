@@ -25,6 +25,7 @@ requests = "*"
 pip = "*"
 coloredlogs = "*"
 pymysql = "*"
+zappa = "*"
 
 [requires]
 python_version = "3.7"

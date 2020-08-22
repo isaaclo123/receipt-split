@@ -1,0 +1,10 @@
+{
+    "production": {
+        "app_function": "receipt_split:create_app()",
+        "profile_name": "default",
+        "project_name": "receipt-split",
+        "runtime": "python3.7",
+        "s3_bucket": "receipt-split-zappa",
+        "aws_region": "us-east-1"
+    }
+}
