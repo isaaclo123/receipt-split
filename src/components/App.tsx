@@ -37,20 +37,20 @@ const AppComponent = (props: Props) => {
       <NavComponent {...props} />
       <div className="container pt-3 h-100">
         <Switch>
-          <Route
+          <PrivateRoute
             path={`${match.url}/balance`}
             component={BalancePage}
           />
-          <Route
+          <PrivateRoute
             path={`${match.url}/receipts/edit/:id`}
             component={ReceiptEditPage}
           />
-          <Route
+          <PrivateRoute
             path={`${match.url}/receipts`}
             component={ReceiptPage}
           />
 
-          <Route path={`${match.url}/people`}
+          <PrivateRoute path={`${match.url}/people`}
             component={PeoplePage}
           />
 
