@@ -19,9 +19,11 @@ while true ; do
 done
 
 # Now take action
-echo "DB_URI: $DB_URI SECRET_KEY $SECRET_KEY"
+echo "DB_URI: $DB_URI"
+echo "SECRET_KEY: $SECRET_KEY"
+echo "WSGI_WORKERS: $WSGI_WORKERS"
 
 pipenv run flask db stamp head
 pipenv run flask db migrate
 pipenv run flask db upgrade
-pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'
+pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:app'

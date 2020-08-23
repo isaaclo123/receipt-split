@@ -11,11 +11,12 @@ branches:
 after_success:
   - npm run build
 
-deploy:
-  provider: s3
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
-  bucket: "receipt-split"
-  skip_cleanup: true
-  region: "us-east-1"
-  local_dir: build
+language: bash
+services:
+  - docker
+install:
+  - docker build -t receipt-split .
+  - docker run -d -p 5000:5000 -name receipt-split receipt-split
+
+script:
+  - docker ps | grep -q receipt-split

@@ -1,44 +1,47 @@
-FROM python:3.8
+FROM zapier/python-node
 
-RUN pip install pipenv
-
+# docker
 WORKDIR /srv/receipt-split
+COPY ./docker-entrypoint.sh .
+
+# python
 COPY ./migrations/ ./migrations/
 COPY ./receipt_split/ ./receipt_split/
-
 COPY ./config.py .
 COPY ./Pipfile .
 COPY ./Pipfile.lock .
 
-COPY ./app.py .
-COPY ./docker-entrypoint.sh .
+# node
+COPY package*.json ./
+COPY ./src/ ./src/
+COPY ./config/ ./config/
+COPY ./public/ ./public/
+COPY ./scripts/ ./scripts/
+COPY static.json ./
+COPY tsconfig.json ./
 
-# Start Args
+# -- Start Vars --
 
 ENV SECRET_KEY="999_DEBUG_CHANGE_IN_PROD_999"
 ENV DB_URI="sqlite:///:memory:"
 
-ENV FLASK_APP=app.py
+# flask
 ENV WSGI_WORKERS=2
+ENV FLASK_ENV=production
+ENV FLASK_APP=receipt_split:app
 
-ENV DEBUG=False
+# react
+ENV REACT_APP_API_URL_PRODUCTION='http://localhost:5000'
 
-# End Args
+# -- End Vars --
 
+# python
+RUN pip install pipenv
 RUN pipenv install
 
-# CMD [ \
-# "bash", \
-# "-c", \
-# "export SECRET_KEY=$SECRET_KEY; \
-# export DEBUG=$DEBUG; \
-# export DB_URI=$DB_URI; \
-# pipenv run flask db stamp head; \
-# pipenv run flask db migrate; \
-# pipenv run flask db upgrade; \
-# pipenv run gunicorn -w $WSGI_WORKERS -b :5000 'receipt_split:create_app()'" \
-# ]
-#
+# node
+RUN npm install
+RUN npm run build
 
 CMD [ \
 "bash", \

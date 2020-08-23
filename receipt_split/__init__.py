@@ -18,7 +18,7 @@ from .helpers import err
 
 
 def create_app(config, name=__name__):
-    app = FlaskAPI(__name__, static_folder='../build', static_url_path='/')
+    app = FlaskAPI(__name__, static_folder='../build')
 
     app.config.from_object(config)
 
