@@ -1,5 +1,5 @@
 from flask_api import FlaskAPI, status
-# from flask import send_from_directory
+from flask import send_from_directory
 
 import coloredlogs
 import traceback
@@ -18,7 +18,7 @@ from .helpers import err
 
 
 def create_app(config, name=__name__):
-    app = FlaskAPI(__name__)
+    app = FlaskAPI(__name__, static_folder='../build', static_url_path='/')
 
     app.config.from_object(config)
 
@@ -49,10 +49,13 @@ def create_app(config, name=__name__):
 
     wtforms_json.init()
 
-    # def dir_last_updated(folder):
-    #     return str(max(os.path.getmtime(os.path.join(root_path, f))
-    #                for root_path, dirs, files in os.walk(folder)
-    #                for f in files))
+    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(views_blueprint)
+
+    def dir_last_updated(folder):
+        return str(max(os.path.getmtime(os.path.join(root_path, f))
+                   for root_path, dirs, files in os.walk(folder)
+                   for f in files))
 
     # Handle errors and turn them into json
     @app.errorhandler(Exception)
@@ -63,16 +66,13 @@ def create_app(config, name=__name__):
         return err(str(e)), status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # Serve React App
-    # @app.route('/', defaults={'path': ''})
-    # @app.route('/<path:path>')
-    # def serve(path):
-    #     if path != "" and os.path.exists(app.static_folder + '/' + path):
-    #         return send_from_directory(app.static_folder, path)
-    #     else:
-    #         return send_from_directory(app.static_folder, 'index.html')
-
-    app.register_blueprint(auth_blueprint)
-    app.register_blueprint(views_blueprint)
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        if path != "" and os.path.exists(app.static_folder + '/' + path):
+            return send_from_directory(app.static_folder, path)
+        else:
+            return send_from_directory(app.static_folder, 'index.html')
 
     print(f"* App running in mode: {app.config.get('FLASK_ENV')}")
 

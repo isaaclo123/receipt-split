@@ -27,4 +27,4 @@ RUN pipenv install
 RUN pipenv run flask db migrate
 RUN pipenv run flask db upgrade
 
-CMD [ "pipenv", "run", "gunicorn", "-w", $WSGI_WORKERS, "-b", ":5000", "receipt_split:create_app()" ]
+CMD [ "pipenv", "run", "gunicorn", "-w", $WSGI_WORKERS, "-b", ":5000", "receipt_split:app" ]
