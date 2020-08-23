@@ -23,7 +23,7 @@ COPY tsconfig.json ./
 # -- Start Vars --
 
 ENV SECRET_KEY="999_DEBUG_CHANGE_IN_PROD_999"
-ENV DB_URI="sqlite:///:memory:"
+ENV DB_URI="sqlite:////srv/receipt-split/app.db.sqlite3"
 
 # flask
 ENV WSGI_WORKERS=2
