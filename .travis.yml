@@ -27,6 +27,12 @@ jobs:
         - docker build -t receipt-split .
         - docker build -t $REPO:$COMMIT .
         - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+        # - docker build -f Dockerfile -t $REPO:$COMMIT .
+        - docker tag $REPO:$COMMIT $REPO:$TAG
+        - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+        - docker push $REPO
       script:
         - docker ps | grep -q receipt-split
       after_success:
