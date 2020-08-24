@@ -17,6 +17,10 @@ jobs:
         - npm run build
 
     - language: generic
+      # requires env vars
+      # DOCKER_EMAIL
+      # DOCKER_USER
+      # DOCKER_PASS
       services:
         - docker
       install:
