@@ -1,6 +1,7 @@
 env:
   global:
     - COMMIT=${TRAVIS_COMMIT::8}
+    - REPO=isaaclo1234/receipt-split
 
 jobs:
   include:
@@ -16,23 +17,22 @@ jobs:
       after_success:
         - npm run build
 
-    - language: generic
+    - language: ruby
       # requires env vars
-      # DOCKER_EMAIL
       # DOCKER_USER
       # DOCKER_PASS
       services:
         - docker
-      install:
+      before_install:
         - docker build -t receipt-split .
-        - docker run -d -p 5000:5000 --name receipt-split receipt-split
+        - docker build -t $REPO:$COMMIT .
+        - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT
       script:
         - docker ps | grep -q receipt-split
       after_success:
-        - docker login -u $DOCKER_USER -p $DOCKER_PASS
-        - export REPO=isaaclo1234/receipt-split
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-        - docker build -f Dockerfile -t $REPO:$COMMIT .
+        # - docker build -f Dockerfile -t $REPO:$COMMIT .
         - docker tag $REPO:$COMMIT $REPO:$TAG
         - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
         - docker push $REPO
