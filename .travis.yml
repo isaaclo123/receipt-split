@@ -11,7 +11,7 @@ branches:
 after_success:
   - npm run build
 
-language: bash
+language: ruby
 services:
   - docker
 install:
