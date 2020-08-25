@@ -49,7 +49,7 @@ jobs:
 
   - stage: deploy
     language: python
-    python: '2.7'
+
     cache:
       directories:
       - roles
@@ -58,7 +58,6 @@ jobs:
     # ANSIBLE_HOST
     # SSH_KEY_BASE64
     before_install:
-    - sudo apt-get update -qq
     - sudo apt-get install -y ccrypt
     - (echo "[prod]" && echo "$ANSIBLE_HOST") > inventory.prod
     - echo "$SSH_KEY_BASE64" | base64 -d > travis.pem
@@ -66,10 +65,15 @@ jobs:
 
     install:
     - pip install ansible
+    - ansible-galaxy install -r requirements.yml
 
     script:
     - ansible-playbook site.yml -i inventory.prod --private-key travis.pem
 
-    after_script:
+    after_success:
+    - rm inventory.prod
+    - rm travis.pem
+
+    after_fail:
     - rm inventory.prod
     - rm travis.pem
