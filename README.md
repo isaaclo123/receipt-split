@@ -1,4 +1,4 @@
-# Receipt-split ![Build Status](https://travis-ci.org/isaaclo123/receipt-split.svg?branch=master)
+# Receipt-split [![Build Status](https://travis-ci.org/isaaclo123/receipt-split.svg?branch=master)](https://travis-ci.org/isaaclo123/receipt-split)
 
 ## Screenshots
 
