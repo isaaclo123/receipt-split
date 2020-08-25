@@ -69,8 +69,12 @@ export const ExpenseCardComponent = ({
       <Card.Body>
         <Form>
           <Form.Row className="mb-0">
-            <Form.Group as={Col} className="mb-0 pr-0" style={{
-              minWidth: 0
+            <Form.Group
+              xs="auto"
+              as={Col}
+              className="mb-0 pr-0"
+              style={{
+                minWidth: 0
               }}>
               <Form.Control
                 style={inputStyle}
@@ -89,8 +93,11 @@ export const ExpenseCardComponent = ({
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} xs="auto" className="mb-0 pl-0" style={{
-              minWidth: 0,
+            <Form.Group
+              as={Col}
+              className="mb-0 pl-0"
+              style={{
+                minWidth: 0,
               }}>
 
               <NumberFormat

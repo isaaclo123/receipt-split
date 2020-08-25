@@ -1,5 +1,16 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# start ansible
+
+roles/*
+*.retry
+
+# temp
+group_vars/*
+inventory.*
+
+# end ansible
+
 # dependencies
 /node_modules
 /.pnp

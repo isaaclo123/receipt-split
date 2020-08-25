@@ -109,11 +109,9 @@ const PeoplePageComponent = ({
                   setFriendConfirm(id, "reject", index);
                 }}
                 message={from_user.fullname}
-                messageComponent={(name: string) => (
-                  <>
-                    <span className="text-primary">{name}</span>
-                  </>
-                  )}
+                messageComponent={
+                  <span className="text-primary">{from_user.fullname}</span>
+                }
               / >
             );
         })}
@@ -144,11 +142,9 @@ const PeoplePageComponent = ({
               <AcceptRejectComponent
                 accepted={accepted}
                 buttons={buttonType}
-                messageComponent={(
-                  <>
-                    <span className="text-primary">{to_user.fullname}</span>
-                  </>
-                  )}
+                messageComponent={
+                  <span className="text-primary">{to_user.fullname}</span>
+                }
               / >
             );
           })}
