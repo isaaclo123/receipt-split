@@ -4,8 +4,8 @@ env:
   - REPO=isaaclo1234/receipt-split
 
 stages:
-- test
-- build
+# - test
+# - build
 - deploy
 
 branches:
@@ -54,9 +54,12 @@ jobs:
       directories:
       - roles
 
+    # need to define
+    # ANSIBLE_HOST
+    # SSH_KEY_BASE64
     before_install:
-    - apt-get update -qq
-    - apt-get install -y ccrypt
+    - sudo apt-get update -qq
+    - sudo apt-get install -y ccrypt
     - (echo "[prod]" && echo "$ANSIBLE_HOST") > inventory.prod
     - echo "$SSH_KEY_BASE64" | base64 -d > travis.pem
     - chmod 600 travis.pem
