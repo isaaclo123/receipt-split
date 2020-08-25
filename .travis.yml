@@ -4,8 +4,6 @@ env:
   - REPO=isaaclo1234/receipt-split
 
 stages:
-# - test
-# - build
 - deploy
 
 branches:
@@ -49,18 +47,16 @@ jobs:
 
   - stage: deploy
     language: python
-
     cache:
       directories:
       - roles
 
-    # need to define
-    # ANSIBLE_HOST
-    # SSH_KEY_BASE64
     before_install:
-    - sudo apt-get install -y ccrypt
+    - openssl aes-256-cbc -K $encrypted_bc3fa1cd3271_key -iv $encrypted_bc3fa1cd3271_iv
+    - in travis.enc -out travis.pem -d
+
     - (echo "[prod]" && echo "$ANSIBLE_HOST") > inventory.prod
-    - echo "$SSH_KEY_BASE64" | base64 -d > travis.pem
+    - echo "$SSH_PRIVATE_KEY" > travis.pem
     - chmod 600 travis.pem
 
     install:
