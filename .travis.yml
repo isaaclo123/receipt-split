@@ -1,11 +1,12 @@
 env:
   global:
-    - COMMIT=${TRAVIS_COMMIT::8}
-    - REPO=isaaclo1234/receipt-split
+  - COMMIT=${TRAVIS_COMMIT::8}
+  - REPO=isaaclo1234/receipt-split
 
 stages:
-  - test
-  - build
+- test
+- build
+- deploy
 
 branches:
   only:
@@ -13,32 +14,59 @@ branches:
 
 jobs:
   include:
-    - stage: test
-      language: node_js
-      node_js: 10
-      cache:
-        directories:
-          - "node_modules"
-      script:
-        - npm run test
+  - stage: test
+    language: node_js
+    node_js: 10
 
-    - stage: build
-      language: ruby
-      # requires env vars
-      # DOCKER_USER
-      # DOCKER_PASS
-      services:
-        - docker
-      before_install:
-        - docker build -t receipt-split .
-        - docker build -t $REPO:$COMMIT .
-        - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT
-      script:
-        - docker ps | grep -q receipt-split
-      after_success:
-        - echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
-        - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-        # - docker build -f Dockerfile -t $REPO:$COMMIT .
-        - docker tag $REPO:$COMMIT $REPO:$TAG
-        - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-        - docker push $REPO
+    cache:
+      directories:
+      - node_modules
+
+    script:
+    - npm run test
+
+  - stage: build
+    language: ruby
+
+    services:
+    - docker
+
+    before_install:
+    - docker build -t receipt-split .
+    - docker build -t $REPO:$COMMIT .
+    - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT
+
+    script:
+    - docker ps | grep -q receipt-split
+
+    after_success:
+    - echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
+    - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo
+      $TRAVIS_BRANCH ; fi`
+    - docker tag $REPO:$COMMIT $REPO:$TAG
+    - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+    - docker push $REPO
+
+  - stage: deploy
+    language: python
+    python: '2.7'
+    cache:
+      directories:
+      - roles
+
+    before_install:
+    - apt-get update -qq
+    - apt-get install -y ccrypt
+    - (echo "[prod]" && echo "$ANSIBLE_HOST") > inventory.prod
+    - echo "$SSH_KEY_BASE64" | base64 -d > travis.pem
+    - chmod 600 travis.pem
+
+    install:
+    - pip install ansible
+
+    script:
+    - ansible-playbook site.yml -i inventory.prod --private-key travis.pem
+
+    after_script:
+    - rm inventory.prod
+    - rm travis.pem

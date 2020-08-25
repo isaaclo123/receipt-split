@@ -1,0 +1,25 @@
+---
+
+- name: Create receipt_split database
+  hosts: all
+  tasks:
+  - name: Install postgres packages
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - postgresql
+      - postgresql-contrib
+      - python-psycopg2
+    become: yes
+
+  - name: Configure postgres database
+    postgresql_db:
+      name: receipt_split
+      login_user: "{{ postgres_user }}"
+      login_password: "{{ postgres_pass }}"
+      login_unix_socket: "{{ postgres_sock }}"
+
+      port: "{{ postgres_port }}"
+    become: yes
+    become_user: postgres

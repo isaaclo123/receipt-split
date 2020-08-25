@@ -109,3 +109,13 @@ aws s3 cp build s3://receipt-split --recursive
 docker build -t receipt-split .
 docker run -p 5000:5000 -e $NAME_OF_ENV_FILE receipt-split
 ```
+
+## Ansible
+
+```bash
+# install roles
+ansible-galaxy install -r requirements.yml
+
+# run playbook
+ansible-playbook site.yml -i MY_INVENTORY
+'''

@@ -6,7 +6,7 @@ roles/*
 *.retry
 
 # temp
-group_vars/*
+# group_vars/*
 inventory.*
 
 # end ansible

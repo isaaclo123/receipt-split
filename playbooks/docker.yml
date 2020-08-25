@@ -1,0 +1,36 @@
+---
+
+- name: Install docker
+  hosts: all
+  roles:
+    - darkwizard242.docker
+  become: yes
+
+- name: Deploy receipt-split docker image from docker hub
+  hosts: all
+  become: yes
+  tasks:
+  - name: Install docker-python
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - python-docker
+    become: yes
+
+  - name: Create docker receipt-split
+    docker_container:
+      name: receipt-split
+      image: isaaclo1234/receipt-split
+      pull: yes
+      restart: yes
+
+      state: started
+      ports:
+      - "80:5000"
+
+      env:
+        SECRET_KEY: "{{ secret_key }}"
+        WSGI_WORKERS: "{{ wsgi_workers }}"
+
+        DB_URI: "postgres://{{ postgres_user }}:{{ postgres_pass }}@/receipt_split?host={{ postgres_sock }}"
