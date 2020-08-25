@@ -52,11 +52,11 @@ jobs:
       - roles
 
     before_install:
+    # ssh private key
     - openssl aes-256-cbc -K $encrypted_bc3fa1cd3271_key -iv $encrypted_bc3fa1cd3271_iv
     - in travis.enc -out travis.pem -d
 
     - (echo "[prod]" && echo "$ANSIBLE_HOST") > inventory.prod
-    - echo "$SSH_PRIVATE_KEY" > travis.pem
     - chmod 600 travis.pem
 
     install:
