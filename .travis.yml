@@ -30,7 +30,7 @@ jobs:
     cache: npm
 
     before_install:
-    - npm install -g typescript
+    - npm link typescript
 
     script:
     - npm run build
