@@ -1,24 +1,50 @@
-FROM nikolaik/python-nodejs:latest
+# FROM node:10.22.0 AS builder
+#
+# WORKDIR /srv/receipt-split
+#
+# # node
+# COPY ./src/ ./src/
+# COPY ./config/ ./config/
+# COPY ./public/ ./public/
+# COPY ./scripts/ ./scripts/
+# COPY ./node_modules/ ./node_modules/
+#
+# COPY [ \
+# "package-lock.json", \
+# "package.json", \
+# "static.json", \
+# "tsconfig.json", \
+# "./" \
+# ]
+#
+# # react
+# ENV REACT_APP_API_URL_PRODUCTION=''
+# ENV NODE_ENV=production
+#
+# # node
+# RUN npm install
+# RUN npm run build
+#
+FROM python:3.7
 
 # docker
 WORKDIR /srv/receipt-split
-COPY ./docker-entrypoint.sh .
+
+# react files (must build outside before running docker image)
+# COPY --from=builder /srv/receipt-split/build/ ./build
+COPY ./build/ ./build/
 
 # python
 COPY ./migrations/ ./migrations/
 COPY ./receipt_split/ ./receipt_split/
-COPY ./config.py .
-COPY ./Pipfile .
-COPY ./Pipfile.lock .
 
-# node
-COPY package*.json ./
-COPY ./src/ ./src/
-COPY ./config/ ./config/
-COPY ./public/ ./public/
-COPY ./scripts/ ./scripts/
-COPY static.json ./
-COPY tsconfig.json ./
+COPY [ \
+"docker-entrypoint.sh", \
+"config.py", \
+"Pipfile", \
+"Pipfile.lock", \
+"./" \
+]
 
 # -- Start Vars --
 
@@ -30,20 +56,11 @@ ENV WSGI_WORKERS=2
 ENV FLASK_ENV=production
 ENV FLASK_APP=receipt_split:app
 
-# react
-ENV REACT_APP_API_URL_PRODUCTION=''
-ENV NODE_ENV="production"
-
 # -- End Vars --
 
 # python
 RUN pip install pipenv
 RUN pipenv install
-
-# node
-RUN npm install
-RUN npm link typescript
-RUN npm run build
 
 CMD [ \
 "bash", \

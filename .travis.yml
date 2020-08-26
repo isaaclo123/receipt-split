@@ -2,10 +2,12 @@ env:
   global:
   - COMMIT=${TRAVIS_COMMIT::8}
   - REPO=isaaclo1234/receipt-split
+  - NODE_ENV=production
 
 stages:
 - test
 - build
+- docker
 - deploy
 
 branches:
@@ -27,6 +29,18 @@ jobs:
     - npm run test
 
   - stage: build
+    language: node_js
+    node_js: 10
+
+    cache:
+      npm: true
+      directories:
+      - build
+
+    script:
+    - npm run build
+
+  - stage: docker
     language: ruby
 
     services:
