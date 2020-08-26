@@ -30,6 +30,18 @@ FROM python:3.7
 # docker
 WORKDIR /srv/receipt-split
 
+# -- Start Vars --
+
+ENV SECRET_KEY="999_DEBUG_CHANGE_IN_PROD_999"
+ENV DB_URI="sqlite:////srv/receipt-split/app.db.sqlite3"
+
+# flask
+ENV WSGI_WORKERS=2
+ENV FLASK_ENV=production
+ENV FLASK_APP=receipt_split:app
+
+# -- End Vars --
+
 # react files (must build outside before running docker image)
 # COPY --from=builder /srv/receipt-split/build/ ./build
 COPY ./build/ ./build/
@@ -45,18 +57,6 @@ COPY [ \
 "Pipfile.lock", \
 "./" \
 ]
-
-# -- Start Vars --
-
-ENV SECRET_KEY="999_DEBUG_CHANGE_IN_PROD_999"
-ENV DB_URI="sqlite:////srv/receipt-split/app.db.sqlite3"
-
-# flask
-ENV WSGI_WORKERS=2
-ENV FLASK_ENV=production
-ENV FLASK_APP=receipt_split:app
-
-# -- End Vars --
 
 # python
 RUN pip install pipenv
