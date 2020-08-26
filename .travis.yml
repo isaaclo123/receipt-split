@@ -5,7 +5,7 @@ env:
   - NODE_ENV=production
 
 stages:
-# - test
+- test
 - build
 - docker
 - deploy
