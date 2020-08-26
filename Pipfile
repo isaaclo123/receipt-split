@@ -22,10 +22,10 @@ simplejson = "*"
 flask-marshmallow = "*"
 gunicorn = "*"
 requests = "*"
-pip = "*"
 coloredlogs = "*"
+psycopg2-binary = "==2.7.7"
 pymysql = "*"
-psypcopg2-binary = "*"
+pip = "*"
 
 [requires]
 python_version = "3.7"
