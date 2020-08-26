@@ -20,7 +20,7 @@
 
 3. Link to live Application:
 
-    * http://receipt-split.s3-website-us-east-1.amazonaws.com
+    * http://receipt-split.isaaclo.site
 
 4. Link to Github Code Repository: Make sure that you provide the link to project code and not the link to your homepage of GitHub repository.
 
@@ -94,13 +94,6 @@
 flask db init
 flask db migrate
 flask db upgrade
-```
-
-## Command to upload to s3
-
-```bash
-npm run build
-aws s3 cp build s3://receipt-split --recursive
 ```
 
 ## Docker commands
