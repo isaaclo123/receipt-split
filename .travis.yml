@@ -39,13 +39,17 @@ jobs:
     language: node_js
     node_js: 12
 
+    cache:
+      directories:
+      - "build/"
+
     services:
     - docker
 
     before_install:
-    - ls "$TRAVIS_HOME"
-    - ls "$TRAVIS_HOME/build"
-    - ls "$TRAVIS_HOME/.casher"
+    - ls -a "$TRAVIS_HOME"
+    - ls -a "$TRAVIS_HOME/build"
+    - ls -a "$TRAVIS_HOME/.casher"
     - docker build -t receipt-split .
     - docker build -t $REPO:$COMMIT .
     - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT
