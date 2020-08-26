@@ -4,6 +4,8 @@ env:
   - REPO=isaaclo1234/receipt-split
 
 stages:
+- test
+- build
 - deploy
 
 branches:
