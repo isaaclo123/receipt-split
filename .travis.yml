@@ -21,8 +21,6 @@ jobs:
     node_js: 10
     cache: npm
 
-    install: npm link typescript
-
     script:
     - npm run test
 
@@ -31,7 +29,8 @@ jobs:
     node_js: 10
     cache: npm
 
-    before_install:
+    install:
+    - npm install
     - npm link typescript
 
     script:
