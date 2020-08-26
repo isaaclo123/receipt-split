@@ -2,7 +2,6 @@ env:
   global:
   - COMMIT=${TRAVIS_COMMIT::8}
   - REPO=isaaclo1234/receipt-split
-  - NODE_ENV=production
   - REACT_APP_API_URL_PRODUCTION=''
 
 stages:
@@ -31,7 +30,7 @@ jobs:
     cache: npm
 
     script:
-    - npm run build
+    - NODE_ENV=production npm run build
 
     artifacts:
       paths:
