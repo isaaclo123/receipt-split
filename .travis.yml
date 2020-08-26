@@ -5,7 +5,7 @@ env:
   - NODE_ENV=production
 
 stages:
-- test
+# - test
 - build
 - docker
 - deploy
@@ -28,6 +28,9 @@ jobs:
     language: node_js
     node_js: 10
     cache: npm
+
+    before_install:
+    - npm install -g typescript
 
     script:
     - npm run build
