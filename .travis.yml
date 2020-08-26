@@ -43,11 +43,11 @@ jobs:
     - docker
 
     before_install:
+    - ls "$TRAVIS_HOME"
+    - ls "$TRAVIS_HOME/.casher"
     - docker build -t receipt-split .
     - docker build -t $REPO:$COMMIT .
     - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT
-    - ls "$TRAVIS_HOME"
-    - ls "$TRAVIS_HOME/.casher"
 
     script:
     - docker ps | grep -q receipt-split
