@@ -59,6 +59,7 @@ jobs:
     install:
     - pip install ansible
     - ansible-galaxy install -r requirements.yml
+    - export ANSIBLE_FORCE_COLOR=true
 
     script:
     - ansible-playbook site.yml -i inventory.prod --private-key travis.pem

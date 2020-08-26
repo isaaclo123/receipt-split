@@ -24,6 +24,7 @@
       image: isaaclo1234/receipt-split
       pull: yes
       restart: yes
+      recreate: yes
 
       state: started
       ports:
