@@ -21,9 +21,10 @@
   - name: Create docker receipt-split
     docker_container:
       name: receipt-split
-      image: isaaclo1234/receipt-split
+      image: isaaclo1234/receipt-split:latest
       pull: yes
       restart: yes
+      restart_policy: always
       recreate: yes
 
       state: started
