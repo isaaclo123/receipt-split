@@ -74,7 +74,7 @@ def create_app(config, name=__name__):
         else:
             return send_from_directory(app.static_folder, 'index.html')
 
-    print(f"* App running in mode: {app.config.get('FLASK_ENV')}")
+    app.logger.debug(f"* App running in mode: {app.config.get('ENV')}")
 
     return app
 

@@ -26,6 +26,7 @@ coloredlogs = "*"
 psycopg2-binary = "==2.7.7"
 pymysql = "*"
 pip = "*"
+gevent = "*"
 
 [requires]
 python_version = "3.7"

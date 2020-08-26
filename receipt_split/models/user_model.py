@@ -80,16 +80,12 @@ class User(Base):
             left_user_id=self.id
         )
 
-        app.logger.debug("settle_from %s", settle_from.all())
-
         settle_to = db.session.query(
             Settlement.left_user_id.label("left_user_id"),
             Settlement.right_user_id.label("right_user_id")
         ).filter_by(
             right_user_id=self.id
         )
-
-        app.logger.debug("settle_from %s", settle_to.all())
 
         result_ids = settle_from.union(settle_to).subquery()
 
@@ -116,20 +112,12 @@ class User(Base):
             accepted=True
         )
 
-        app.logger.debug("----------------")
-        app.logger.debug("%s's 'friends_from %s", self.username,
-                         friends_from.all())
-
         friends_to = db.session.query(
             Friend.from_user_id.label("id")
         ).select_from(Friend).filter_by(
             to_user_id=self.id,
             accepted=True
         )
-
-        app.logger.debug("----------------")
-        app.logger.debug("%s's 'friends_to%s", self.username,
-                         friends_to.all())
 
         all_friends_ids = friends_from.union(friends_to).subquery()
 
@@ -170,7 +158,7 @@ class User(Base):
             Receipt.resolved.is_(False)
         )
 
-        app.logger.info("receipts_owed expression running - %s", result)
+        app.logger.debug("receipts_owed expression running - %s", result)
 
         return result
 
@@ -184,7 +172,7 @@ class User(Base):
             Receipt.resolved.is_(True)
         )
 
-        app.logger.info("receipts_owed expression running - %s", result)
+        app.logger.debug("receipts_owed expression running - %s", result)
 
         return result
 
@@ -197,7 +185,7 @@ class User(Base):
             Receipt.user_id != self.id
         )
 
-        app.logger.info("receipts_owed expression running - %s", result)
+        app.logger.debug("receipts_owed expression running - %s", result)
 
         return result
 

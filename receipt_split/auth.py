@@ -29,7 +29,7 @@ def signup_post():
 
     json_data = request.get_json()
 
-    app.logger.info("/signup input data - %s", json_data)
+    app.logger.debug("/signup input data - %s", json_data)
 
     username = json_data.get("username")
     if username is not None:
@@ -41,7 +41,7 @@ def signup_post():
 
     form = SignupForm.from_json(json_data)
     if not form.validate():
-        app.logger.info("/signup form errors - %s", form.errors)
+        app.logger.debug("/signup form errors - %s", form.errors)
         return form.errors, status.HTTP_400_BAD_REQUEST
 
     new_user = User(username=username,

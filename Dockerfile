@@ -31,7 +31,8 @@ ENV FLASK_ENV=production
 ENV FLASK_APP=receipt_split:app
 
 # react
-ENV REACT_APP_API_URL_PRODUCTION=''
+ENV REACT_APP_API_URL_PRODUCTION=""
+ENV NODE_ENV="production"
 
 # -- End Vars --
 
