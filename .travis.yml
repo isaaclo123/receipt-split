@@ -52,7 +52,7 @@ jobs:
       - roles
 
     before_install:
-    - openssl aes-256-cbc -K $encrypted_ff08fc184ac0_key -iv $encrypted_ff08fc184ac0_iv -in travis.pem.enc -out ~\/.ssh/travis.pem -d
+    - openssl aes-256-cbc -K $encrypted_06826a922d57_key -iv $encrypted_06826a922d57_iv -in travis.pem.enc -out travis.pem -d
     - (echo "[prod]" && echo "$ANSIBLE_HOST") > inventory.prod
     - chmod 600 travis.pem
 
@@ -61,4 +61,4 @@ jobs:
     - ansible-galaxy install -r requirements.yml
 
     script:
-    - ansible-playbook site.yml -i inventory.prod --private-key ~\/.ssh/travis.pem -d
+    - ansible-playbook site.yml -i inventory.prod --private-key travis.pem -d
