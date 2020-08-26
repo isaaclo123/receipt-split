@@ -1,4 +1,4 @@
-FROM zapier/python-node
+FROM nikolaik/python-nodejs:latest
 
 # docker
 WORKDIR /srv/receipt-split
@@ -31,7 +31,7 @@ ENV FLASK_ENV=production
 ENV FLASK_APP=receipt_split:app
 
 # react
-ENV REACT_APP_API_URL_PRODUCTION=""
+ENV REACT_APP_API_URL_PRODUCTION=''
 ENV NODE_ENV="production"
 
 # -- End Vars --
@@ -42,6 +42,7 @@ RUN pipenv install
 
 # node
 RUN npm install
+RUN npm link typescript
 RUN npm run build
 
 CMD [ \
