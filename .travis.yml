@@ -27,17 +27,17 @@ jobs:
   - stage: build
     language: node_js
     node_js: 12
-    cache: npm
+    cache:
+      npm: true
+      directories:
+      - "build/"
 
     script:
     - NODE_ENV=production npm run build
 
-    artifacts:
-      paths:
-      - build/
-
   - stage: docker
-    language: ruby
+    language: node_js
+    node_js: 12
 
     services:
     - docker
