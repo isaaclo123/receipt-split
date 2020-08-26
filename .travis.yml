@@ -30,7 +30,7 @@ jobs:
     cache: npm
 
     install:
-    - npm install
+    - npm ci
     - npm link typescript
 
     script:
