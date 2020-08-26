@@ -119,3 +119,10 @@ ansible-galaxy install -r requirements.yml
 # run playbook
 ansible-playbook site.yml -i MY_INVENTORY
 '''
+
+## To encrypt private key
+
+'''bash
+travis login --org
+travis encrypt-file -r isaaclo123/receipt-split travis.pem --org
+'''

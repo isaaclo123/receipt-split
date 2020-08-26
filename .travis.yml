@@ -61,4 +61,4 @@ jobs:
     - ansible-galaxy install -r requirements.yml
 
     script:
-    - ansible-playbook site.yml -i inventory.prod --private-key travis.pem -d
+    - ansible-playbook site.yml -i inventory.prod --private-key travis.pem
