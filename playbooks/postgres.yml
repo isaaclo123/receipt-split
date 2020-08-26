@@ -17,7 +17,7 @@
     - "{{ postgres_sock }}"
 
     postgresql_hba_entries:
-    - { type: local, database: all, user: "{{ postgres_user }}", auth_method: peer }
+    - { type: local, database: all, user: "{{ postgres_user }}", auth_method: md5 }
 
     postgresql_databases:
     - name: receipt_split
