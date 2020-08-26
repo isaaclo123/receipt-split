@@ -4,11 +4,9 @@ import {
   RECEIPT_LIST_SUCCESS,
   RECEIPT_LIST_FAIL,
   RECEIPT_INDEX_DELETE_MAP,
-  RECEIPT_LIST_ADD,
 } from "../types/index";
 
 import {
-  editDataReducer,
   createDeleteReducers,
   setDataReducer,
   applyDataReducers,

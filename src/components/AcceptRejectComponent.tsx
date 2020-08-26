@@ -114,7 +114,11 @@ export const AcceptRejectComponent = ({
               setHide(!hide);
             }}>
 
-            <a href="javascript:void(0);" className="stretched-link text-dark">{message}</a>
+            <Button
+              variant="link"
+              className="m-0 p-0 stretched-link text-dark text-align text-left">
+              {message}
+            </Button>
           </Col>
         </Row>
           }

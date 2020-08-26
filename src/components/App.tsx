@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
-import { Route, Switch, RouteComponentProps, Redirect } from "react-router-dom";
+import { Switch, RouteComponentProps, Redirect } from "react-router-dom";
 
 import {
   PrivateRoute,

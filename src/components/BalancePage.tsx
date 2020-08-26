@@ -5,7 +5,6 @@ import { RouteComponentProps } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
 import CardColumns from "react-bootstrap/CardColumns";
-import Col from "react-bootstrap/Col";
 
 import {
   AcceptRejectButtonsType,
@@ -34,13 +33,12 @@ import {
 } from "../types/index";
 import { ListGroup } from "react-bootstrap";
 
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { ListOrNoneComponent } from "./ListOrNoneComponent";
 
 import { apiArchive } from "../api/index";
 import NumberFormat from "react-number-format";
+
+import Button from "react-bootstrap/Button";
 
 const mapStateToProps = (state: RootState) => {
   const {
@@ -217,7 +215,11 @@ const BalancePageComponent = ({
                     &nbsp;from&nbsp;
                     <span className="text-primary">{from_user.fullname}</span>
                     :&nbsp;
-                    <a href="javascript:void(0);" className="stretched-link text-dark">{message}</a>
+                    <Button
+                      variant="link"
+                      className="m-0 p-0 stretched-link text-dark">
+                      {message}
+                    </Button>
                   </>
                   }
                 hiddenMessageComponent={
@@ -282,7 +284,11 @@ const BalancePageComponent = ({
                     &nbsp;to&nbsp;
                     <span className="text-primary">{to_user.fullname}</span>
                     :&nbsp;
-                    <a href="javascript:void(0);" className="stretched-link text-dark">{message}</a>
+                    <Button
+                      variant="link"
+                      className="m-0 p-0 stretched-link text-dark">
+                      {message}
+                    </Button>
                   </>
                   }
                 hiddenMessageComponent={

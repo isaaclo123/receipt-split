@@ -10,7 +10,9 @@ export const SERVER_URL = (process.env.NODE_ENV !== 'production') ?
       process.env.REACT_APP_API_URL_DEVELOPMENT :
       'http://localhost:5000'
   ) :
-  process.env.REACT_APP_API_URL_PRODUCTION;
+    (process.env.REACT_APP_API_URL_PRODUCTION != null) ?
+      process.env.REACT_APP_API_URL_PRODUCTION:
+      '';
 
 export const DEFAULT_HEADERS = {
   Accept: "application/json",

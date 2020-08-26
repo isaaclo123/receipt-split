@@ -1,31 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { connect, ConnectedProps } from "react-redux";
-import { RootState, LoginState } from "../types/index";
+import React from "react";
 
-import { Route, Redirect, RouteProps, useLocation, useHistory } from "react-router-dom";
+import { Route, Redirect, RouteProps, useLocation } from "react-router-dom";
 import { getToken } from "../api";
 
-// const mapStateToProps = (state: RootState) => {
-//   return { };
-// };
-
-// const connector = connect(
-//   null,
-//   {}
-// );
-
-// type PropsFromRedux = ConnectedProps<typeof connector>;
-
 type Props = RouteProps & {
-    // loginState: LoginState;
+  // loginState: LoginState;
 
-    onSuccess?: () => void;
-    onFail?: () => void;
-  };
+  onSuccess?: () => void;
+  onFail?: () => void;
+};
 
 const PrivateRouteComponent = (props: Props) => {
   const location = useLocation();
-  // const history = useHistory();
 
   console.log(props);
 

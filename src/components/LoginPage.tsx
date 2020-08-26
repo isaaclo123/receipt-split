@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { connect, ConnectedProps } from "react-redux";
-import { LoginData, LoginState, Dict } from "../types/index";
+import { LoginState } from "../types/index";
 
 import { LinkContainer } from "react-router-bootstrap";
 
@@ -18,8 +18,6 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/Form";
 
 import { LocationState, RootState } from "../types/index";
-
-import { initApiFetcher, getToken } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
   const { loginState } = state;

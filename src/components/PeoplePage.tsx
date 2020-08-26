@@ -16,6 +16,8 @@ import { RootState, UserType, FriendType, PEOPLE_PAGE } from "../types/index";
 
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import { apiArchive } from "../api/index";
 
@@ -47,14 +49,6 @@ const PeoplePageComponent = ({
 
   apiArchive(PEOPLE_PAGE);
 
-  // // gets user info once
-  // const [run, setRun] = useState(true);
-
-  // if (run) {
-  //   getUserAndFriends();
-  //   setRun(false);
-  // }
-
   const errors = (friendState.errors != null) ? friendState.errors : {};
 
   const { username, fullname } = userState.data;
@@ -79,110 +73,145 @@ const PeoplePageComponent = ({
       />
 
       {("error" in errors) &&
-        <Alert variant="danger">
-          {errors.error}
-        </Alert>}
+        <Row>
+          <Col>
+          <Alert variant="danger">
+            {errors.error}
+          </Alert>
+          </Col>
+        </Row>}
 
-      {((friends_received).length > 0) &&
-      <>
-        <h5>Received Friend Requests</h5>
+      {(friends_received.length > 0) &&
+        <>
+          <Row>
+            <Col>
+              <h5>Received Friend Requests</h5>
+            </Col>
+          </Row>
 
-        <ListGroup className="mb-3">
-          {friends_received.map(({
-            id = -1,
-            accepted,
-            from_user = {
-              id:-1,
-              username:"",
-              fullname:"",
-            },
-          }: FriendType,
-          index: number) => {
-            return (
-              <AcceptRejectComponent
-                accepted={accepted}
-                buttons={["accept", "reject"]}
-                onAccept={() => {
-                  setFriendConfirm(id, "accept", index);
-                }}
-                onReject={() => {
-                  setFriendConfirm(id, "reject", index);
-                }}
-                message={from_user.fullname}
-                messageComponent={
-                  <span className="text-primary">{from_user.fullname}</span>
-                }
-              / >
-            );
-        })}
-        </ListGroup>
-      </>}
+          <Row>
+            <Col>
+              <ListGroup className="mb-3">
+                {friends_received.map(({
+                  id = -1,
+                  accepted,
+                  from_user = {
+                    id:-1,
+                    username:"",
+                    fullname:"",
+                  },
+                }: FriendType,
+                index: number) => {
+                  return (
+                    <AcceptRejectComponent
+                      accepted={accepted}
+                      buttons={["accept", "reject"]}
+                      onAccept={() => {
+                        setFriendConfirm(id, "accept", index);
+                      }}
+                      onReject={() => {
+                        setFriendConfirm(id, "reject", index);
+                      }}
+                      message={from_user.fullname}
+                      messageComponent={
+                        <span className="text-primary">{from_user.fullname}</span>
+                      }
+                    / >
+                  );
+              })}
+              </ListGroup>
+            </Col>
+          </Row>
+        </>}
 
       {(friends_sent.length > 0) &&
       <>
-        <h5>Pending Friend Requests</h5>
+        <Row>
+          <Col>
+            <h5>Pending Friend Requests</h5>
+          </Col>
+        </Row>
 
-        <ListGroup className="mb-3">
-          {friends_sent.map(({
-            id = -1,
-            accepted,
-            to_user = {
-              id:-1,
-              username:"",
-              fullname:"",
-            },
-          }: FriendType) => {
-            const buttonType: AcceptRejectButtonsType = (
-              (accepted === true && ["accept"]) ||
-              (accepted === false && ["reject"]) ||
-              (["pending"])
-            );
+        <Row>
+          <Col>
+            <ListGroup className="mb-3">
+              {friends_sent.map(({
+                id = -1,
+                accepted,
+                to_user = {
+                  id:-1,
+                  username:"",
+                  fullname:"",
+                },
+              }: FriendType) => {
+                const buttonType: AcceptRejectButtonsType = (
+                  (accepted === true && ["accept"]) ||
+                  (accepted === false && ["reject"]) ||
+                  (["pending"])
+                );
 
-            return (
-              <AcceptRejectComponent
-                accepted={accepted}
-                buttons={buttonType}
-                messageComponent={
-                  <span className="text-primary">{to_user.fullname}</span>
-                }
-              / >
-            );
-          })}
-        </ListGroup>
+                return (
+                  <AcceptRejectComponent
+                    accepted={accepted}
+                    buttons={buttonType}
+                    messageComponent={
+                      <span className="text-primary">{to_user.fullname}</span>
+                    }
+                  / >
+                );
+              })}
+            </ListGroup>
+          </Col>
+        </Row>
       </>
       }
 
-      <h5>User Info</h5>
-      <ListGroup className="mb-3">
-        <ListGroup.Item>
-          <span className="float-left">
-            <span className="text-primary">{fullname}</span>
-          </span>
-          <span className="float-right">({username})</span>
-        </ListGroup.Item>
-      </ListGroup>
-      <div className="align-middle">
-        <h5 className="float-left">Friends</h5>
-        <Button
-          variant="link"
-          className="m-0 p-0 float-right"
-          onClick={() => setHide(false)}
-          >
-          + Add Friends
-        </Button>
-      </div>
-      <br />
-      <h5 />
+      <Row>
+        <Col>
+          <h5>User Info</h5>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ListGroup className="mb-3">
+            <ListGroup.Item>
+              <span className="float-left">
+                <span className="text-primary">{fullname}</span>
+              </span>
+              <span className="float-right">({username})</span>
+            </ListGroup.Item>
+          </ListGroup>
+        </Col>
+      </Row>
 
-      <ListGroup className="mb-3">
-        <ListOrNoneComponent<UserType>
-          list={friends}
-          listComponent={(user: UserType) => (
-            <UserListItemComponent user={user} />
-          )}
-          noneComponent={<UserListItemComponent />}
-        />
-      </ListGroup>
+      <Row>
+        <Col>
+          <h5 className="float-left">Friends</h5>
+        </Col>
+        <Col xs="auto">
+          <Button
+            variant="link"
+            className="m-0 p-0 float-right"
+            onClick={() => setHide(false)}
+            >
+            + Add Friends
+          </Button>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col>
+          <ListGroup className="mb-3">
+            <ListOrNoneComponent<UserType>
+              list={friends}
+              listComponent={(user: UserType) => (
+                <UserListItemComponent user={user} />
+              )}
+              noneComponent={<UserListItemComponent />}
+            />
+          </ListGroup>
+        </Col>
+      </Row>
     </>
   );
 };

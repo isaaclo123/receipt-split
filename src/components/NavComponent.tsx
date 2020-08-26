@@ -12,8 +12,6 @@ import Navbar from "react-bootstrap/Navbar";
 import { logOut, getUser } from "../actions/index";
 import { RootState } from "../types/index";
 
-import { removeToken } from "../api/index";
-
 const mapStateToProps = (state: RootState) => {
   const {
     userState,

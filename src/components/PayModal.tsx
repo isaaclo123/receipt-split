@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { connect, ConnectedProps } from "react-redux";
 
@@ -21,13 +21,8 @@ import {
 
 import {
   RootState,
-  UserType,
   CURRENCY_FORMAT
 } from "../types/index";
-
-import {
-  UserSelectModal
-} from "./index"
 
 const mapStateToProps = (state: RootState) => {
   const { paymentState } = state;

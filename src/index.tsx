@@ -1,9 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { useLocation, BrowserRouter, HashRouter, Redirect, Route } from "react-router-dom";
-
-import { createBrowserHistory } from "history";
+import { HashRouter, Redirect, Route } from "react-router-dom";
 
 import store from "./store";
 import "./index.css";
