@@ -44,6 +44,7 @@ jobs:
 
     before_install:
     - ls "$TRAVIS_HOME"
+    - ls "$TRAVIS_HOME/build"
     - ls "$TRAVIS_HOME/.casher"
     - docker build -t receipt-split .
     - docker build -t $REPO:$COMMIT .
