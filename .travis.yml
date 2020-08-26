@@ -3,6 +3,7 @@ env:
   - COMMIT=${TRAVIS_COMMIT::8}
   - REPO=isaaclo1234/receipt-split
   - NODE_ENV=production
+  - REACT_APP_API_URL_PRODUCTION=''
 
 stages:
 - test
