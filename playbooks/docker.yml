@@ -28,6 +28,12 @@
       recreate: yes
 
       state: started
+
+      volumes:
+      - /var/run/postgresql/.s.PGSQL.5432:/tmp/.s.PGSQL.5432
+
+      exposed_ports:
+      - "80"
       ports:
       - "80:5000"
 
@@ -35,4 +41,4 @@
         SECRET_KEY: "{{ secret_key }}"
         WSGI_WORKERS: "{{ wsgi_workers }}"
 
-        DB_URI: "postgres://{{ postgres_user }}:{{ postgres_pass }}@/receipt_split?host={{ postgres_sock }}"
+        DB_URI: "postgres://{{ postgres_user }}:{{ postgres_pass }}@/receipt_split?host=/tmp"

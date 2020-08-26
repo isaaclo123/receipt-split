@@ -1,3 +1,5 @@
 ---
 
 - src: darkwizard242.docker
+
+- src: geerlingguy.postgresql

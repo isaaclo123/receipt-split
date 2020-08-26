@@ -2,24 +2,36 @@
 
 - name: Create receipt_split database
   hosts: all
-  tasks:
-  - name: Install postgres packages
-    apt:
-      name: "{{ packages }}"
-    vars:
-      packages:
-      - postgresql
-      - postgresql-contrib
-      - python-psycopg2
+  roles:
+  - role: geerlingguy.postgresql
     become: yes
+    name: receipt_split
 
-  - name: Configure postgres database
-    postgresql_db:
-      name: receipt_split
+    postgresql_service_state: restarted
+
+    postgresql_global_config_options:
+    - option: listen_addresses
+      value: ''
+
+    postgresql_unix_socket_directories:
+    - "{{ postgres_sock }}"
+
+    postgresql_hba_entries:
+    - { type: local, database: all, user: "{{ postgres_user }}", auth_method: peer }
+
+    postgresql_databases:
+    - name: receipt_split
       login_user: "{{ postgres_user }}"
       login_password: "{{ postgres_pass }}"
       login_unix_socket: "{{ postgres_sock }}"
-
       port: "{{ postgres_port }}"
-    become: yes
-    become_user: postgres
+      owner: "{{ postgres_user }}"
+
+    postgresql_users:
+    - name: "{{ postgres_user }}"
+      password: "{{ postgres_pass }}"
+      db: receipt_split
+      login_user: '{{ postgres_user }}'
+      login_password: "{{ postgres_pass }}"
+      login_unix_socket: "{{ postgres_sock }}"
+      port: "{{ postgres_port }}"
