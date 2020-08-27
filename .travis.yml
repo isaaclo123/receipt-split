@@ -2,13 +2,12 @@ env:
   global:
   - COMMIT=${TRAVIS_COMMIT::8}
   - REPO=isaaclo1234/receipt-split
-  - REACT_APP_API_URL_PRODUCTION=''
+  # - REACT_APP_API_URL_PRODUCTION=''
 
 stages:
-  # - test
-  # - build
-- docker
-- deploy
+  - test
+  - build
+  - deploy
 
 branches:
   only:
@@ -24,32 +23,27 @@ jobs:
     script:
     - npm run test
 
+    # - stage: build
+    #   language: node_js
+    #   node_js: 12
+    #   cache:
+    #     npm: true
+    #     directories:
+    #     - "build/"
+
+    #   script:
+    #   - NODE_ENV=production npm run build
+
   - stage: build
     language: node_js
     node_js: 12
-    cache:
-      npm: true
-      directories:
-      - "build/"
 
-    script:
-    - NODE_ENV=production npm run build
-
-  - stage: docker
-    language: node_js
-    node_js: 12
-
-    cache:
-      directories:
-      - "build/"
+    cache: npm
 
     services:
     - docker
 
     before_install:
-    - ls -a "$TRAVIS_HOME"
-    - ls -a "$TRAVIS_HOME/build"
-    - ls -a "$TRAVIS_HOME/.casher"
     - docker build -t receipt-split .
     - docker build -t $REPO:$COMMIT .
     - docker run -d -p 5000:5000 --name receipt-split $REPO:$COMMIT

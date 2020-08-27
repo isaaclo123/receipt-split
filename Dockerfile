@@ -1,31 +1,35 @@
-# FROM node:10.22.0 AS builder
-#
-# WORKDIR /srv/receipt-split
-#
-# # node
-# COPY ./src/ ./src/
-# COPY ./config/ ./config/
-# COPY ./public/ ./public/
-# COPY ./scripts/ ./scripts/
-# COPY ./node_modules/ ./node_modules/
-#
-# COPY [ \
-# "package-lock.json", \
-# "package.json", \
-# "static.json", \
-# "tsconfig.json", \
-# "./" \
-# ]
-#
-# # react
-# ENV REACT_APP_API_URL_PRODUCTION=''
-# ENV NODE_ENV=production
-#
-# # node
-# RUN npm install
-# RUN npm run build
-#
-FROM python:3.7
+# node build
+
+FROM node:12-alpine3.12 AS builder
+
+WORKDIR /receipt-split
+
+# node
+COPY ./src/ ./src/
+COPY ./config/ ./config/
+COPY ./public/ ./public/
+COPY ./scripts/ ./scripts/
+
+COPY [ \
+"package-lock.json", \
+"package.json", \
+"static.json", \
+"tsconfig.json", \
+"./" \
+]
+
+# node
+RUN npm ci
+
+# react
+ENV REACT_APP_API_URL_PRODUCTION=''
+ENV NODE_ENV=production
+
+RUN npm run build
+
+# python build
+
+FROM python:3.7-slim
 
 # docker
 WORKDIR /srv/receipt-split
@@ -42,9 +46,7 @@ ENV FLASK_APP=receipt_split:app
 
 # -- End Vars --
 
-# react files (must build outside before running docker image)
-# COPY --from=builder /srv/receipt-split/build/ ./build
-COPY ./build/ ./build/
+COPY --from=builder /receipt-split/build/ ./build
 
 # python
 COPY ./migrations/ ./migrations/

@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import { get } from "./index";
 import { connect, ConnectedProps } from "react-redux";
 
-// import { getUser } from "../actions/getUser";
-
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
