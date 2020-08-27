@@ -48,7 +48,10 @@ export const addNewPayment = (payment: PaymentType) =>
     [EDIT_DATA_PREPEND]
   );
 
-export const setNewPayment = ({max_amount, ...payload}: PaymentEditType): ApiMiddlewareAction =>
+export const setNewPayment = (
+    {max_amount, ...payload}: PaymentEditType,
+    onSuccess = () => {}
+  ): ApiMiddlewareAction =>
   apiCallAction({
     successType: PAYMENT_SAVE_SUCCESS,
     failType: PAYMENT_SAVE_FAIL,
@@ -56,6 +59,7 @@ export const setNewPayment = ({max_amount, ...payload}: PaymentEditType): ApiMid
     apiCall: savePayment,
     apiCallArgs: [{...payload}],
     afterSuccess: ({ paymentState }: RootState) => {
+      onSuccess()
       return addNewPayment(paymentState.data as PaymentType);
     }
   });

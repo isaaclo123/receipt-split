@@ -38,6 +38,8 @@ import {
 
 import { ApiMiddlewareAction } from "../types/index";
 import { setValueAction, apiCallAction } from "./index";
+import { batch } from "react-redux";
+import { getBalanceSumList } from "./balanceActions";
 
 export const getReceiptList = (): ApiMiddlewareAction =>
   apiCallAction({
@@ -94,7 +96,12 @@ export const saveReceipt = (
     apiCall: saveReceiptById,
     apiCallArgs: [id, payload],
     afterSuccess: (state: any) => {
-      return getReceiptList();
+      return (dispatch, getState) => {
+        batch(() => {
+          dispatch(getReceiptList())
+          dispatch(getBalanceSumList())
+        });
+      };
     },
   });
 

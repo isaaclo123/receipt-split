@@ -97,7 +97,8 @@ const PayModalComponent = ({
 
           { (amount > max_amount) &&
             <Alert variant="warning">
-              The payment amount you have entered is over the amount you owe. Are you sure?
+              The payment amount you have entered (${amount}) is over the amount you owe
+              (${max_amount}). Are you sure?
             </Alert>
           }
 
@@ -153,7 +154,7 @@ const PayModalComponent = ({
             onClick={() => {
               console.log("Set New Payment")
               console.log(paymentState.data)
-              setNewPayment(paymentState.data);
+              setNewPayment(paymentState.data, onClose);
             }}
           >
             Pay
