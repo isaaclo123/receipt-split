@@ -19,6 +19,8 @@
     become: yes
 
   - name: Create docker receipt-split
+    become: yes
+    become_user: www-data
     docker_container:
       name: receipt-split
       image: isaaclo1234/receipt-split:latest
