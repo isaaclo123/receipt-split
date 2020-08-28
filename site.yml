@@ -4,6 +4,6 @@
 
 - import_playbook: ./playbooks/docker.yml
 
-- import_playbook: ./playbooks/letsencrypt.yml
-
 - import_playbook: ./playbooks/nginx.yml
+
+- import_playbook: ./playbooks/letsencrypt.yml

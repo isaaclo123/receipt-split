@@ -25,16 +25,18 @@
         - add_header Strict-Transport-Security "max-age=31536000" always
     nginx_sites:
       http:
-        - listen 80
-        - server_name "{{ domain }}"
-        - |
-          location / {
-            return 301 https://$host$request_uri
-          }
+        - listen 80 default_server
+        - listen [::]:80 default_server
+        - server_name _
+        - return 301 https://$host$request_uri
 
       default:
         - listen 443 ssl
-        - server_name "{{ domain }}"
+        - listen 443 ssl http2
+        - listen [::]:443 ssl http2
+        - server_name "{{ domain }} www.{{ domain }}"
+        - root "/var/www/{{ domain }}/html"
+        - index index.html index.htm index.nginx-debian.html
 
         - |
           location / {
