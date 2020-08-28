@@ -1,6 +1,6 @@
 # node build
 
-FROM node:12-alpine3.12 AS builder
+FROM node:12-slim AS builder
 
 WORKDIR /receipt-split
 
