@@ -34,8 +34,6 @@
         - listen 443 ssl http2
         - listen [::]:443 ssl http2
         - server_name "{{ domain }} www.{{ domain }}"
-        - root "/var/www/{{ domain }}/html"
-        - index index.html index.htm index.nginx-debian.html
 
         - |
           location / {
