@@ -91,11 +91,11 @@ def friends(id, action=None):
     if friend.to_user_id != current_identity.id:
         app.logger.info("/friend/%s from_user incorrect", id)
         return err("you are not authorized to add friends from this user"), \
-            status.HTTP_401_UNAUTHORIZED
+            status.HTTP_403_FORBIDDEN
 
     if friend.from_user_id == current_identity.id:
         app.logger.info("/friend/%s can't friend self", id)
-        return err("Cannot friend self"), status.HTTP_401_UNAUTHORIZED
+        return err("Cannot friend self"), status.HTTP_403_FORBIDDEN
 
     if not db.session.query(exists().where(
                             User.id == friend.to_user_id)).scalar():

@@ -1,0 +1,11 @@
+---
+
+- hosts: all
+  become: yes
+  roles:
+    - role: thefinn93.letsencrypt
+      letsencrypt_webroot_path: "/var/www/{{ domain }}/html"
+      letsencrypt_email: "{{ email }}"
+      letsencrypt_cert_domains:
+        - "{{ domain }}"
+      letsencrypt_renewal_command_args: '--renew-hook "systemctl restart nginx"'

@@ -21,8 +21,8 @@ def get_payment(id, action=None):
 
     if payment.to_user != current_identity and \
             payment.from_user != current_identity:
-        return err("you are not authorized to view this payment"),
-    status.HTTP_401_UNAUTHORIZED
+        return err("you are not authorized to view this payment"), \
+            status.HTTP_403_FORBIDDEN
 
     if action is None and request.method == 'GET':
         payment_dump = payment_schema.dump(payment)
@@ -31,8 +31,8 @@ def get_payment(id, action=None):
     # accept or reject bahavior after
 
     if payment.to_user != current_identity:
-        return err("you are not authorized to accept or reject this payment"),
-    status.HTTP_401_UNAUTHORIZED
+        return err("you are not authorized to accept or reject this payment"),\
+            status.HTTP_403_FORBIDDEN
 
     if (action == "accept" or action == "reject") and request.method == 'POST':
         # change accepted value

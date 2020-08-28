@@ -3,3 +3,7 @@
 - src: darkwizard242.docker
 
 - src: geerlingguy.postgresql
+
+- src: jdauphant.nginx
+
+- src: thefinn93.letsencrypt

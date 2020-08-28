@@ -1,5 +1,8 @@
 ---
 
+email: "{{ lookup('env','EMAIL') }}"
+domain: "{{ lookup('env','DOMAIN') }}"
+
 ansible_user: "{{ lookup('env','ANSIBLE_USER') }}"
 # ansible_pass: "{{ lookup('env','ANSIBLE_PASS') }}"
 

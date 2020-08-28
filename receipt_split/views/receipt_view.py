@@ -109,7 +109,7 @@ def receipt_by_id(id):
                         current_identity)
         app.logger.debug("you do not own this receipt")
         return err("You do not own this receipt"),\
-            status.HTTP_401_UNAUTHORIZED
+            status.HTTP_403_FORBIDDEN
 
     if request.method == 'DELETE':
         app.logger.info("Deleting receipt/%s", id)
