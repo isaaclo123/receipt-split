@@ -18,6 +18,12 @@
       - python-docker
     become: yes
 
+  - name: Add nginx www-data user to docker group
+    user:
+      name: www-data
+      groups: docker
+      append: yes
+
   - name: Create docker receipt-split
     become: yes
     become_user: www-data
