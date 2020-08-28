@@ -110,7 +110,7 @@ docker run -p 5000:5000 -e $NAME_OF_ENV_FILE receipt-split
 ansible-galaxy install -r requirements.yml
 
 # run playbook
-ansible-playbook site.yml -i MY_INVENTORY
+ansible-playbook site.yml -i MY_INVENTORY_FILE
 '''
 
 ## To encrypt private key
