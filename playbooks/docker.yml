@@ -27,22 +27,22 @@
       restart_policy: always
       recreate: yes
 
-      user: "www-data:www-data"
+      # user: "www-data:www-data"
 
       state: started
 
       volumes:
       - /var/run/postgresql/.s.PGSQL.5432:/tmp/.s.PGSQL.5432
-      - /var/run/gunicorn.sock:/tmp/gunicorn.sock
+      # - /var/run/gunicorn.sock:/tmp/gunicorn.sock
 
       # exposed_ports:
       # - "5000"
-      # ports:
-      # - "5000:5000"
+      ports:
+      - "5000:5000"
 
       env:
         SECRET_KEY: "{{ secret_key }}"
         WSGI_WORKERS: "{{ wsgi_workers }}"
-        GUNICORN_SOCK: "unix:/tmp/gunicorn.sock"
+        # GUNICORN_SOCK: "unix:/tmp/gunicorn.sock"
 
         DB_URI: "postgres://{{ postgres_user }}:{{ postgres_pass }}@/receipt_split?host=/tmp"
