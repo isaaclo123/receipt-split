@@ -34,7 +34,7 @@
       default:
         - listen 443 ssl http2
         - listen [::]:443 ssl http2
-        - server_name "{{ domain }} www.{{ domain }}"
+        - server_name _
 
         # proxy_pass http://unix:/var/run/gunicorn.sock;
         - |
