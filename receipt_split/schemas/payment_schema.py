@@ -1,6 +1,6 @@
 from flask import current_app as app
 
-from marshmallow import post_load
+from marshmallow import fields, post_load
 from receipt_split.models import Payment
 from receipt_split.meta import ma
 from . import BaseSchema, UserSchema, get_existing_user, USER_INFO_FIELDS
@@ -24,3 +24,7 @@ class PaymentSchema(BaseSchema):
                                      user_field="from_user", **kwargs)
         app.logger.debug("GET EXISTING USER END PAYMENT_SCHEMA")
         return fromuser
+
+
+class PaymentCreateSchema(PaymentSchema):
+    id = fields.Int(dump_only=True)

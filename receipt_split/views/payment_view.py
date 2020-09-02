@@ -5,8 +5,9 @@ from flask_jwt import current_identity, jwt_required
 from receipt_split.forms import PaymentForm
 from receipt_split.models import Payment, Settlement
 from receipt_split.meta import db
-from receipt_split.schemas import payments_schema, payment_schema, user_schema
-from . import views, err, round_decimals_down
+from receipt_split.schemas import payments_schema, payment_schema, \
+    payment_create_schema, user_schema
+from . import views, err
 
 
 @views.route('/payments/<int:id>')
@@ -93,10 +94,7 @@ def pay_user():
             app.logger.info("pay form errors - %s", form.errors)
             return form.errors, status.HTTP_400_BAD_REQUEST
 
-        # TODO dont know if this is neccesary
         to_user = json_data.get("to_user")
-
-        app.logger.info("/pay to_user %s", to_user)
 
         if to_user is None:
             return err("to_user is not specified"), status.HTTP_400_BAD_REQUEST
@@ -142,26 +140,16 @@ def pay_user():
         app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
         app.logger.info("/pay POST JSON_DATA - %s", json_data)
 
-        pay_data = payment_schema.load(json_data, session=db.session)
+        pay_data = payment_create_schema.load(json_data, session=db.session)
         pay_data.archived = False
 
         app.logger.debug("AFTER PAYMENT SCHEMA LOAD")
 
         if pay_data.to_user not in current_identity.friends:
-            app.logger.debug("curr ident friends")
-            app.logger.debug(current_identity.friends)
-            app.logger.debug("curr user")
-            app.logger.debug(current_identity)
-            app.logger.debug("pay_data to_user")
-            app.logger.debug(pay_data.to_user)
-            app.logger.debug("pay_data from_user")
-            app.logger.debug(pay_data.from_user)
-            app.logger.debug("Cant pay non friend")
             return err("Cannot pay a non-friended user"),\
                 status.HTTP_400_BAD_REQUEST
 
         if pay_data.to_user == current_identity:
-            app.logger.debug("Cant pay self")
             return err("Cannot pay yourself"),\
                 status.HTTP_400_BAD_REQUEST
 

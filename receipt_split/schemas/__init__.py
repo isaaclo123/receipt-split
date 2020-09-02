@@ -17,6 +17,7 @@ receipts_schema = ReceiptSchema(many=True, exclude=RECEIPT_INFO_EXCLUDE_FIELDS)
 receipt_create_schema = ReceiptCreateSchema()
 
 payment_schema = PaymentSchema()
+payment_create_schema = PaymentCreateSchema()
 payments_schema = PaymentSchema(many=True)
 
 friend_schema = FriendSchema()
