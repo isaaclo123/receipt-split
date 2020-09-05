@@ -10,8 +10,6 @@ import { LinkContainer } from "react-router-bootstrap";
 
 import { getReceiptList } from "../actions/index";
 
-import { apiArchive } from "../api/index";
-
 import NumberFormat from 'react-number-format';
 
 import Alert from "react-bootstrap/Alert";
@@ -26,7 +24,6 @@ import {
 import {
   RootState,
   ReceiptSummaryType,
-  RECEIPT_PAGE,
   CURRENCY_FORMAT,
 } from "../types/index";
 
@@ -53,8 +50,6 @@ const ReceiptPageComponent = ({
   receiptListState,
   getReceiptList
 }: Props) => {
-  apiArchive(RECEIPT_PAGE);
-
   const errors = (receiptListState.errors != null) ? receiptListState.errors : {};
 
   console.log(receiptListState);

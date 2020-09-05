@@ -28,14 +28,12 @@ import {
   BalanceSumType,
   Dict,
   PaymentType,
-  BALANCE_PAGE,
   CURRENCY_FORMAT,
 } from "../types/index";
 import { ListGroup } from "react-bootstrap";
 
 import { ListOrNoneComponent } from "./ListOrNoneComponent";
 
-import { apiArchive } from "../api/index";
 import NumberFormat from "react-number-format";
 
 import Button from "react-bootstrap/Button";
@@ -85,8 +83,6 @@ const BalancePageComponent = ({
   setPaymentConfirm,
 }: Props) => {
   const [payShow, setPayShow] = useState(false);
-
-  apiArchive(BALANCE_PAGE);
 
   const balanceErrors = (balanceSumListState.errors != null) ? balanceSumListState.errors : {};
   const paymentErrors = (paymentListState.errors != null) ? paymentListState.errors : {};

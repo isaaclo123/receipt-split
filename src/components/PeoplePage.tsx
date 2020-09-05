@@ -12,14 +12,12 @@ import {
   AcceptRejectComponent,
   AcceptRejectButtonsType
 } from "./index";
-import { RootState, UserType, FriendType, PEOPLE_PAGE } from "../types/index";
+import { RootState, UserType, FriendType } from "../types/index";
 
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
-import { apiArchive } from "../api/index";
 
 const mapStateToProps = (state: RootState) => {
   const { userState, friendState } = state;
@@ -46,8 +44,6 @@ const PeoplePageComponent = ({
   getUserAndFriends
 }: Props) => {
   const [hide, setHide] = useState(true);
-
-  apiArchive(PEOPLE_PAGE);
 
   const errors = (friendState.errors != null) ? friendState.errors : {};
 

@@ -2,6 +2,7 @@ import React from "react";
 
 import { Route, Redirect, RouteProps, useLocation } from "react-router-dom";
 import { getToken } from "../api";
+import { startApiFetcher } from "../api/index";
 
 type Props = RouteProps & {
   // loginState: LoginState;
@@ -33,9 +34,9 @@ const PrivateRouteComponent = (props: Props) => {
     }} />;
   }
 
-  onSuccess()
+  onSuccess();
+  startApiFetcher();
   return <Route {...props} />;
 };
 
-// export const PrivateRoute = connector(PrivateRouteComponent);
 export const PrivateRoute = PrivateRouteComponent;

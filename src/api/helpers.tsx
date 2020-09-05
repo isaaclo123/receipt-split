@@ -1,5 +1,7 @@
 import { SERVER_URL, DEFAULT_HEADERS } from "./index";
 import { ApiFetchType } from "../types/index";
+import { initApiFetcher } from "./apiFetcher";
+import { removeToken } from "./token";
 
 // TODO: make type safe
 export const fetchData = async (
@@ -39,6 +41,13 @@ export const fetchData = async (
     const json = await response.json();
 
     if (!response.ok) {
+
+      // logout on response error
+      if (response.status === 401) { // unauthorized
+        initApiFetcher();
+        removeToken();
+      }
+
       return {
         modified: true,
         error: true,
