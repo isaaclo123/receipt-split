@@ -71,10 +71,11 @@ const NavComponentPage = ({
   const { fullname } = userState.data;
 
   return (
-    <Navbar variant="dark" bg="dark">
-      <Navbar.Brand>Receipt Split App</Navbar.Brand>
+    <Navbar variant="dark" bg="dark" expand="md">
+      <Navbar.Brand>Receipt Split</Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-      <Navbar.Collapse>
+      <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto" />
 
         <Nav>
