@@ -18,6 +18,7 @@ import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/Form";
 
 import { LocationState, RootState } from "../types/index";
+import { GithubRibbonComponent } from "./GithubRibbonComponent";
 
 const mapStateToProps = (state: RootState) => {
   const { loginState } = state;
@@ -67,6 +68,7 @@ const LoginPage = (props: Props) => {
 
   return (
     <div className="login-container">
+      <GithubRibbonComponent />
       <Card>
         <Card.Body>
           <Card.Title>Login</Card.Title>

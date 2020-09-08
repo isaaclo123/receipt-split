@@ -15,6 +15,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { LoginData, RootState } from "../types/index";
+import { GithubRibbonComponent } from "./GithubRibbonComponent";
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -58,6 +59,7 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
 
   return (
     <div className="login-container">
+      <GithubRibbonComponent />
       <Card>
         <Card.Body>
           <Card.Title>Signup</Card.Title>
@@ -139,7 +141,7 @@ const SignupPage = ({ setSignup, loginState }: Props) => {
 
             <span>
               <LinkContainer to={`/login`} className="float-left">
-                <Button>Login</Button>
+                <Button variant="danger">Cancel</Button>
               </LinkContainer>
 
               <Button onClick={handleSignupClick} className="float-right">

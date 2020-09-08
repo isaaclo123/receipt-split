@@ -20,3 +20,8 @@
 .App-link {
   color: #09d3ac;
 }
+
+/* github fork css */
+.github-fork-ribbon:before {
+  background-color: #121621;
+}

@@ -6,6 +6,7 @@ import { HashRouter, Redirect, Route } from "react-router-dom";
 import store from "./store";
 import "./index.css";
 import "./custom.scss";
+import "github-fork-ribbon-css/gh-fork-ribbon.css";
 
 import * as serviceWorker from "./serviceWorker";
 
