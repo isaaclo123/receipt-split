@@ -20,6 +20,7 @@ export * from "./ListOrNoneComponent";
 export * from "./FriendModal";
 export * from "./PayModal";
 export * from "./AcceptRejectComponent";
+export * from "./GithubRibbonComponent";
 export * from "./helpers";
 
 // export * from "./LeaveListItemComponent";
