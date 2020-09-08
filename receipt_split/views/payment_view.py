@@ -2,12 +2,15 @@ from flask import request, current_app as app
 from flask_api import status
 from flask_jwt import current_identity, jwt_required
 
+from sqlalchemy.sql import func, and_
+from sqlalchemy import literal_column
+
 from receipt_split.forms import PaymentForm
 from receipt_split.models import Payment, Settlement
 from receipt_split.meta import db
 from receipt_split.schemas import payments_schema, payment_schema, \
     payment_create_schema, user_schema
-from . import views, err
+from . import views, err, get_money_fmt
 
 
 @views.route('/payments/<int:id>')
@@ -117,26 +120,28 @@ def pay_user():
                 status.HTTP_400_BAD_REQUEST
 
         payment_amount = json_data.get("amount", 0)
+
+        diff_amount = s.get_diff_amount(current_identity.id)
         owed_amount = s.get_owed_amount(current_identity.id)
 
-        app.logger.debug(f"Payment amount ${payment_amount} and owed " +
-                         f"amount ${str('{:.2f}'.format(owed_amount))}")
+        app.logger.debug(f"Payment amount ${get_money_fmt(payment_amount)} " +
+                         f"and owed amount ${get_money_fmt(owed_amount)}")
 
-        # if s is not None and \
-        #         payment_amount > s.get_owed_amount(current_identity.id):
-        #     return err(f"Payment amount ${payment_amount} is over owed " +
-        #                f"amount ${owed_amount}"), status.HTTP_400_BAD_REQUEST
+        payment_sum = db.session.query(
+            func.coalesce(
+                func.sum(Payment.amount), literal_column("0.0")
+            )
+        ).filter(
+            Payment.from_user_id == from_user_id,
+            Payment.to_user_id == to_user_id,
+            Payment.accepted.is_(None)
+        ).scalar()
 
-        existing_pending = db.session.query(Payment.query.filter_by(
-            from_user_id=from_user_id,
-            to_user_id=to_user_id,
-            accepted=None
-        ).exists()).scalar()
-
-        if existing_pending:
-            return err("You already have a pending payment that has not " +
-                       "been accepted or rejected."), \
-                status.HTTP_400_BAD_REQUEST
+        if payment_sum >= diff_amount:
+            return err(f"The total of your pending payments " +
+                       f"(${get_money_fmt(payment_sum)}) already exceeds the" +
+                       f" owed amount (${get_money_fmt(diff_amount)})"), \
+                       status.HTTP_400_BAD_REQUEST
 
         app.logger.debug("BEFORE PAYMENT SCHEMA LOAD")
         app.logger.info("/pay POST JSON_DATA - %s", json_data)

@@ -174,8 +174,8 @@ class Settlement(Base):
     def get_owed_amount(self, user_id):
         return get(self, user_id, "owed_amount", Decimal(0.0))
 
-    def get_diff_total(self, user_id):
-        return get(self, user_id, "diff_total", Decimal(0.0))
+    def get_diff_amount(self, user_id):
+        return get(self, user_id, "diff_amount", Decimal(0.0))
 
     def add_payment(self, payment):
         """

@@ -13,6 +13,10 @@ from receipt_split.models import Balance, Settlement
 from . import err
 
 
+def get_money_fmt(val):
+    return str('{:.2f}'.format(val))
+
+
 def get_userkey(user):
     # return str(user.get("id", "-1")) + " - " + user.get("username", " ")
     return user.id
