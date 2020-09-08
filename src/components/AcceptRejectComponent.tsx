@@ -53,7 +53,7 @@ export const AcceptRejectComponent = ({
         }
       })()}>
         <Row>
-          <Col className="mt-1 d-inline-block text-truncate pr-0"
+          <Col className="mt-1 d-inline-block pr-0"
             onClick={() => {
               setHide(!hide);
               }}>
