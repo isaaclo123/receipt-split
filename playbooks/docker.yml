@@ -46,3 +46,13 @@
         # GUNICORN_SOCK: "unix:/tmp/gunicorn.sock"
 
         DB_URI: "postgres://{{ postgres_user }}:{{ postgres_pass }}@/receipt_split?host=/tmp"
+
+- name: Docker clean
+  hosts: all
+  become: yes
+  tasks:
+  - name: docker prune
+    shell: |
+      docker container prune
+      docker image prune
+      docker network prune
