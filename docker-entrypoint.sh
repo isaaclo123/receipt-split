@@ -25,6 +25,7 @@ echo "DB_URI: $DB_URI"
 echo "SECRET_KEY: $SECRET_KEY"
 echo "WSGI_WORKERS: $WSGI_WORKERS"
 
+pipenv run flask db init
 pipenv run flask db stamp head
 pipenv run flask db migrate
 pipenv run flask db upgrade
