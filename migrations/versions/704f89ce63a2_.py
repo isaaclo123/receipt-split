@@ -24,6 +24,8 @@ def upgrade():
 
     with op.batch_alter_table('receipt', schema=None) as batch_op:
         batch_op.execute("UPDATE receipt SET tax = 0")
+
+    with op.batch_alter_table('receipt', schema=None) as batch_op:
         batch_op.alter_column('tax', nullable=False)
 
     # ### end Alembic commands ###
