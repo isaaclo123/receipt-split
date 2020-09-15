@@ -6,6 +6,7 @@ import {
   RECEIPT_SET_NAME,
   RECEIPT_SET_AMOUNT,
   RECEIPT_SET_DATE,
+  RECEIPT_SET_TAX,
   RECEIPT_ADD_USER,
   RECEIPT_DELETE_USER,
   RECEIPT_ADD_RECEIPT_ITEM,
@@ -31,6 +32,7 @@ const initialState = (
   id: -1,
   name: "",
   amount: 0,
+  tax: 0,
   date: getCurrentDate(),
   resolved: false,
   user: user,
@@ -79,6 +81,15 @@ export const receiptReducer = applyDataReducers<ReceiptState, ReceiptIdAction>(
         {
           successType: RECEIPT_SET_NAME,
           field: [["name", false]]
+        }
+      ]
+    },
+    {
+      reducerCreator: editDataReducer,
+      args: [
+        {
+          successType: RECEIPT_SET_TAX,
+          field: [["tax", false]]
         }
       ]
     },

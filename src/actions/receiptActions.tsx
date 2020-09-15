@@ -13,6 +13,7 @@ import {
   RECEIPT_LIST_SUCCESS,
   RECEIPT_SET_NAME,
   RECEIPT_SET_AMOUNT,
+  RECEIPT_SET_TAX,
   RECEIPT_SET_DATE,
   RECEIPT_ADD_USER,
   RECEIPT_DELETE_USER,
@@ -163,6 +164,9 @@ export const setReceiptName = setValueAction<string>({
 });
 export const setReceiptAmount = setValueAction<number>({
   successType: RECEIPT_SET_AMOUNT
+});
+export const setReceiptTax = setValueAction<number>({
+  successType: RECEIPT_SET_TAX
 });
 export const setReceiptDate = setValueAction<string>({
   successType: RECEIPT_SET_DATE

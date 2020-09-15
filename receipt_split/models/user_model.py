@@ -2,8 +2,8 @@ from receipt_split.meta import db
 from . import receiptitem_association_table, receipt_association_table, Base,\
     Settlement, Friend, Payment, Receipt, Balance
 
-from sqlalchemy.sql import expression, or_, and_
-from flask import current_app as app
+from sqlalchemy.sql import or_, and_
+# from flask import current_app as app
 from sqlalchemy.orm import relationship
 
 
@@ -158,7 +158,7 @@ class User(Base):
             Receipt.resolved.is_(False)
         )
 
-        app.logger.debug("receipts_owed expression running - %s", result)
+        # app.logger.debug("receipts_owed expression running - %s", result)
 
         return result
 
@@ -172,7 +172,7 @@ class User(Base):
             Receipt.resolved.is_(True)
         )
 
-        app.logger.debug("receipts_owed expression running - %s", result)
+        # app.logger.debug("receipts_owed expression running - %s", result)
 
         return result
 
@@ -185,7 +185,7 @@ class User(Base):
             Receipt.user_id != self.id
         )
 
-        app.logger.debug("receipts_owed expression running - %s", result)
+        # app.logger.debug("receipts_owed expression running - %s", result)
 
         return result
 

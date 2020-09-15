@@ -20,6 +20,7 @@ import {
   getReceipt,
   setReceiptName,
   setReceiptAmount,
+  setReceiptTax,
   setReceiptDate,
   addReceiptUser,
   addReceiptItem,
@@ -75,6 +76,7 @@ const connector = connect(
     getReceipt,
     setReceiptName,
     setReceiptAmount,
+    setReceiptTax,
     setReceiptDate,
     addReceiptUser,
     deleteReceiptUser,
@@ -101,6 +103,7 @@ const ReceiptEditPageComponent = ({
   getReceipt,
   setReceiptName,
   setReceiptAmount,
+  setReceiptTax,
   setReceiptDate,
   addReceiptUser,
   deleteReceipt,
@@ -138,6 +141,7 @@ Props) => {
     id = -1,
     balances,
     name,
+    tax,
     amount,
     user,
     users,
@@ -260,15 +264,21 @@ Props) => {
         <Col>
           <ExpenseCardComponent
             extraComponent={
-              <>
+              <Row>
+                <Col
+                  xs="8"
+                  sm="9"
+                  md="9"
+                  lg="9">
                 <InputGroup>
                   <Form.Label
                     className="col-form-label">
-                    Paid by{" "}
+                    Paid by&nbsp;
                     <span className="text-primary">
                       {user == null ? "Unknown" : user.fullname}
-                    </span>{" "}
-                    on&nbsp; </Form.Label>
+                    </span>
+                    &nbsp;on&nbsp;
+                  </Form.Label>
                   <Form.Group className="mb-0">
                     <NumberFormat
                       className="pb-0"
@@ -283,8 +293,35 @@ Props) => {
                       customInput={Form.Control} />
                       <Form.Control.Feedback type="invalid">{errors.date}</Form.Control.Feedback>
                     </Form.Group>
+
                   </InputGroup>
-              </>
+                </Col>
+
+                <Col
+                  xs="4"
+                  sm="3"
+                  md="3"
+                  lg="3"
+                  >
+                  <Form.Group className="mb-0">
+                    <NumberFormat
+                      style={{ textAlign: "right"}}
+                      prefix="Tax: "
+                      suffix="%"
+                      className="pb-0"
+                      value={tax * 100}
+                      allowNegative={false}
+                      onValueChange={({floatValue = 0}: NumberFormatValues) => {
+                        setReceiptTax(floatValue / 100);
+                      }}
+                      plaintext
+                      isInvalid={errors.tax != null}
+
+                      customInput={Form.Control} />
+                      <Form.Control.Feedback type="invalid">{errors.tax}</Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+              </Row>
             }
             prefix="*"
             variant="info"

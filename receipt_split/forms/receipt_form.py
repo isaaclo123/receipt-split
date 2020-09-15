@@ -20,4 +20,5 @@ class ReceiptForm(ModelForm):
     name = fields.StringField("Name",
                               [va.length(min=1)])
     amount = fields.DecimalField("Decimal", [va.NumberRange(min=0)])
+    tax = fields.DecimalField("Decimal", [va.NumberRange(min=0)])
     receipt_items = fields.FieldList(fields.FormField(ReceiptItemForm))

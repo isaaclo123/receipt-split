@@ -110,6 +110,7 @@ def calculate_balances(receipt):
     """
     takes receipt model object and calculate balances
     """
+    tax = get(receipt.tax, Decimal(0.0))
     owner = get(receipt.user)
     users = get(receipt.users)
     receipt_amount = get(receipt.amount)
@@ -142,12 +143,16 @@ def calculate_balances(receipt):
         for u in users
     }
 
+    app.logger.debug("tax %s", tax)
+
     # split for receipt_items
     for r in receipt_items:
+        # add tax amount to item
         subitem_amount = Decimal(get(r.amount, 0))
+        subitem_amount *= (1 + tax)
         subitem_users = get(r.users, [])
 
-        subitem_total = subitem_total + subitem_amount
+        subitem_total += subitem_amount
 
         # split costs
         split_cost(subitem_amount, subitem_users, owner, balance_dict)

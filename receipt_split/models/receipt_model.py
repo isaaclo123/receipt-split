@@ -45,6 +45,8 @@ class Receipt(Base):
                      default=func.now(),
                      nullable=False)
 
+    tax = db.Column(db.Float(asdecimal=True), nullable=False, default=0)
+
     # resolved = db.Column(db.Boolean)
 
     # user

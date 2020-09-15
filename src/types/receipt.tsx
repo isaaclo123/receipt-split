@@ -56,6 +56,7 @@ export interface ReceiptError extends ErrorData {
   id?: string;
   name?: string;
   amount?: string;
+  tax?: string;
   date?: string;
   resolved?: string;
   user_id?: string;
@@ -79,6 +80,7 @@ export type ReceiptType = ReceiptSummaryType & {
   users: UserType[];
   balances: BalanceType[];
   receipt_items: ReceiptItemType[];
+  tax: number;
 };
 
 export type ReceiptItemType = {
