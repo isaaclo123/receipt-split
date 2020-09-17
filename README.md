@@ -1,6 +1,6 @@
 # Receipt-split [![Build Status](https://travis-ci.org/isaaclo123/receipt-split.svg?branch=master)](https://travis-ci.org/isaaclo123/receipt-split)
 
-http://receipt-split.isaaclo.site
+https://receipt-split.isaaclo.site
 
 https://hub.docker.com/repository/docker/isaaclo1234/receipt-split
 
