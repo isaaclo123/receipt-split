@@ -153,3 +153,7 @@ ansible-playbook site.yml -i MY_INVENTORY_FILE
 travis login --org
 travis encrypt-file -r isaaclo123/receipt-split travis.pem --org
 '''
+
+## Credit
+
+<div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
