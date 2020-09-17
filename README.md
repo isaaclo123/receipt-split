@@ -81,6 +81,8 @@ docker image for the app, uploads it to the docker hub, then runs an ansible pla
 playbook sets up a Postgres database, HTTPS with letsencrypt, updates the Google Cloud instance's
 app docker image to the latest built image, and sets up a reverse proxy with Nginx.
 
+## Docker Info
+
 ### Docker Image Quickstart
 
 ```bash
