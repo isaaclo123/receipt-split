@@ -1,94 +1,133 @@
 # Receipt-split [![Build Status](https://travis-ci.org/isaaclo123/receipt-split.svg?branch=master)](https://travis-ci.org/isaaclo123/receipt-split)
 
-## Screenshots
+http://receipt-split.isaaclo.site
+
+https://hub.docker.com/repository/docker/isaaclo1234/receipt-split
+
+Receipt-Split is an application that allows people to precisely share the costs of receipts.
+
+One common issue when sharing the cost of receipts among roommates is that in receipts, usually many
+items are shared, but some items may only be used by specific people. This app is designed to
+address this problem, by providing an easy way to keep track of receipts while being able to split
+the costs of items precisely.
+
+## Balance Page
+
+When first logging in to the app, you are directed to the Balance page. This page shows the amount
+of money you are owed from and owe to other users; a balance.
+
+The numbers on the balance card are in the format
+
+```None
+(total sum to pay) - (total sum of payments sent to user) = (remaining amount to pay)
+```
 
 ![Balance Pay Page](screenshots/balancepay.png)
 
-![Friend Page](screenshots/friendpage.png)
+To pay balances, you press the "Pay" button, where you enter a message and an amount of money to
+pay. The user the payment is sent to can then choose to "accept" or "reject" the payment in the
+"Payments Received" section of the page. The user sending a payment will have a "Payments Sent"
+section in the page, showing the status of their payment: "pending", "accepted", or "rejected".
+
+![Send Payment](screenshots/paymodal.png)
+
+## Receipt Page
+
+The receipt edit page allows you to create a receipt that you paid for and share the cost with
+other users. In the "Receipt Info" section, you enter a name, date, total cost of the receipt, and
+the tax rate for the receipt in percent. You can share the cost with friends in the "With" section,
+by pressing the "+" button in the "With" section.
+
+The "Sub-expenses" section represents items that are only shared by a subset of users in the
+receipt. The users specified in the "With" section of each sub-expense are the only ones who will
+have to pay for that sub-expense.
+
+Upon saving the receipt, in the "Balance" section, Balances will be calculated for the receipt,
+representing what each user must pay the owner of the receipt. When payments are accapted in the
+Balances page, the amount in the accepted payment is applied to the balances in the receipt, marking
+them as "PAID". When all balances in the receipt are paid, then the receipt is marked "Resolved"
 
 ![Receipt Edit Page](screenshots/receiptedit.png)
 
-## Project description
+The receipt list page has 4 sections. "My Receipts" lists the unresolved receipts you own. "Receipts
+In" lists the unresolved receipts that you do not own but are in. "My Resolved Receipts" lists your
+resolved receipts. "Receipts In Resolved" lists the resolved receipts you do not own, but are in.
 
-1. Project Type: Plan A or B or C
+![Receipt List Page](screenshots/receiptpage.png)
 
-    * I tried to go for Plan A
+## Friend Page
 
-2. Group Members Name:
+This page shows your user information and the user information of the friends you have. It displays
+the Full Name of the user on the left and the username in parenthesis on the right.
 
-    * Isaac Lo
+![Friend Page](screenshots/friendpage.png)
 
-3. Link to live Application:
+To add a new friend, press the "Add Friends" link, which brings up the "Send Friend Request" modal.
+Type in the user name of the friend you want to send a request to, and press "Add". A user
+receiving a friend request can choose to "accept" or "reject" the request, which will be shown in
+"Received Friend Requests". The user sending a friend request can see the status of their friend
+request: "pending", "accepted", or "rejected".
 
-    * http://receipt-split.isaaclo.site
+![Friend Request](screenshots/friendrequest.png)
 
-4. Link to Github Code Repository: Make sure that you provide the link to project code and not the link to your homepage of GitHub repository.
+## Technologies used
 
-    * https://github.com/isaaclo123/receipt-split
+To develop this application, I created a React JS front-end using redux and typescript.
+React-bootstrap and SCSS were to style the site. The server was written with python and flask,
+using marshmallow serialization and sqlalchemy. flask-jwt was used for JWT authentication.
 
-5. List of Technologies/API's Used
+To deploy the application, I used a Google Cloud Compute instance. A Travis CI pipeline builds a
+docker image for the app, uploads it to the docker hub, then runs an ansible playbook. The ansible
+playbook sets up a Postgres database, HTTPS with letsencrypt, updates the Google Cloud instance's
+app docker image to the latest built image, and sets up a reverse proxy with Nginx.
 
-    * To develop this application, I used a React JS front-end with redux and typescript. I tried to
-      use redux-saga, but that proved to be mostly uneccesary for the application. React-bootstrap
-      was used to make the site nicely styled. A backend was developed in flask with marshmallow
-      serialization and sqlalchemy. flask-jwt was used for JWT authentication.
+### Docker Image Quickstart
 
-6. Detailed Description of the project (No more than 500 words)
+```bash
+docker run -it --rm -p 5000:5000 isaaclo1234/receipt-split
+```
 
-    * this project is an application that allows people to share the costs of receipts. When one
-      enters the site for the first time, they are shown a balance page. If one goes to "receipts",
-      they have the option to add new receipts and view created receipts. When one creates a
-      receipt, they have to option to add other users to share the cost of the receipt, as well as
-      change some other receipt information, such as the date in "YYYY-MM-DD" format, or the receipt
-      name. They have the option to add receipt items. These receipt items can have users added to
-      them, which will cause costs to be subtracted and added to what each individual user must pay.
-      This would indicate that there is a specific receipt item only certain users used, and the
-      amount each person would have to pay would change as a result. On saving the receipt, a list
-      of balances each person must pay will appear on the bottom. This will be shown reflected on
-      the balances page. To add more people to receipts, one should do so by friending more users.
-      This is done by going to the people page, selecting "add friend", and adding users.
+The app will be running at localhost:5000
 
-7. List of Controllers and their short description (No more than 50 words for each controller)
+### Docker Image Build
 
-    * there is a controller for getting user information, such as friends, and balances "/user"
-    * there is a controller for creating (GET), updating (PUT), and deleting (DELETE (unused))
-      receipts with a certain id
-    * there is a controller for getting default receipt information (GET) and creating (PUT)
-      receipts, "/receipt/-1"
-    * there is a controller for adding friends (POST empty) "/friends/:username"
+```bash
+docker build -t receipt-split .
+docker run -p 5000:5000 -e $NAME_OF_ENV_FILE receipt-split
+```
 
-8. List of Views and their short description (No more than 50 words for each view)
+### Docker Image Env Variables
 
-    * the balances page contains a list of overall balances, that have been calculated from the
-      receipts. It contains balances you must pay other users and balances other users owe you. It
-      also includes balances you pay yourself within it. "/app/balance"
-    * the receipts page contains a list of receipts "app/receipt". You are able to edit receipts if
-      you own them, by clicking on them "app/receipt/:id".
-    * the people page contains a list of friends you have, with username on a list on the left and
-    * fullname on the right. There is an "add friend" link that opens a modal to add a friend by
-      username.
+```bash
+DB_URI # database connection uri for app
+SECRET_KEY # secret key for app
+WSGI_WORKERS # number of WSGI workers that app should run with
+```
 
-9. List of Tables, their Structure and short description
+## Development Info
 
-    * User: contains username, a password hash, fullname, and references to balances and receipt
-      items, and friends (a list of other users)
-    * Receipt: contains the name and date of a receipt, with the creating user (user). Has a decimal
-      amount, indicating the amount the receipt cost, and a list of users, or the people who are
-      included in the cost of the receipt. It contains a list of receipt_items, and a list of
-      balances that are calculated.
-    * Receipt item: an item whose cost is only shared by some of the people in the receipt. Contains
-      an amount, a list of users sharing the item, and a name.
-    * Balance: represents something a user must pay. contains a to_user and a from_user and an
-      amount. the "to_user" must pay the "from_user" "amount"
+### App Environment variables
 
-10. References/Resources: List all the references, resources or the online templates that were used for the project.
+```bash
+FLASK_APP=receipt_split:app
 
-    * https://flask-marshmallow.readthedocs.io/en/latest/
-    * https://www.typescriptlang.org/
-    * https://auth0.com/blog/beyond-create-react-app-react-router-redux-saga-and-more/
-    * https://flask-sqlalchemy.palletsprojects.com/en/2.x/
+FLASK_ENV # is "development" or "production"
 
-## Database
+SECRET_KEY # secret key for flask app
+DB_URI # database connection uri for flask app in production
+
+REACT_APP_API_URL_DEVELOPMENT='http://127.0.0.1:5000' # API URL for react app in dev
+REACT_APP_API_URL_PRODUCTION='' # API URL for react app in prod
+
+ANSIBLE_USER # ansible username for ansible playbook
+POSTGRES_USER # postgres username for server
+POSTGRES_PASS # postgres password for server
+
+EMAIL # email for letsencrypt
+DOMAIN # domain for letsencrypt
+```
+
+### Database
 
 ```bash
 flask db init
@@ -96,14 +135,7 @@ flask db migrate
 flask db upgrade
 ```
 
-## Docker commands
-
-```bash
-docker build -t receipt-split .
-docker run -p 5000:5000 -e $NAME_OF_ENV_FILE receipt-split
-```
-
-## Ansible
+### Ansible
 
 ```bash
 # install roles
@@ -113,7 +145,7 @@ ansible-galaxy install -r requirements.yml
 ansible-playbook site.yml -i MY_INVENTORY_FILE
 '''
 
-## To encrypt private key
+### To encrypt private key
 
 '''bash
 travis login --org
