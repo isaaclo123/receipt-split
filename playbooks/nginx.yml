@@ -42,3 +42,8 @@
             include proxy_params;
             proxy_pass http://localhost:5000;
           }
+        - |
+          location ^~ /.well-known/acme-challenge/ {
+            allow all;
+            default_type "text/plain";
+          }
