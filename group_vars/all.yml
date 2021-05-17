@@ -9,7 +9,7 @@ ansible_user: "{{ lookup('env','ANSIBLE_USER') }}"
 postgres_user: "{{ lookup('env','POSTGRES_USER') }}"
 postgres_pass: "{{ lookup('env','POSTGRES_PASS') }}"
 
-postgres_sock: /var/postgres-socket/postgresql
+postgres_sock: /etc/postgresql
 postgres_port: 5432
 
 wsgi_workers: "4"
