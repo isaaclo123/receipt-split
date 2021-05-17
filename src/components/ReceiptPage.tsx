@@ -71,16 +71,20 @@ const ReceiptPageComponent = ({
               return (
                 <LinkContainer to={`${match.url}/edit/${id}`}>
                   <ListGroup.Item className="d-inline-block text-truncate">
-                    <NumberFormat
-                      className="text-info"
-                      displayType="text"
-                      value={amount}
-                      prefix="$"
-                      {...CURRENCY_FORMAT}/>
-                    &nbsp;for&nbsp;
-                    <Button variant="link" className="m-0 p-0 stretched-link">{name}</Button>
-                    &nbsp;by&nbsp;
-                    <span className="text-primary">{user.fullname}</span>
+                    <span className="float-left">
+                      <NumberFormat
+                        className="text-info"
+                        displayType="text"
+                        value={amount}
+                        prefix="$"
+                        {...CURRENCY_FORMAT}/>
+                      &nbsp;for&nbsp;
+                      <Button variant="link" className="m-0 p-0 stretched-link">{name}</Button>
+                      &nbsp;by&nbsp;
+                      <span className="text-primary">{user.fullname}</span>
+                    </span>
+
+                    <span className="float-right">({date})</span>
                   </ListGroup.Item>
                 </LinkContainer>
               );
