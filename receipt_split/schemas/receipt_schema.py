@@ -26,9 +26,10 @@ class ReceiptItemSchema(BaseSchema):
 class ReceiptSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = Receipt
-        fields = ('date', 'id', 'name', 'amount', 'resolved',
+        fields = ('id', 'date', 'name', 'amount', 'resolved',
                   'balances', 'receipt_items', 'users', 'user', 'tax')
         ordered = True
+        order_by = ('name',)
 
     id = fields.Int()
 

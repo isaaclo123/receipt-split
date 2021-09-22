@@ -14,15 +14,17 @@
 
     # postgres_users_no_log: true
 
-    postgresql_service_state: started
+    postgresql_service_state: restarted
     postgresql_service_enabled: true
-
-    postgresql_global_config_options:
-    - option: listen_addresses
-      value: ''
 
     postgresql_unix_socket_directories:
     - "{{ postgres_sock }}"
+
+    postgresql_global_config_options:
+    - option: unix_socket_directories
+      value: '{{ postgresql_unix_socket_directories | join(",") }}'
+    - option: listen_addresses
+      value: ''
 
     postgresql_hba_entries:
       # - { type: local, database: all, user: "{{ postgres_user }}", auth_method: md5 }

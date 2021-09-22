@@ -32,7 +32,7 @@
       state: started
 
       volumes:
-      - /var/run/postgresql/.s.PGSQL.5432:/tmp/.s.PGSQL.5432
+      - "{{ postgres_sock }}/.s.PGSQL.5432:/tmp/.s.PGSQL.5432"
       # - /var/run/gunicorn.sock:/tmp/gunicorn.sock
 
       # exposed_ports:
